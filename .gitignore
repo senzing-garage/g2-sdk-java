@@ -23,3 +23,10 @@
 hs_err_pid*
 
 .history
+
+# Maven build artifact directory
+target/*
+
+# IntelliJ project directory info
+.idea/*
+

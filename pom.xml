@@ -1,0 +1,91 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.senzing</groupId>
+  <artifactId>g2</artifactId>
+  <packaging>jar</packaging>
+  <version>2.8.2</version>
+  <name>com.senzing:g2-sdk-java</name>
+  <description>The Java SDK for the Senzing G2 Engine.  This calls through to the native Senzing SDK via JNI.</description>
+  <url>http://github.com/Senzing/g2-sdk-java</url>
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <name>Jae Adams</name>
+      <email>jae@senzing.com</email>
+      <organization>Senzing</organization>
+      <organizationUrl>http://www.senzing.com</organizationUrl>
+    </developer>
+    <developer>
+      <name>Jeff Adair</name>
+      <email>jeffadair@senzing.com</email>
+      <organization>Senzing</organization>
+      <organizationUrl>http://www.senzing.com</organizationUrl>
+    </developer>
+    <developer>
+      <name>Brian Macy</name>
+      <email>brian@senzing.com</email>
+      <organization>Senzing</organization>
+      <organizationUrl>http://www.senzing.com</organizationUrl>
+    </developer>
+    <developer>
+      <name>Barry M. Caceres</name>
+      <email>barry@senzing.com</email>
+      <organization>Senzing</organization>
+      <organizationUrl>http://www.senzing.com</organizationUrl>
+    </developer>
+    <developer>
+      <name>Oskar Thorbjornsson</name>
+      <email>oskar@senzing.com</email>
+      <organization>Senzing</organization>
+      <organizationUrl>http://www.senzing.com</organizationUrl>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:git://github.com/Senzing/g2-sdk-java.git</connection>
+    <developerConnection>scm:git:ssh://github.com:Senzing/g2-sdk-java.git</developerConnection>
+    <url>http://github.com/Senzing/g2-sdk-java/tree/main</url>
+  </scm>
+  <dependencies>
+  </dependencies>
+  <properties>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+  </properties>
+  <build>
+    <finalName>${project.artifactId}</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.2.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.3.0</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
