@@ -10,7 +10,11 @@ public interface G2SuppressedFeaturePlugin extends G2PluginInterface
 	/**
 	 * Determines if one feature is a possible generalization of another feature.
 	 * This is based on the features specified in the generalization context.
-	 * 
+	 *
+	 * @param context The {@link GeneralizationCheckContext} for performing the
+	 *                operation.
+	 *
+	 * @return A non-negative number on success and a negative number on failure.
 	 */
 	int checkForGeneralization(GeneralizationCheckContext context);
 
@@ -18,7 +22,7 @@ public interface G2SuppressedFeaturePlugin extends G2PluginInterface
 	 * Context for processing.
 	 * 
 	 */
-	public class GeneralizationCheckContext 
+	class GeneralizationCheckContext
 	{
 		private FeatureInfo primaryComponents = null;
 		private FeatureInfo possibleGeneralizationComponents = null;
@@ -27,8 +31,14 @@ public interface G2SuppressedFeaturePlugin extends G2PluginInterface
 		
 		/**
 		 * Constructs with the features to check for generalization.
+		 *
+		 * @param primaryFeature The {@link FeatureInfo} describing the primary
+		 *                       feature.
+		 * @param possibleGeneralizationFeature The {@link FeatureInfo} describing
+		 *                                      the possible generalization feature.
 		 */
-		public GeneralizationCheckContext(FeatureInfo primaryFeature,FeatureInfo possibleGeneralizationFeature)
+		public GeneralizationCheckContext(FeatureInfo primaryFeature,
+																			FeatureInfo possibleGeneralizationFeature)
 		{
 			this.primaryComponents 		= primaryFeature;
 			this.possibleGeneralizationComponents 		= possibleGeneralizationFeature;
@@ -48,8 +58,11 @@ public interface G2SuppressedFeaturePlugin extends G2PluginInterface
 		public FeatureInfo getPossibleGeneralizationComponents() { return possibleGeneralizationComponents; }
 		
 		/**
-		 * Returns whether the feature in question was determined to be a generalization of the primary feature
-		 * @return True if the feature in question is a generalization.
+		 * Returns whether or not the feature in question was determined to be a
+		 * generalization of the primary feature.
+		 *
+		 * @return <code>true</code> if the feature in question is a generalization,
+		 *         otherwise <code>false</code>.
 		 */
 		public boolean isGeneralized() { return generalized; }
 
@@ -61,14 +74,14 @@ public interface G2SuppressedFeaturePlugin extends G2PluginInterface
 		
 		/**
 		 * Get the error message (if any).
-		 * @return The error message that was set or <tt>null</tt> if no error.
+		 * @return The error message that was set or <code>null</code> if no error.
 		 */
 		public String getErrorMessage() { return errorMessage; }
 		
 		/**
 		 * Sets the error message (if any).
 		 * @param message The error message to set if an error occurs, or 
-		 *                <tt>null</tt> to clear an error.
+		 *                <code>null</code> to clear an error.
 		 */
 		public void setErrorMessage(String message) { errorMessage = message; }
 	}

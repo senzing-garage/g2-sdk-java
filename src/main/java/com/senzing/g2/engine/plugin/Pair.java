@@ -30,8 +30,8 @@ public class Pair<T1, T2> {
 	/**
 	 * Constructs with both values.
 	 * 
-	 * @param value1 The first value.
-	 * @param value2 The second value.
+	 * @param first The first value.
+	 * @param second The second value.
 	 */
 	public Pair(T1 first, T2 second) {
 		this.first 	= first;

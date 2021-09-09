@@ -7,6 +7,10 @@ Copyright Office.
 
 package com.senzing.g2.engine;
 
+/**
+ * Implements the {@link G2Engine} interface to call the native implementations
+ * of each function.
+ */
 public class G2JNI implements G2Engine {
   static {
     System.loadLibrary("G2");

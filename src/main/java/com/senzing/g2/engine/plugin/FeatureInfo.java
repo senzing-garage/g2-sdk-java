@@ -17,13 +17,15 @@ public class FeatureInfo
 	private List<FeatureElementInfo> featureElements = null;
 
 	/**
-	 * Constructs with the feature type code and zero or more {@link FeatureElementInfo} instances.
+	 * Constructs with the feature type code and zero or more {@link
+	 * FeatureElementInfo} instances.
 	 * 
-	 * @param featureTypeCode
-	 * @param elementInfos
+	 * @param featureTypeCode The feature type code for the feature.
+	 * @param elementInfos The array of {@link FeatureElementInfo} instances
+	 *                     describing each of the feature elements.
 	 */
-	public FeatureInfo(String 					featureTypeCode,
-					   FeatureElementInfo... 	elementInfos)
+	public FeatureInfo(String 								featureTypeCode,
+					   				 FeatureElementInfo... 	elementInfos)
 	{ 
 		requireNonNull(featureTypeCode, "The feature type code cannot be null");
 	

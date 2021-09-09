@@ -13,9 +13,11 @@ public interface G2Diagnostic extends G2Fallible
    * <code>G2CONFIGFILE</code> init parameter is absent then the default
    * configuration from the repository is used.
    *
-   * @param moduleName A short name given to this instance of the diagnostic object
-   * @param iniParams A JSON string containing configuration paramters
-   * @param verboseLogging Enable diagnostic logging which will print a massive amount of information to stdout
+   * @param moduleName A short name given to this instance of the diagnostic
+   *                   object.
+   * @param iniParams A JSON string containing configuration parameters.
+   * @param verboseLogging Enable diagnostic logging which will print a massive
+   *                       amount of information to stdout.
    *
    * @return Zero (0) on success, non-zero on failure.
    */
@@ -31,7 +33,7 @@ public interface G2Diagnostic extends G2Fallible
    * @param initConfigID The specific configuration ID to initialize with.
    * @param verboseLogging Whether or not to initialize with verbose logging.
    *
-   * @return Zero (0) on success, non-zero on failure.
+   * @return Zero (0) on success and non-zero on failure.
    */
   int initWithConfigIDV2(String   moduleName,
                          String   iniParams,
@@ -43,14 +45,14 @@ public interface G2Diagnostic extends G2Fallible
    *
    * @param initConfigID The configuration ID with which to reinitialize.
    *
-   * @return Zero (0) on success, non-zero on failure.
+   * @return Zero (0) on success and non-zero on failure.
    */
   int reinitV2(long initConfigID);
 
   /**
    * Uninitializes the G2 diagnostic object.
    *
-   * @return Zero (0) on success, non-zero on failure.
+   * @return Zero (0) on success and non-zero on failure.
    */
   int destroy();
 
@@ -83,7 +85,6 @@ public interface G2Diagnostic extends G2Fallible
    * @return The number of cores on success and negative one (-1) on failure.
    */
   int getLogicalCores();
-
 
   /**
    * Runs non-destruction DB performance tests and writes detail of the result
@@ -157,29 +158,176 @@ public interface G2Diagnostic extends G2Fallible
    */
   int findEntitiesByFeatureIDs(String features, StringBuffer response);
 
-
   /**
-   * Retrieve diagnostic information on the contents of the data store
+   * Experimental/internal method for obtaining data source counts.
+   *
+   * @param response The {@link StringBuffer} to write the JSON response
+   *                 document to.
+   * @return Zero (0) on success and non-zero on failure.
    */
   int getDataSourceCounts(StringBuffer response);
+
+  /**
+   * Experimental/internal method for obtaining mapping statistics.
+   *
+   * @param includeInternalFeatures <code>true</code> if internal features
+   *                                should be included and <code>false</code>
+   *                                if they should be excluded.
+   * @param response The {@link StringBuffer} to write the JSON response
+   *                 document to.
+   * @return Zero (0) on success and non-zero on failure.
+   */
   int getMappingStatistics(boolean includeInternalFeatures, StringBuffer response);
-  int getGenericFeatures(String featureType, long maximumEstimatedCount, StringBuffer response);
-  int getEntitySizeBreakdown(long minimumEntitySize, boolean includeInternalFeatures, StringBuffer response);
-  int getEntityDetails(long entityID, boolean includeInternalFeatures, StringBuffer response);
+
+  /**
+   * Experimental/internal method for obtaining generic features.
+   * @param featureType The feature type code.
+   * @param maximumEstimatedCount The maximum estimated count.
+   * @param response The {@link StringBuffer} to write the JSON response
+   *                 document to.
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int getGenericFeatures(String       featureType,
+                         long         maximumEstimatedCount,
+                         StringBuffer response);
+
+  /**
+   * Experimental/internal method for obtaining entity size breakdown.
+   * @param minimumEntitySize The minimum entity size.
+   * @param includeInternalFeatures <code>true</code> if internal features
+   *                                should be included and <code>false</code>
+   *                                if they should be excluded.
+   * @param response The {@link StringBuffer} to write the JSON response
+   *                 document to.
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int getEntitySizeBreakdown(long         minimumEntitySize,
+                             boolean      includeInternalFeatures,
+                             StringBuffer response);
+
+  /**
+   * Experimental/internal method for obtaining diagnostic entity details.
+   *
+   * @param entityID The entity ID for the entity.
+   * @param includeInternalFeatures <code>true</code> if internal features
+   *                                should be included and <code>false</code>
+   *                                if they should be excluded.
+   * @param response The {@link StringBuffer} to write the JSON response
+   *                 document to.
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int getEntityDetails(long         entityID,
+                       boolean      includeInternalFeatures,
+                       StringBuffer response);
+
+
+  /**
+   * Experimental/internal method for obtaining resolution statistics.
+   *
+   * @param response The {@link StringBuffer} to write the JSON response
+   *                 document to.
+   * @return Zero (0) on success and non-zero on failure.
+   */
   int getResolutionStatistics(StringBuffer response);
-  int getRelationshipDetails(long relationshipID, boolean includeInternalFeatures, StringBuffer response);
+
+  /**
+   * Experimental/internal method for obtaining diagnostic relationship
+   * details.
+   *
+   * @param relationshipID The relationship ID identifying the relationship.
+   * @param includeInternalFeatures <code>true</code> if internal features
+   *                                should be included and <code>false</code>
+   *                                if they should be excluded.
+   * @param response The {@link StringBuffer} to write the JSON response
+   *                 document to.
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int getRelationshipDetails(long         relationshipID,
+                             boolean      includeInternalFeatures,
+                             StringBuffer response);
+
+  /**
+   * Experimental/internal method for obtaining diagnostic entity resume.
+   *
+   * @param entityID The entity ID.
+   * @param response The {@link StringBuffer} to write the JSON result
+   *                 document to.
+   * @return Zero (0) on success and non-zero on failure.
+   */
   int getEntityResume(long entityID, StringBuffer response);
+
+  /**
+   * Experimental/internal method for obtaining diagnostic feature information.
+   *
+   * @param libFeatID The <code>LIB_FEAT_ID</code> identifying the feature.
+   * @param response The {@link StringBuffer} to write the JSON result
+   *                 document to.
+   * @return Zero (0) on success and non-zero on failure.
+   */
   int getFeature(long libFeatID, StringBuffer response);
 
   /**
-   * Retrieve diagnostic information on sized-entities in the data store
+   * Experimental/internal method for obtaining diagnostic information on
+   * sized entities.
+   *
+   * @param entitySize The entity size.
+   *
+   * @return The handle for the result set.
    */
   long getEntityListBySize(long entitySize);
+
+  /**
+   * Experimental/internal method for obtaining the next sized entity result
+   * with the specified handle obtained from {@link #getEntityListBySize(long)}.
+   *
+   * @param entityListBySizeHandle The handle for the result set.
+   *
+   * @return The next sized entity result.
+   */
   String fetchNextEntityBySize(long entityListBySizeHandle);
+
+  /**
+   * Experimental/internal method to close the result set associated with the
+   * specified handle obtained from {@link #getEntityListBySize(long)}.
+   *
+   * @param entityListBySizeHandle The handle for the result set.
+   */
   void closeEntityListBySize(long entityListBySizeHandle);
 
+  /**
+   * Experimental/internal method for obtaining diagnostic information on
+   * sized entities.
+   *
+   * @param entitySize The entity size.
+   *
+   * @param exportHandle The {@link Result} object on which the result handle
+   *                     will be set.
+   *
+   * @return Zero (0) on success and non-zero on failure.
+   */
   int getEntityListBySizeV2(long entitySize, Result<Long> exportHandle);
+
+  /**
+   * Experimental/internal method for obtaining the next sized entity result
+   * with the specified handle obtained from {@link
+   * #getEntityListBySizeV2(long,Result)}.
+   *
+   * @param entityListBySizeHandle The handle for the result set.
+   * @param response The {@link StringBuffer} to write the JSON result
+   *                 document to.
+   *
+   * @return Zero (0) on success and non-zero on failure.
+   */
   int fetchNextEntityBySizeV2(long entityListBySizeHandle, StringBuffer response);
+
+  /**
+   * Experimental/internal method to close the result set associated with the
+   * specified handle obtained from {@link
+   * #getEntityListBySizeV2(long,Result)}.
+   *
+   * @param entityListBySizeHandle The handle for the result set.
+   * @return Zero (0) on success and non-zero on failure.
+   */
   int closeEntityListBySizeV2(long entityListBySizeHandle);
 
 }

@@ -4,11 +4,9 @@ import java.util.Map;
 
 /**
  * Scores two different features to determine equivalence.
- * 
  */
 public interface G2ScoringPlugin extends G2PluginInterface
 {
-
 	/**
 	 * Run the feature scoring process
 	 * @param context The feature scoring context
@@ -28,9 +26,12 @@ public interface G2ScoringPlugin extends G2PluginInterface
 	
 		/**
 		 * Constructs with the features to compare for scoring.
+		 *
+		 * @param feature1 The first feature to compare.
+		 * @param feature2 The second feature to compare.
 		 */
 		public ScoringContext(FeatureInfo feature1,
-							  FeatureInfo feature2)
+							  					FeatureInfo feature2)
 		{ 
 			this.feat1 		= feature1;
 			this.feat2 		= feature2;
@@ -41,24 +42,24 @@ public interface G2ScoringPlugin extends G2PluginInterface
 		 * Gets the first feature to compare for scoring.
 		 * @return The first feature to compare for scoring.
 		 */
-		public FeatureInfo getFeature1() { return feat1; }
+		public FeatureInfo getFeature1() { return this.feat1; }
 		
 		/**
 		 * Gets the second feature to compare for scoring.
 		 * @return The second feature to compare for scoring.
 		 */
-		public FeatureInfo getFeature2() { return feat2; }
+		public FeatureInfo getFeature2() { return this.feat2; }
 
 		/**
 		 * Get the error message (if any).
-		 * @return The error message that was set or <tt>null</tt> if no error.
+		 * @return The error message that was set or <code>null</code> if no error.
 		 */
-		public String getErrorMessage() { return errorMessage; }
+		public String getErrorMessage() { return this.errorMessage; }
 		
 		/**
 		 * Sets the error message (if any).
 		 * @param message The error message to set if an error occurs, or 
-		 *                <tt>null</tt> to clear an error.
+		 *                <code>null</code> to clear an error.
 		 */
 		public void setErrorMessage(String message) { errorMessage = message; }
 
@@ -74,23 +75,23 @@ public interface G2ScoringPlugin extends G2PluginInterface
 			return this.results;
 		}
 	}
-	
+
 	/**
 	 * Gets the score names as XML.  The default implementation calls
-	 * {@link #getScoreNames(List)} and constructs the XML from the 
+	 * {@link #getScoreNames(Set)} and constructs the XML from the
 	 * populated list and appends it to the specified {@link StringBuilder}.
-	 * 
+	 *
 	 * @param scoreNames The {@link StringBuilder} to append the XML to.
-	 * 
-	 * @return The return code (zero if success).
+	 *
+	 * @return A non-negative number on success and a negative number on failure.
 	 */
 	default int getScoreNames(StringBuilder scoreNames) {
 		Set<String> scoreSet = new ArraySet<>();
 		int returnCode = getScoreNames(scoreSet);
-		if (returnCode != 0) return returnCode;
+		if (returnCode < 0) return returnCode;
 		scoreNames.append("[");
 		boolean firstAdded = false;
-		for (String scoreName: scoreSet) 
+		for (String scoreName: scoreSet)
 		{
 			if (firstAdded)
 			{
@@ -100,7 +101,7 @@ public interface G2ScoringPlugin extends G2PluginInterface
 			scoreNames.append("\"").append(scoreName).append("\"");
 		}
 		scoreNames.append("]");
-		return 0;
+		return returnCode;
 	}
 	
 	/**
@@ -108,7 +109,7 @@ public interface G2ScoringPlugin extends G2PluginInterface
 	 * scoring names that will be produced.
 	 * 
 	 * @param scoreNames The {@link Set} to be populated.
-	 * @return The return code (zero if success).
+	 * @return A non-negative number on success and a negative number on failure.
 	 */
 	int getScoreNames(Set<String> scoreNames);
 	

@@ -6,20 +6,18 @@ import java.util.ArrayList;
 
 /**
  * Generates new expressed features from existing features
- *
  */
 public interface G2ExpressedFeaturePlugin extends G2PluginInterface
 {
 	/**
 	 * Runs the expressed feature processing.
-	 * @param context
-	 * @return
+	 * @param context The {@link ProcessingContext} for performing the operation.
+	 * @return A non-negative number on success and a negative number on failure.
 	 */
 	int process(ProcessingContext context);
 
 	/**
 	 * Context for processing.
-	 * 
 	 */
 	class ProcessingContext
 	{
@@ -30,7 +28,8 @@ public interface G2ExpressedFeaturePlugin extends G2PluginInterface
 		/**
 		 * Constructs with the {@link List} of {@link FeatureInfo} instances
 		 * describing the feature values to be processed.
-		 * @param input
+		 * @param input The {@link List} of {@link FeatureInfo} instances to be
+		 *              processed.
 		 */
 		public ProcessingContext(List<FeatureInfo> input) {
 			this.input  = input;
@@ -38,10 +37,11 @@ public interface G2ExpressedFeaturePlugin extends G2PluginInterface
 		}
 		
 		/**
-		 * Gets an <b>unmodifiable</b> {@link List} containing the {@link FeatureInfo}
-		 * instances describing the input feature values.
+		 * Gets an <b>unmodifiable</b> {@link List} containing the {@link
+		 * FeatureInfo} instances describing the input feature values.
 		 * 
-		 * @return An <b>unmodifiable</b> {@link List} of {@link FeatureInfo} instances.
+		 * @return An <b>unmodifiable</b> {@link List} of {@link FeatureInfo}
+		 *         instances.
 		 */
 		public List<FeatureInfo> getInput() { 
 			return Collections.unmodifiableList(input); 
@@ -54,19 +54,19 @@ public interface G2ExpressedFeaturePlugin extends G2PluginInterface
 		 * @return The modifiable result {@link List}.
 		 */
 		public List<FeatureInfo> getResult() { 
-			return result; 
+			return this.result;
 		}
 		
 		/**
 		 * Get the error message (if any).
-		 * @return The error message that was set or <tt>null</tt> if no error.
+		 * @return The error message that was set or <code>null</code> if no error.
 		 */
 		public String getErrorMessage() { return errorMessage; }
 		
 		/**
 		 * Sets the error message (if any).
 		 * @param message The error message to set if an error occurs, or 
-		 *                <tt>null</tt> to clear an error.
+		 *                <code>null</code> to clear an error.
 		 */
 		public void setErrorMessage(String message) { errorMessage = message; }
 	}
