@@ -1,5 +1,8 @@
 package com.senzing.g2.engine;
 
+/**
+ * Provides a base interface for Senzing native SDK's can have failures occur.
+ */
 public interface G2Fallible {
   /**
    * Returns a string about the last error the system received.

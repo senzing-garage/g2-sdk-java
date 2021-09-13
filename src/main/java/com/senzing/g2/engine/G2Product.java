@@ -9,13 +9,12 @@ package com.senzing.g2.engine;
 public interface G2Product extends G2Fallible
 {
   /**
-   * Initializes the G2 product object with the specified module name,
+   * Initializes the G2 product API with the specified module name,
    * init parameters and flag indicating verbose logging.  If the
    * <code>G2CONFIGFILE</code> init parameter is absent then the default
    * configuration from the repository is used.
    *
-   * @param moduleName A short name given to this instance of the diagnostic
-   *                   object.
+   * @param moduleName A short name given to this instance of the product API.
    * @param iniParams A JSON string containing configuration parameters.
    * @param verboseLogging Enable diagnostic logging which will print a massive
    *                       amount of information to stdout.
@@ -25,7 +24,7 @@ public interface G2Product extends G2Fallible
   int initV2(String moduleName, String iniParams, boolean verboseLogging);
 
   /**
-   * Uninitializes the G2 product object.
+   * Uninitializes the G2 product API.
    *
    * @return Zero (0) on success and non-zero on failure.
    */
