@@ -111,6 +111,7 @@ public interface G2Config extends G2Fallible
    * @return Zero (0) on success and non-zero on failure.
    * @deprecated
    */
+  @Deprecated(since = "2.9.0", forRemoval = true)
   int listDataSources(long configHandle, StringBuffer response);
 
   /**

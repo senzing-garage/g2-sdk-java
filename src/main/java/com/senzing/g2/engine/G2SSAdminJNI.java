@@ -13,6 +13,7 @@ public class G2SSAdminJNI implements G2SSAdmin
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public native int initV2(String 	moduleName,
 													 String 	iniParams,
 													 boolean	verboseLogging);
@@ -20,11 +21,13 @@ public class G2SSAdminJNI implements G2SSAdmin
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public native int destroy();
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public native int initializeNewToken(String defaultSOPin,
 																			 String newSOPin,
 																			 String label);
@@ -32,26 +35,31 @@ public class G2SSAdminJNI implements G2SSAdmin
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public native int reinitializeToken(String soPin, String label);
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public native int setupStore(String soPin);
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public native int list(StringBuffer response);
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public native int put(String soPin, String label, String value);
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public native String createSaltInStore(String	soPin,
 																				 String name,
 																				 String method);
@@ -59,15 +67,18 @@ public class G2SSAdminJNI implements G2SSAdmin
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public native String getLastException();
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public native int getLastExceptionCode();
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public native void clearLastException();
 }

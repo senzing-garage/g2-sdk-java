@@ -9,6 +9,7 @@ import com.senzing.g2.engine.Result;
  *
  * @deprecated
  */
+@Deprecated(since = "2.9.0", forRemoval = true)
 public interface G2Audit extends G2Fallible {
   /**
    * Initializes the G2 Audit API with the specified module name,

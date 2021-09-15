@@ -13,6 +13,7 @@ public class G2ProductJNI implements G2Product
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public native int initV2(String 	moduleName,
 													 String 	iniParams,
 													 boolean 	verboseLogging);
@@ -20,36 +21,43 @@ public class G2ProductJNI implements G2Product
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public native int destroy();
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public native String license();
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public native int validateLicenseFile(String 				licenseFile,
 																				StringBuffer 	errorResponse);
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public native String version();
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public native String getLastException();
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public native int getLastExceptionCode();
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public native void clearLastException();
 }
