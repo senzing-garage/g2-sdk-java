@@ -4,8 +4,8 @@
   <groupId>com.senzing</groupId>
   <artifactId>g2</artifactId>
   <packaging>jar</packaging>
-  <version>2.9.0-SNAPSHOT</version>
-  <name>com.senzing:g2-sdk-java</name>
+  <version>2.9.0</version>
+  <name>Senzing G2 Java SDK</name>
   <description>The Java SDK for the Senzing G2 Engine.  This calls through to the native Senzing SDK via JNI.</description>
   <url>http://github.com/Senzing/g2-sdk-java</url>
   <licenses>
@@ -19,6 +19,10 @@
       <id>ossrh</id>
       <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
     </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
   </distributionManagement>
   <developers>
     <developer>
