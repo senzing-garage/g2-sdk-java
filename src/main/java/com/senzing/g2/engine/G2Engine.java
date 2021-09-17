@@ -19,49 +19,49 @@ public interface G2Engine extends G2Fallible
    * we should include "resolved" relationships
    *
    */
-  int G2_EXPORT_INCLUDE_RESOLVED = ( 1 << 0 );
+  long G2_EXPORT_INCLUDE_RESOLVED = ( 1L << 0 );
   
   /**
    * The bitwise flag for export functionality to indicate that
    * we should include "possibly same" relationships
    *
    */
-  int G2_EXPORT_INCLUDE_POSSIBLY_SAME = ( 1 << 1 );
+  long G2_EXPORT_INCLUDE_POSSIBLY_SAME = ( 1L << 1 );
   
   /**
    * The bitwise flag for export functionality to indicate that
    * we should include "possibly related" relationships
    *
    */
-  int G2_EXPORT_INCLUDE_POSSIBLY_RELATED = ( 1 << 2 );
+  long G2_EXPORT_INCLUDE_POSSIBLY_RELATED = ( 1L << 2 );
   
   /**
    * The bitwise flag for export functionality to indicate that
    * we should include "name only" relationships
    *
    */
-  int G2_EXPORT_INCLUDE_NAME_ONLY = ( 1 << 3 );
+  long G2_EXPORT_INCLUDE_NAME_ONLY = ( 1L << 3 );
   
   /**
    * The bitwise flag for export functionality to indicate that
    * we should include "disclosed" relationships
    *
    */
-  int G2_EXPORT_INCLUDE_DISCLOSED = ( 1 << 4 );
+  long G2_EXPORT_INCLUDE_DISCLOSED = ( 1L << 4 );
   
   /**
    * The bitwise flag for export functionality to indicate that
    * we should include singleton entities
    *
    */
-  int G2_EXPORT_INCLUDE_SINGLETONS = ( 1 << 5 );
+  long G2_EXPORT_INCLUDE_SINGLETONS = ( 1L << 5 );
   
   /**
    * The bitwise flag for export functionality to indicate that
    * we should include all entities
    *
    */
-  int G2_EXPORT_INCLUDE_ALL_ENTITIES 
+  long G2_EXPORT_INCLUDE_ALL_ENTITIES
       = (G2_EXPORT_INCLUDE_RESOLVED | G2_EXPORT_INCLUDE_SINGLETONS);
   
   /**
@@ -69,34 +69,34 @@ public interface G2Engine extends G2Fallible
    * we should include all relationships
    *
    */
-  int G2_EXPORT_INCLUDE_ALL_RELATIONSHIPS
+  long G2_EXPORT_INCLUDE_ALL_RELATIONSHIPS
       = (G2_EXPORT_INCLUDE_POSSIBLY_SAME | G2_EXPORT_INCLUDE_POSSIBLY_RELATED
          | G2_EXPORT_INCLUDE_NAME_ONLY | G2_EXPORT_INCLUDE_DISCLOSED);
   
   /**
    * The bitwise flag for including possibly-same relations for entities
    */
-  int G2_ENTITY_INCLUDE_POSSIBLY_SAME_RELATIONS = ( 1 << 6 );
+  long G2_ENTITY_INCLUDE_POSSIBLY_SAME_RELATIONS = ( 1L << 6 );
 
   /**
    * The bitwise flag for including possibly-related relations for entities
    */
-  int G2_ENTITY_INCLUDE_POSSIBLY_RELATED_RELATIONS = ( 1 << 7 );
+  long G2_ENTITY_INCLUDE_POSSIBLY_RELATED_RELATIONS = ( 1L << 7 );
 
   /**
    * The bitwise flag for including name-only relations for entities
    */
-  int G2_ENTITY_INCLUDE_NAME_ONLY_RELATIONS = ( 1 << 8 );
+  long G2_ENTITY_INCLUDE_NAME_ONLY_RELATIONS = ( 1L << 8 );
 
   /**
    * The bitwise flag for including disclosed relations for entities
    */
-  int G2_ENTITY_INCLUDE_DISCLOSED_RELATIONS = ( 1 << 9 );
+  long G2_ENTITY_INCLUDE_DISCLOSED_RELATIONS = ( 1L << 9 );
 
   /**
    * The bitwise flag for including all relations for entities
    */
-  int G2_ENTITY_INCLUDE_ALL_RELATIONS
+  long G2_ENTITY_INCLUDE_ALL_RELATIONS
       = (G2_ENTITY_INCLUDE_POSSIBLY_SAME_RELATIONS 
          | G2_ENTITY_INCLUDE_POSSIBLY_RELATED_RELATIONS
          | G2_ENTITY_INCLUDE_NAME_ONLY_RELATIONS
@@ -105,108 +105,108 @@ public interface G2Engine extends G2Fallible
   /**
    * The bitwise flag for including all features for entities
    */
-  int G2_ENTITY_INCLUDE_ALL_FEATURES = ( 1 << 10 );
+  long G2_ENTITY_INCLUDE_ALL_FEATURES = ( 1L << 10 );
   
   /**
    * The bitwise flag for including representative features for entities
    */
-  int G2_ENTITY_INCLUDE_REPRESENTATIVE_FEATURES = ( 1 << 11 );
+  long G2_ENTITY_INCLUDE_REPRESENTATIVE_FEATURES = ( 1L << 11 );
   
   /**
    * The bitwise flag for including the name of the entity
    */
-  int G2_ENTITY_INCLUDE_ENTITY_NAME = ( 1 << 12 );
+  long G2_ENTITY_INCLUDE_ENTITY_NAME = ( 1L << 12 );
   
   /**
    * The bitwise flag for including the record summary of the entity
    */
-  int G2_ENTITY_INCLUDE_RECORD_SUMMARY = ( 1 << 13 );
+  long G2_ENTITY_INCLUDE_RECORD_SUMMARY = ( 1L << 13 );
   
   /**
    * The bitwise flag for including the basic record data for the entity
    */
-  int G2_ENTITY_INCLUDE_RECORD_DATA = ( 1 << 14 );
+  long G2_ENTITY_INCLUDE_RECORD_DATA = ( 1L << 14 );
   
   /**
    * The bitwise flag for including the record matching info for the entity
    */
-  int G2_ENTITY_INCLUDE_RECORD_MATCHING_INFO = ( 1 << 15 );
+  long G2_ENTITY_INCLUDE_RECORD_MATCHING_INFO = ( 1L << 15 );
   
   /**
    * The bitwise flag for including the record json data for the entity
    */
-  int G2_ENTITY_INCLUDE_RECORD_JSON_DATA = ( 1 << 16 );
+  long G2_ENTITY_INCLUDE_RECORD_JSON_DATA = ( 1L << 16 );
   
   /**
    * The bitwise flag for including the record formattted data for the entity
    */
-  int G2_ENTITY_INCLUDE_RECORD_FORMATTED_DATA = ( 1 << 17 );
+  long G2_ENTITY_INCLUDE_RECORD_FORMATTED_DATA = ( 1L << 17 );
   
   /**
    * The bitwise flag for the features identifiers for the records
    */
-  int G2_ENTITY_INCLUDE_RECORD_FEATURE_IDS = ( 1 << 18 );
+  long G2_ENTITY_INCLUDE_RECORD_FEATURE_IDS = ( 1L << 18 );
   
   /**
    * The bitwise flag for including the name of the related entities
    */
-  int G2_ENTITY_INCLUDE_RELATED_ENTITY_NAME = ( 1 << 19 );
+  long G2_ENTITY_INCLUDE_RELATED_ENTITY_NAME = ( 1L << 19 );
   
   /**
    * The bitwise flag for including the record matching info of the related
    * entities
    */
-  int G2_ENTITY_INCLUDE_RELATED_MATCHING_INFO = ( 1 << 20 );
+  long G2_ENTITY_INCLUDE_RELATED_MATCHING_INFO = ( 1L << 20 );
   
   /**
    * The bitwise flag for including the record summary of the related entities
    */
-  int G2_ENTITY_INCLUDE_RELATED_RECORD_SUMMARY = ( 1 << 21 );
+  long G2_ENTITY_INCLUDE_RELATED_RECORD_SUMMARY = ( 1L << 21 );
   
   /**
    * The bitwise flag for including the basic record data of the related
    * entities.
    */
-  int G2_ENTITY_INCLUDE_RELATED_RECORD_DATA = ( 1 << 22 );
+  long G2_ENTITY_INCLUDE_RELATED_RECORD_DATA = ( 1L << 22 );
   
   /**
    * The bitwise flag for including internal features in entity output
    */
-  int G2_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES = ( 1 << 23 );
+  long G2_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES = ( 1L << 23 );
   
   /**
    * The bitwise flag for including feature statistics in entity output.
    */
-  int G2_ENTITY_OPTION_INCLUDE_FEATURE_STATS = ( 1 << 24 );
+  long G2_ENTITY_OPTION_INCLUDE_FEATURE_STATS = ( 1L << 24 );
   
   /**
    * The bitwise flag for find-path functionality to indicate that
    * excluded entities are still allowed, but not preferred
    */
-  int G2_FIND_PATH_PREFER_EXCLUDE = ( 1 << 25 );
+  long G2_FIND_PATH_PREFER_EXCLUDE = ( 1L << 25 );
   
   /**
    * The bitwise flag for including feature scores from search results
    */
-  int G2_SEARCH_INCLUDE_FEATURE_SCORES = ( 1 << 26 );
+  long G2_SEARCH_INCLUDE_FEATURE_SCORES = ( 1L << 26 );
   
   /**
    * The bitwise flag for including statistics from search results
    */
-  int G2_SEARCH_INCLUDE_STATS = ( 1 << 27 );
+  long G2_SEARCH_INCLUDE_STATS = ( 1L << 27 );
 
   /**
    * The bitwise flag for search functionality to indicate that
    * we should include "resolved" match level results
    *
    */
-  int G2_SEARCH_INCLUDE_RESOLVED = (G2_EXPORT_INCLUDE_RESOLVED);
+  long G2_SEARCH_INCLUDE_RESOLVED = (G2_EXPORT_INCLUDE_RESOLVED);
   
   /**
    * The bitwise flag for search functionality to indicate that
    * we should include "possibly same" match level results
    */
-  int G2_SEARCH_INCLUDE_POSSIBLY_SAME
+  long G2_SEARCH_INCLUDE_POSSIBLY_SAME
       = (G2_EXPORT_INCLUDE_POSSIBLY_SAME);
   
   /**
@@ -214,7 +214,7 @@ public interface G2Engine extends G2Fallible
    * we should include "possibly related" match level results
    *
    */
-  int G2_SEARCH_INCLUDE_POSSIBLY_RELATED
+  long G2_SEARCH_INCLUDE_POSSIBLY_RELATED
       = (G2_EXPORT_INCLUDE_POSSIBLY_RELATED);
   
   /**
@@ -222,26 +222,26 @@ public interface G2Engine extends G2Fallible
    * we should include "name only" match level results
    *
    */
-  int G2_SEARCH_INCLUDE_NAME_ONLY = (G2_EXPORT_INCLUDE_NAME_ONLY);
+  long G2_SEARCH_INCLUDE_NAME_ONLY = (G2_EXPORT_INCLUDE_NAME_ONLY);
   
   /**
    * The bitwise flag for search functionality to indicate that
    * we should include all match level results
    *
    */
-  int G2_SEARCH_INCLUDE_ALL_ENTITIES
+  long G2_SEARCH_INCLUDE_ALL_ENTITIES
       = (G2_SEARCH_INCLUDE_RESOLVED | G2_SEARCH_INCLUDE_POSSIBLY_SAME
          | G2_SEARCH_INCLUDE_POSSIBLY_RELATED | G2_SEARCH_INCLUDE_NAME_ONLY);
   
   /**
    * The default recommended bitwise flag values for getting records
    */
-  int G2_RECORD_DEFAULT_FLAGS = (G2_ENTITY_INCLUDE_RECORD_JSON_DATA);
+  long G2_RECORD_DEFAULT_FLAGS = (G2_ENTITY_INCLUDE_RECORD_JSON_DATA);
   
   /**
    * The default recommended bitwise flag values for getting entities
    */
-  int G2_ENTITY_DEFAULT_FLAGS
+  long G2_ENTITY_DEFAULT_FLAGS
       = (G2_ENTITY_INCLUDE_ALL_RELATIONS
          | G2_ENTITY_INCLUDE_REPRESENTATIVE_FEATURES
          | G2_ENTITY_INCLUDE_ENTITY_NAME
@@ -255,7 +255,7 @@ public interface G2Engine extends G2Fallible
   /**
    * The default recommended bitwise flag values for getting entities
    */
-  int G2_ENTITY_BRIEF_DEFAULT_FLAGS
+  long G2_ENTITY_BRIEF_DEFAULT_FLAGS
       = (G2_ENTITY_INCLUDE_RECORD_MATCHING_INFO
          | G2_ENTITY_INCLUDE_ALL_RELATIONS
          | G2_ENTITY_INCLUDE_RELATED_MATCHING_INFO);
@@ -263,7 +263,7 @@ public interface G2Engine extends G2Fallible
   /**
    * The default recommended bitwise flag values for exporting entities
    */
-  int G2_EXPORT_DEFAULT_FLAGS
+  long G2_EXPORT_DEFAULT_FLAGS
       = (G2_EXPORT_INCLUDE_ALL_ENTITIES
          | G2_EXPORT_INCLUDE_ALL_RELATIONSHIPS
          | G2_ENTITY_INCLUDE_ALL_RELATIONS
@@ -276,7 +276,7 @@ public interface G2Engine extends G2Fallible
   /**
    * The default recommended bitwise flag values for finding entity paths
    */
-  int G2_FIND_PATH_DEFAULT_FLAGS
+  long G2_FIND_PATH_DEFAULT_FLAGS
       = (G2_ENTITY_INCLUDE_ALL_RELATIONS
          | G2_ENTITY_INCLUDE_ENTITY_NAME
          | G2_ENTITY_INCLUDE_RECORD_SUMMARY
@@ -285,7 +285,7 @@ public interface G2Engine extends G2Fallible
   /**
    * The default recommended bitwise flag values for why-analysis on entities
    */
-  int G2_WHY_ENTITY_DEFAULT_FLAGS
+  long G2_WHY_ENTITY_DEFAULT_FLAGS
       = (G2_ENTITY_DEFAULT_FLAGS
          | G2_ENTITY_INCLUDE_RECORD_FEATURE_IDS
          | G2_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES
@@ -295,7 +295,7 @@ public interface G2Engine extends G2Fallible
    * The default recommended bitwise flag values for searching by attributes,
    * returning all matching entities
    */
-  int G2_SEARCH_BY_ATTRIBUTES_ALL
+  long G2_SEARCH_BY_ATTRIBUTES_ALL
       = (G2_SEARCH_INCLUDE_ALL_ENTITIES
          | G2_ENTITY_INCLUDE_REPRESENTATIVE_FEATURES
          | G2_ENTITY_INCLUDE_ENTITY_NAME
@@ -306,7 +306,7 @@ public interface G2Engine extends G2Fallible
    * The default recommended bitwise flag values for searching by attributes,
    * returning only strongly matching entities
    */
-  int G2_SEARCH_BY_ATTRIBUTES_STRONG
+  long G2_SEARCH_BY_ATTRIBUTES_STRONG
       = (G2_SEARCH_INCLUDE_RESOLVED
          | G2_SEARCH_INCLUDE_POSSIBLY_SAME
          | G2_ENTITY_INCLUDE_REPRESENTATIVE_FEATURES
@@ -318,19 +318,19 @@ public interface G2Engine extends G2Fallible
    * The default recommended bitwise flag values for searching by attributes,
    * returning minimal data with all matches
    */
-  int G2_SEARCH_BY_ATTRIBUTES_MINIMAL_ALL = (G2_SEARCH_INCLUDE_ALL_ENTITIES);
+  long G2_SEARCH_BY_ATTRIBUTES_MINIMAL_ALL = (G2_SEARCH_INCLUDE_ALL_ENTITIES);
 
   /**
    * The default recommended bitwise flag values for searching by attributes,
    * returning the minimal data, and returning only the strongest matches
    */
-  int G2_SEARCH_BY_ATTRIBUTES_MINIMAL_STRONG
+  long G2_SEARCH_BY_ATTRIBUTES_MINIMAL_STRONG
       = (G2_SEARCH_INCLUDE_RESOLVED | G2_SEARCH_INCLUDE_POSSIBLY_SAME);
 
   /**
    * The default recommended bitwise flag values for searching by attributes
    */
-  int G2_SEARCH_BY_ATTRIBUTES_DEFAULT_FLAGS = (G2_SEARCH_BY_ATTRIBUTES_ALL);
+  long G2_SEARCH_BY_ATTRIBUTES_DEFAULT_FLAGS = (G2_SEARCH_BY_ATTRIBUTES_ALL);
   
   /**
    * Initializes the G2 Engine API with the specified module name,
@@ -505,7 +505,7 @@ public interface G2Engine extends G2Fallible
                             String        recordID,
                             String        jsonData,
                             String        loadID,
-                            int           flags,
+                            long          flags,
                             StringBuffer  response);
 
   /**
@@ -544,7 +544,7 @@ public interface G2Engine extends G2Fallible
   int addRecordWithInfoWithReturnedRecordID(String        dataSourceCode,
                                             String        jsonData,
                                             String        loadID,
-                                            int           flags,
+                                            long          flags,
                                             StringBuffer  recordID,
                                             StringBuffer  response);
   
@@ -572,7 +572,7 @@ public interface G2Engine extends G2Fallible
                          String       recordID,
                          String       jsonData,
                          String       loadID,
-                         int          flags,
+                         long         flags,
                          StringBuffer response);
   
   /**
@@ -606,7 +606,7 @@ public interface G2Engine extends G2Fallible
   int deleteRecordWithInfo(String       dataSourceCode,
                            String       recordID,
                            String       loadID,
-                           int          flags,
+                           long         flags,
                            StringBuffer response);
 
   /**
@@ -618,7 +618,7 @@ public interface G2Engine extends G2Fallible
    *
    * @return Zero (0) on success and non-zero on failure.
    */
-  int reevaluateRecord(String dataSourceCode, String recordID, int flags);
+  int reevaluateRecord(String dataSourceCode, String recordID, long flags);
   
   
   /**
@@ -636,7 +636,7 @@ public interface G2Engine extends G2Fallible
    */
   int reevaluateRecordWithInfo(String       dataSourceCode,
                                String       recordID,
-                               int          flags,
+                               long         flags,
                                StringBuffer response);
   
   /**
@@ -647,7 +647,7 @@ public interface G2Engine extends G2Fallible
    *
    * @return Zero (0) on success and non-zero on failure.
    */
-  int reevaluateEntity(long entityID, int flags);
+  int reevaluateEntity(long entityID, long flags);
 
   /**
    * Reevaluate a resolved entity and return a list of resolved entities
@@ -660,7 +660,9 @@ public interface G2Engine extends G2Fallible
    *
    * @return Zero (0) on success and non-zero on failure.
    */
-  int reevaluateEntityWithInfo(long entityID, int flags, StringBuffer response);
+  int reevaluateEntityWithInfo(long         entityID,
+                               long         flags,
+                               StringBuffer response);
   
   /**
    * This method searches for entities that contain attribute information
@@ -688,8 +690,7 @@ public interface G2Engine extends G2Fallible
    *
    * @return Zero (0) on success and non-zero on failure.
    */
-  int searchByAttributesV2(String jsonData, int flags, StringBuffer response);
-
+  int searchByAttributesV2(String jsonData, long flags, StringBuffer response);
 
   /**
    * This method is used to retrieve information about a specific resolved
@@ -727,7 +728,9 @@ public interface G2Engine extends G2Fallible
    *         initialized. Returns negative-two (-2) if an exception was thrown
    *         and caught.
    */
-  int getEntityByEntityIDV2(long entityID, int flags, StringBuffer response);
+  int getEntityByEntityIDV2(long          entityID,
+                            long          flags,
+                            StringBuffer  response);
 
 
   /**
@@ -760,7 +763,7 @@ public interface G2Engine extends G2Fallible
    */
   int getEntityByRecordIDV2(String        dataSourceCode,
                             String        recordID,
-                            int           flags,
+                            long          flags,
                             StringBuffer  response);
 
   /**
@@ -795,7 +798,7 @@ public interface G2Engine extends G2Fallible
   int findPathByEntityIDV2(long         entityID1,
                            long         entityID2,
                            int          maxDegrees,
-                           int          flags,
+                           long         flags,
                            StringBuffer response);
 
   /**
@@ -840,7 +843,7 @@ public interface G2Engine extends G2Fallible
                            String       dataSourceCode2,
                            String       recordID2,
                            int          maxDegrees,
-                           int          flags,
+                           long         flags,
                            StringBuffer response);
 
 
@@ -879,7 +882,7 @@ public interface G2Engine extends G2Fallible
                                   long          entityID2,
                                   int           maxDegrees,
                                   String        excludedEntities,
-                                  int           flags,
+                                  long          flags,
                                   StringBuffer  response);
 
   /**
@@ -933,7 +936,7 @@ public interface G2Engine extends G2Fallible
                                   String        recordID2,
                                   int           maxDegrees,
                                   String        excludedEntities,
-                                  int           flags,
+                                  long          flags,
                                   StringBuffer  response);
 
 
@@ -990,7 +993,7 @@ public interface G2Engine extends G2Fallible
                                         int           maxDegrees,
                                         String        excludedEntities,
                                         String        requiredSources,
-                                        int           flags,
+                                        long          flags,
                                         StringBuffer  response);
 
   /**
@@ -1062,7 +1065,7 @@ public interface G2Engine extends G2Fallible
                                         int           maxDegrees,
                                         String        excludedEntities,
                                         String        requiredSources,
-                                        int           flags,
+                                        long          flags,
                                         StringBuffer  response);
 
   
@@ -1140,7 +1143,7 @@ public interface G2Engine extends G2Fallible
                               int           maxDegrees,
                               int           buildOutDegrees,
                               int           maxEntities,
-                              int           flags,
+                              long          flags,
                               StringBuffer  response);
 
   /**
@@ -1241,7 +1244,7 @@ public interface G2Engine extends G2Fallible
                               int           maxDegrees,
                               int           buildOutDegrees,
                               int           maxEntities,
-                              int           flags,
+                              long          flags,
                               StringBuffer  response);
   
   /**
@@ -1278,7 +1281,7 @@ public interface G2Engine extends G2Fallible
    */
   int whyEntityByRecordIDV2(String        dataSourceCode,
                             String        recordID,
-                            int           flags,
+                            long          flags,
                             StringBuffer  response);
 
   /**
@@ -1303,7 +1306,9 @@ public interface G2Engine extends G2Fallible
    *                 document to.
    * @return Zero (0) on success and non-zero on failure.
    */
-  int whyEntityByEntityIDV2(long entityID, int flags, StringBuffer response);
+  int whyEntityByEntityIDV2(long          entityID,
+                            long          flags,
+                            StringBuffer  response);
 
   /**
    * This method determines how two records are related to each other.
@@ -1339,7 +1344,7 @@ public interface G2Engine extends G2Fallible
                    String       recordID1,
                    String       dataSourceCode2,
                    String       recordID2,
-                   int          flags,
+                   long         flags,
                    StringBuffer response);
   
   
@@ -1367,7 +1372,7 @@ public interface G2Engine extends G2Fallible
    */
   int whyEntitiesV2(long          entityID1,
                     long          entityID2,
-                    int           flags,
+                    long          flags,
                     StringBuffer  response);
 
   /**
@@ -1396,7 +1401,7 @@ public interface G2Engine extends G2Fallible
    */
   int getRecordV2(String        dataSourceCode,
                   String        recordID,
-                  int           flags,
+                  long          flags,
                   StringBuffer  response);
 
   /**
@@ -1412,7 +1417,7 @@ public interface G2Engine extends G2Fallible
    *
    * @return Returns an export handle that the entity data can be read from.
    */
-  long exportJSONEntityReport(int flags);
+  long exportJSONEntityReport(long flags);
 
   /**
    * This is used to export entity data from known entities.  This function
@@ -1428,7 +1433,7 @@ public interface G2Engine extends G2Fallible
    *                     handle.
    * @return Zero (0) on success and non-zero on failure.
    */
-  int exportJSONEntityReportV3(int flags, Result<Long> exportHandle);
+  int exportJSONEntityReportV3(long flags, Result<Long> exportHandle);
 
 
   /**
@@ -1449,7 +1454,7 @@ public interface G2Engine extends G2Fallible
    *
    * @return Returns an export handle that the entity data can be read from.
    */
-  long exportCSVEntityReportV2(String csvColumnList, int flags);
+  long exportCSVEntityReportV2(String csvColumnList, long flags);
 
   /**
    * This is used to export entity data from known entities.  This function
@@ -1472,7 +1477,7 @@ public interface G2Engine extends G2Fallible
    * @return Returns an export handle that the entity data can be read from.
    */
   int exportCSVEntityReportV3(String        csvColumnList,
-                              int           flags,
+                              long          flags,
                               Result<Long>  exportHandle);
 
   /**
@@ -1532,7 +1537,7 @@ public interface G2Engine extends G2Fallible
    *
    * @return Zero (0) on success and non-zero on failure.
    */
-  int processRedoRecordWithInfo(int           flags,
+  int processRedoRecordWithInfo(long          flags,
                                 StringBuffer  jsonData,
                                 StringBuffer  response);
 
@@ -1581,7 +1586,7 @@ public interface G2Engine extends G2Fallible
    *                 If an error occurred, an error response is stored here.
    * @return Zero (0) on success and non-zero on failure.
    */
-  int processWithInfo(String record, int flags, StringBuffer response);
+  int processWithInfo(String record, long flags, StringBuffer response);
 
   /**
    * This method will send a record for processing in g2. It is a synchronous
