@@ -20,42 +20,42 @@ public interface G2Engine extends G2Fallible
    *
    */
   long G2_EXPORT_INCLUDE_RESOLVED = ( 1L << 0 );
-  
+
   /**
    * The bitwise flag for export functionality to indicate that
    * we should include "possibly same" relationships
    *
    */
   long G2_EXPORT_INCLUDE_POSSIBLY_SAME = ( 1L << 1 );
-  
+
   /**
    * The bitwise flag for export functionality to indicate that
    * we should include "possibly related" relationships
    *
    */
   long G2_EXPORT_INCLUDE_POSSIBLY_RELATED = ( 1L << 2 );
-  
+
   /**
    * The bitwise flag for export functionality to indicate that
    * we should include "name only" relationships
    *
    */
   long G2_EXPORT_INCLUDE_NAME_ONLY = ( 1L << 3 );
-  
+
   /**
    * The bitwise flag for export functionality to indicate that
    * we should include "disclosed" relationships
    *
    */
   long G2_EXPORT_INCLUDE_DISCLOSED = ( 1L << 4 );
-  
+
   /**
    * The bitwise flag for export functionality to indicate that
    * we should include singleton entities
    *
    */
   long G2_EXPORT_INCLUDE_SINGLETONS = ( 1L << 5 );
-  
+
   /**
    * The bitwise flag for export functionality to indicate that
    * we should include all entities
@@ -63,7 +63,7 @@ public interface G2Engine extends G2Fallible
    */
   long G2_EXPORT_INCLUDE_ALL_ENTITIES
       = (G2_EXPORT_INCLUDE_RESOLVED | G2_EXPORT_INCLUDE_SINGLETONS);
-  
+
   /**
    * The bitwise flag for export functionality to indicate that
    * we should include all relationships
@@ -72,7 +72,7 @@ public interface G2Engine extends G2Fallible
   long G2_EXPORT_INCLUDE_ALL_RELATIONSHIPS
       = (G2_EXPORT_INCLUDE_POSSIBLY_SAME | G2_EXPORT_INCLUDE_POSSIBLY_RELATED
          | G2_EXPORT_INCLUDE_NAME_ONLY | G2_EXPORT_INCLUDE_DISCLOSED);
-  
+
   /**
    * The bitwise flag for including possibly-same relations for entities
    */
@@ -97,103 +97,108 @@ public interface G2Engine extends G2Fallible
    * The bitwise flag for including all relations for entities
    */
   long G2_ENTITY_INCLUDE_ALL_RELATIONS
-      = (G2_ENTITY_INCLUDE_POSSIBLY_SAME_RELATIONS 
+      = (G2_ENTITY_INCLUDE_POSSIBLY_SAME_RELATIONS
          | G2_ENTITY_INCLUDE_POSSIBLY_RELATED_RELATIONS
          | G2_ENTITY_INCLUDE_NAME_ONLY_RELATIONS
          | G2_ENTITY_INCLUDE_DISCLOSED_RELATIONS);
-  
+
   /**
    * The bitwise flag for including all features for entities
    */
   long G2_ENTITY_INCLUDE_ALL_FEATURES = ( 1L << 10 );
-  
+
   /**
    * The bitwise flag for including representative features for entities
    */
   long G2_ENTITY_INCLUDE_REPRESENTATIVE_FEATURES = ( 1L << 11 );
-  
+
   /**
    * The bitwise flag for including the name of the entity
    */
   long G2_ENTITY_INCLUDE_ENTITY_NAME = ( 1L << 12 );
-  
+
   /**
    * The bitwise flag for including the record summary of the entity
    */
   long G2_ENTITY_INCLUDE_RECORD_SUMMARY = ( 1L << 13 );
-  
+
   /**
    * The bitwise flag for including the basic record data for the entity
    */
   long G2_ENTITY_INCLUDE_RECORD_DATA = ( 1L << 14 );
-  
+
   /**
    * The bitwise flag for including the record matching info for the entity
    */
   long G2_ENTITY_INCLUDE_RECORD_MATCHING_INFO = ( 1L << 15 );
-  
+
   /**
    * The bitwise flag for including the record json data for the entity
    */
   long G2_ENTITY_INCLUDE_RECORD_JSON_DATA = ( 1L << 16 );
-  
+
   /**
    * The bitwise flag for including the record formattted data for the entity
    */
   long G2_ENTITY_INCLUDE_RECORD_FORMATTED_DATA = ( 1L << 17 );
-  
+
   /**
    * The bitwise flag for the features identifiers for the records
    */
   long G2_ENTITY_INCLUDE_RECORD_FEATURE_IDS = ( 1L << 18 );
-  
+
   /**
    * The bitwise flag for including the name of the related entities
    */
   long G2_ENTITY_INCLUDE_RELATED_ENTITY_NAME = ( 1L << 19 );
-  
+
   /**
    * The bitwise flag for including the record matching info of the related
    * entities
    */
   long G2_ENTITY_INCLUDE_RELATED_MATCHING_INFO = ( 1L << 20 );
-  
+
   /**
    * The bitwise flag for including the record summary of the related entities
    */
   long G2_ENTITY_INCLUDE_RELATED_RECORD_SUMMARY = ( 1L << 21 );
-  
+
   /**
    * The bitwise flag for including the basic record data of the related
    * entities.
    */
   long G2_ENTITY_INCLUDE_RELATED_RECORD_DATA = ( 1L << 22 );
-  
+
   /**
    * The bitwise flag for including internal features in entity output
    */
   long G2_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES = ( 1L << 23 );
-  
+
   /**
    * The bitwise flag for including feature statistics in entity output.
    */
   long G2_ENTITY_OPTION_INCLUDE_FEATURE_STATS = ( 1L << 24 );
-  
+
   /**
    * The bitwise flag for find-path functionality to indicate that
    * excluded entities are still allowed, but not preferred
    */
   long G2_FIND_PATH_PREFER_EXCLUDE = ( 1L << 25 );
-  
+
   /**
-   * The bitwise flag for including feature scores from search results
+   * The bitwise flag for including feature scores.
    */
-  long G2_SEARCH_INCLUDE_FEATURE_SCORES = ( 1L << 26 );
-  
+  long G2_INCLUDE_FEATURE_SCORES = ( 1L << 26 );
+
   /**
    * The bitwise flag for including statistics from search results
    */
   long G2_SEARCH_INCLUDE_STATS = ( 1L << 27 );
+
+  /**
+   * The bitwise flag for including feature scores from search results.
+   */
+  long G2_SEARCH_INCLUDE_FEATURE_SCORES = G2_INCLUDE_FEATURE_SCORES;
 
   /**
    * The bitwise flag for search functionality to indicate that
@@ -201,14 +206,14 @@ public interface G2Engine extends G2Fallible
    *
    */
   long G2_SEARCH_INCLUDE_RESOLVED = (G2_EXPORT_INCLUDE_RESOLVED);
-  
+
   /**
    * The bitwise flag for search functionality to indicate that
    * we should include "possibly same" match level results
    */
   long G2_SEARCH_INCLUDE_POSSIBLY_SAME
       = (G2_EXPORT_INCLUDE_POSSIBLY_SAME);
-  
+
   /**
    * The bitwise flag for search functionality to indicate that
    * we should include "possibly related" match level results
@@ -216,14 +221,14 @@ public interface G2Engine extends G2Fallible
    */
   long G2_SEARCH_INCLUDE_POSSIBLY_RELATED
       = (G2_EXPORT_INCLUDE_POSSIBLY_RELATED);
-  
+
   /**
    * The bitwise flag for search functionality to indicate that
    * we should include "name only" match level results
    *
    */
   long G2_SEARCH_INCLUDE_NAME_ONLY = (G2_EXPORT_INCLUDE_NAME_ONLY);
-  
+
   /**
    * The bitwise flag for search functionality to indicate that
    * we should include all match level results
@@ -232,12 +237,12 @@ public interface G2Engine extends G2Fallible
   long G2_SEARCH_INCLUDE_ALL_ENTITIES
       = (G2_SEARCH_INCLUDE_RESOLVED | G2_SEARCH_INCLUDE_POSSIBLY_SAME
          | G2_SEARCH_INCLUDE_POSSIBLY_RELATED | G2_SEARCH_INCLUDE_NAME_ONLY);
-  
+
   /**
    * The default recommended bitwise flag values for getting records
    */
   long G2_RECORD_DEFAULT_FLAGS = (G2_ENTITY_INCLUDE_RECORD_JSON_DATA);
-  
+
   /**
    * The default recommended bitwise flag values for getting entities
    */
@@ -251,7 +256,7 @@ public interface G2Engine extends G2Fallible
          | G2_ENTITY_INCLUDE_RELATED_ENTITY_NAME
          | G2_ENTITY_INCLUDE_RELATED_RECORD_SUMMARY
          | G2_ENTITY_INCLUDE_RELATED_MATCHING_INFO);
-  
+
   /**
    * The default recommended bitwise flag values for getting entities
    */
@@ -290,6 +295,11 @@ public interface G2Engine extends G2Fallible
          | G2_ENTITY_INCLUDE_RECORD_FEATURE_IDS
          | G2_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES
          | G2_ENTITY_OPTION_INCLUDE_FEATURE_STATS);
+
+  /**
+   * The default recommended bitwise flag values for why-analysis on entities
+   */
+  long G2_HOW_ENTITY_DEFAULT_FLAGS = (0L);
 
   /**
    * The default recommended bitwise flag values for searching by attributes,
@@ -331,7 +341,7 @@ public interface G2Engine extends G2Fallible
    * The default recommended bitwise flag values for searching by attributes
    */
   long G2_SEARCH_BY_ATTRIBUTES_DEFAULT_FLAGS = (G2_SEARCH_BY_ATTRIBUTES_ALL);
-  
+
   /**
    * Initializes the G2 Engine API with the specified module name,
    * init parameters and flag indicating verbose logging.  If the
@@ -345,7 +355,7 @@ public interface G2Engine extends G2Fallible
    *
    * @return Zero (0) on success, non-zero on failure.
    */
-  int initV2(String moduleName, String iniParams, boolean verboseLogging);
+  int init(String moduleName, String iniParams, boolean verboseLogging);
 
   /**
    * Initializes the G2 Engine object with the module name, initialization
@@ -359,10 +369,10 @@ public interface G2Engine extends G2Fallible
    *
    * @return Zero (0) on success, non-zero on failure.
    */
-  int initWithConfigIDV2(String   moduleName,
-                         String   iniParams,
-                         long     initConfigID,
-                         boolean  verboseLogging);
+  int initWithConfigID(String   moduleName,
+                       String   iniParams,
+                       long     initConfigID,
+                       boolean  verboseLogging);
 
   /**
    * Reinitializes with the specified configuration ID.
@@ -371,7 +381,7 @@ public interface G2Engine extends G2Fallible
    *
    * @return Zero (0) on success, non-zero on failure.
    */
-  int reinitV2(long initConfigID);
+  int reinit(long initConfigID);
 
   /**
    * Uninitializes the G2 engine.
@@ -437,7 +447,7 @@ public interface G2Engine extends G2Fallible
   int getActiveConfigID(Result<Long> configID);
 
   /**
-   * Returns a long integer representing number of seconds since 
+   * Returns a long integer representing number of seconds since
    * January 1, 1970 12:00am GMT (epoch time).  This indicates the last
    * time the data repository was modified.
    *
@@ -466,7 +476,7 @@ public interface G2Engine extends G2Fallible
                 String  recordID,
                 String  jsonData,
                 String  loadID);
-  
+
   /**
    * Replace the JSON record that has already been loaded
    *
@@ -483,7 +493,7 @@ public interface G2Engine extends G2Fallible
                     String  recordID,
                     String  jsonData,
                     String  loadID);
-  
+
   /**
    * Replace the JSON record that has already been loaded and returns
    * a list of modified resolved entities
@@ -509,8 +519,8 @@ public interface G2Engine extends G2Fallible
                             StringBuffer  response);
 
   /**
-   * Loads the JSON record.  This works similarly to the G2_addRecord function, 
-   * except that instead or requiring the recordID as an input parameter, the 
+   * Loads the JSON record.  This works similarly to the G2_addRecord function,
+   * except that instead or requiring the recordID as an input parameter, the
    * recordID is generated internally and returned through the parameter list.
    *
    * @param dataSourceCode The data source for the observation.
@@ -547,12 +557,12 @@ public interface G2Engine extends G2Fallible
                                             long          flags,
                                             StringBuffer  recordID,
                                             StringBuffer  response);
-  
+
   /**
    * This method is used to add entity data into the system.  This works
    * similarly to the G2_addRecord function, except that instead or requiring
    * the recordID as an input parameter, the recordID is generated internally
-   * and returned through the parameter list. A list of modified resolved 
+   * and returned through the parameter list. A list of modified resolved
    * entities is also returned
    *
    * @param dataSourceCode The data source for the observation.
@@ -574,7 +584,7 @@ public interface G2Engine extends G2Fallible
                          String       loadID,
                          long         flags,
                          StringBuffer response);
-  
+
   /**
    * Delete the record that has already been loaded
    *
@@ -586,10 +596,10 @@ public interface G2Engine extends G2Fallible
    * @return Zero (0) on success and non-zero on failure.
    */
   int deleteRecord(String dataSourceCode, String recordID, String loadID);
-  
-  
+
+
   /**
-   * Delete the record that has already been loaded. Returns a list 
+   * Delete the record that has already been loaded. Returns a list
    * of modified resolved entities
    *
    * @param dataSourceCode The data source for the observation.
@@ -619,8 +629,8 @@ public interface G2Engine extends G2Fallible
    * @return Zero (0) on success and non-zero on failure.
    */
   int reevaluateRecord(String dataSourceCode, String recordID, long flags);
-  
-  
+
+
   /**
    * Reevaluate a record that has already been loaded. Returns a list
    * of resolved entities.
@@ -638,7 +648,7 @@ public interface G2Engine extends G2Fallible
                                String       recordID,
                                long         flags,
                                StringBuffer response);
-  
+
   /**
    * Reevaluate a resolved entity identified by the specified entity ID.
    *
@@ -663,7 +673,7 @@ public interface G2Engine extends G2Fallible
   int reevaluateEntityWithInfo(long         entityID,
                                long         flags,
                                StringBuffer response);
-  
+
   /**
    * This method searches for entities that contain attribute information
    * that are relevant to a set of input search attributes.
@@ -690,7 +700,7 @@ public interface G2Engine extends G2Fallible
    *
    * @return Zero (0) on success and non-zero on failure.
    */
-  int searchByAttributesV2(String jsonData, long flags, StringBuffer response);
+  int searchByAttributes(String jsonData, long flags, StringBuffer response);
 
   /**
    * This method is used to retrieve information about a specific resolved
@@ -728,9 +738,9 @@ public interface G2Engine extends G2Fallible
    *         initialized. Returns negative-two (-2) if an exception was thrown
    *         and caught.
    */
-  int getEntityByEntityIDV2(long          entityID,
-                            long          flags,
-                            StringBuffer  response);
+  int getEntityByEntityID(long          entityID,
+                          long          flags,
+                          StringBuffer  response);
 
 
   /**
@@ -761,10 +771,10 @@ public interface G2Engine extends G2Fallible
    *
    * @return Zero (0) on success and non-zero on failure.
    */
-  int getEntityByRecordIDV2(String        dataSourceCode,
-                            String        recordID,
-                            long          flags,
-                            StringBuffer  response);
+  int getEntityByRecordID(String        dataSourceCode,
+                          String        recordID,
+                          long          flags,
+                          StringBuffer  response);
 
   /**
    * This method is used to find a relationship path between entities that
@@ -795,11 +805,11 @@ public interface G2Engine extends G2Fallible
    *                 document to.
    * @return Zero (0) on success and non-zero on failure.
    */
-  int findPathByEntityIDV2(long         entityID1,
-                           long         entityID2,
-                           int          maxDegrees,
-                           long         flags,
-                           StringBuffer response);
+  int findPathByEntityID(long         entityID1,
+                         long         entityID2,
+                         int          maxDegrees,
+                         long         flags,
+                         StringBuffer response);
 
   /**
    * This method is used to find a relationship path between entities that
@@ -838,14 +848,49 @@ public interface G2Engine extends G2Fallible
    *                 document to.
    * @return Zero (0) on success and non-zero on failure.
    */
-  int findPathByRecordIDV2(String       dataSourceCode1,
-                           String       recordID1,
-                           String       dataSourceCode2,
-                           String       recordID2,
-                           int          maxDegrees,
-                           long         flags,
-                           StringBuffer response);
+  int findPathByRecordID(String       dataSourceCode1,
+                         String       recordID1,
+                         String       dataSourceCode2,
+                         String       recordID2,
+                         int          maxDegrees,
+                         long         flags,
+                         StringBuffer response);
 
+
+  /**
+   * <p>
+   * This method is used to find a relationship path between two entities
+   * identified by their entity ID's that excludes one or more entities, also
+   * identified by their entity ID's.
+   *
+   * <p>
+   * The excluded entities are identified by their entity ID's in a JSON
+   * document with the following format:
+   * <pre>
+   *   {
+   *     "ENTITIES": [
+   *        { "ENTITY_ID": &lt;entity_id1&gt; },
+   *        { "ENTITY_ID": &lt;entity_id2&gt; },
+   *        . . .
+   *        { "ENTITY_ID": &lt;entity_idN&gt; }
+   *     ]
+   *   }
+   * </pre>
+   *
+   * @param entityID1 The entity ID of the first entity.
+   * @param entityID2 The entity ID of the second entity.
+   * @param maxDegrees The maximum number of degrees for the path search.
+   * @param excludedEntities The JSON document identifying the excluded entities
+   *                         via their entity ID's.
+   * @param response The {@link StringBuffer} to write the JSON response
+   *                 document to.
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int findPathExcludingByEntityID(long          entityID1,
+                                  long          entityID2,
+                                  int           maxDegrees,
+                                  String        excludedEntities,
+                                  StringBuffer  response);
 
   /**
    * <p>
@@ -924,6 +969,57 @@ public interface G2Engine extends G2Fallible
    * @param maxDegrees The maximum number of degrees for the path search.
    * @param excludedEntities The JSON document identifying the excluded entities
    *                         via their entity ID's.
+   * @param response The {@link StringBuffer} to write the JSON response
+   *                 document to.
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int findPathExcludingByRecordID(String        dataSourceCode1,
+                                  String        recordID1,
+                                  String        dataSourceCode2,
+                                  String        recordID2,
+                                  int           maxDegrees,
+                                  String        excludedEntities,
+                                  StringBuffer  response);
+
+  /**
+   * <p>
+   * This method is used to find a relationship path between two entities
+   * identified by the data source codes and record IDs of their composite
+   * records where that path excludes one or more entities, also
+   * identified by the data sourec codes and record IDs of their composite
+   * records.
+   *
+   * <p>
+   * The excluded entities are identified by the data source codes and record
+   * ID's of their composite records in a JSON document with the following
+   * format:
+   * <pre>
+   *   {
+   *     "ENTITIES": [
+   *        {
+   *          "DATA_SOURCE": "&lt;data_source1&gt;",
+   *          "RECORD_ID":  "&lt;record_id1&gt;"
+   *        },
+   *        {
+   *          "DATA_SOURCE": "&lt;data_source2&gt;",
+   *          "RECORD_ID":  "&lt;record_id2&gt;"
+   *        },
+   *        . . .
+   *        {
+   *          "DATA_SOURCE": "&lt;data_sourceN&gt;",
+   *          "RECORD_ID":  "&lt;record_idN&gt;"
+   *        }
+   *     ]
+   *   }
+   * </pre>
+   *
+   * @param dataSourceCode1 The data source code of the first record.
+   * @param recordID1 The record ID of the first record.
+   * @param dataSourceCode2 The data source code of the second record.
+   * @param recordID2 The record ID of the second record.
+   * @param maxDegrees The maximum number of degrees for the path search.
+   * @param excludedEntities The JSON document identifying the excluded entities
+   *                         via their entity ID's.
    * @param flags The flags to control how the operation is performed and
    *              specifically the content of the response JSON document.
    * @param response The {@link StringBuffer} to write the JSON response
@@ -939,6 +1035,58 @@ public interface G2Engine extends G2Fallible
                                   long          flags,
                                   StringBuffer  response);
 
+  /**
+   * <p>
+   * This method is used to find a relationship path between two entities
+   * identified by their entity ID's.  The path will exclude the one or more
+   * entities, also identified by the specified entity ID's and will require
+   * that the path contains <b>at least one</b> of the data sources identified
+   * by the one or more specified data sources codes.
+   *
+   * <p>
+   * The excluded entities are identified by their entity ID's in a JSON
+   * document with the following format:
+   * <pre>
+   *   {
+   *     "ENTITIES": [
+   *        { "ENTITY_ID": &lt;entity_id1&gt; },
+   *        { "ENTITY_ID": &lt;entity_id2&gt; },
+   *        . . .
+   *        { "ENTITY_ID": &lt;entity_idN&gt; }
+   *     ]
+   *   }
+   * </pre>
+   *
+   * <p>
+   * The required set of data sources are identified by their data source codes
+   * in a JSON document with the following format:
+   * <pre>
+   *    { "DATA_SOURCES": [
+   *        "&lt;data_source_code1&gt;",
+   *        "&lt;data_source_code2&gt;",
+   *        . . .
+   *        "&lt;data_source_codeN&gt;"
+   *      ]
+   *    }
+   * </pre>
+   *
+   * @param entityID1 The entity ID of the first entity.
+   * @param entityID2 The entity ID of the second entity.
+   * @param maxDegrees The maximum number of degrees for the path search.
+   * @param excludedEntities The JSON document identifying the excluded entities
+   *                         via their entity ID's.
+   * @param requiredSources The JSON document identifying the data sources that
+   *                        must be included on the path.
+   * @param response The {@link StringBuffer} to write the JSON response
+   *                 document to.
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int findPathIncludingSourceByEntityID(long          entityID1,
+                                        long          entityID2,
+                                        int           maxDegrees,
+                                        String        excludedEntities,
+                                        String        requiredSources,
+                                        StringBuffer  response);
 
   /**
    * <p>
@@ -1052,6 +1200,75 @@ public interface G2Engine extends G2Fallible
    *                         via their entity ID's.
    * @param requiredSources The JSON document identifying the data sources that
    *                        must be included on the path.
+   * @param response The {@link StringBuffer} to write the JSON response
+   *                 document to.
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int findPathIncludingSourceByRecordID(String        dataSourceCode1,
+                                        String        recordID1,
+                                        String        dataSourceCode2,
+                                        String        recordID2,
+                                        int           maxDegrees,
+                                        String        excludedEntities,
+                                        String        requiredSources,
+                                        StringBuffer  response);
+
+  /**
+   * <p>
+   * This method is used to find a relationship path between two entities
+   * identified by the data source codes and record IDs of their composite
+   * records.  THe path will exclude the one or more entities also identified
+   * by the specified data source code and record ID pairs that identify the
+   * composite records of the excluded entities and further will require the
+   * path contains <b>at least one</b> of the data sources identified by the
+   * one or more specified data sources codes.
+   *
+   * <p>
+   * The excluded entities are identified by the data source codes and record
+   * ID's of their composite records in a JSON document with the following
+   * format:
+   * <pre>
+   *   {
+   *     "ENTITIES": [
+   *        {
+   *          "DATA_SOURCE": "&lt;data_source1&gt;",
+   *          "RECORD_ID":  "&lt;record_id1&gt;"
+   *        },
+   *        {
+   *          "DATA_SOURCE": "&lt;data_source2&gt;",
+   *          "RECORD_ID":  "&lt;record_id2&gt;"
+   *        },
+   *        . . .
+   *        {
+   *          "DATA_SOURCE": "&lt;data_sourceN&gt;",
+   *          "RECORD_ID":  "&lt;record_idN&gt;"
+   *        }
+   *     ]
+   *   }
+   * </pre>
+   *
+   * <p>
+   * The required set of data sources are identified by their data source codes
+   * in a JSON document with the following format:
+   * <pre>
+   *    { "DATA_SOURCES": [
+   *        "&lt;data_source_code1&gt;",
+   *        "&lt;data_source_code2&gt;",
+   *        . . .
+   *        "&lt;data_source_codeN&gt;"
+   *      ]
+   *    }
+   * </pre>
+   *
+   * @param dataSourceCode1 The data source code of the first record.
+   * @param recordID1 The record ID of the first record.
+   * @param dataSourceCode2 The data source code of the second record.
+   * @param recordID2 The record ID of the second record.
+   * @param maxDegrees The maximum number of degrees for the path search.
+   * @param excludedEntities The JSON document identifying the excluded entities
+   *                         via their entity ID's.
+   * @param requiredSources The JSON document identifying the data sources that
+   *                        must be included on the path.
    * @param flags The flags to control how the operation is performed and
    *              specifically the content of the response JSON document.
    * @param response The {@link StringBuffer} to write the JSON response
@@ -1068,7 +1285,6 @@ public interface G2Engine extends G2Fallible
                                         long          flags,
                                         StringBuffer  response);
 
-  
   /**
    * <p>
    * This method is used to find a network of entity relationships,
@@ -1139,12 +1355,12 @@ public interface G2Engine extends G2Fallible
    *                 document to.
    * @return Zero (0) on success and non-zero on failure.
    */
-  int findNetworkByEntityIDV2(String        entityList,
-                              int           maxDegrees,
-                              int           buildOutDegrees,
-                              int           maxEntities,
-                              long          flags,
-                              StringBuffer  response);
+  int findNetworkByEntityID(String        entityList,
+                            int           maxDegrees,
+                            int           buildOutDegrees,
+                            int           maxEntities,
+                            long          flags,
+                            StringBuffer  response);
 
   /**
    * <p>
@@ -1240,13 +1456,13 @@ public interface G2Engine extends G2Fallible
    *                 document to.
    * @return Zero (0) on success and non-zero on failure.
    */
-  int findNetworkByRecordIDV2(String        recordList,
-                              int           maxDegrees,
-                              int           buildOutDegrees,
-                              int           maxEntities,
-                              long          flags,
-                              StringBuffer  response);
-  
+  int findNetworkByRecordID(String        recordList,
+                            int           maxDegrees,
+                            int           buildOutDegrees,
+                            int           maxEntities,
+                            long          flags,
+                            StringBuffer  response);
+
   /**
    * This method determines why records are included in the resolved entity
    * they belong to.  The entity for the operation is the one having the
@@ -1279,10 +1495,10 @@ public interface G2Engine extends G2Fallible
    *                 document to.
    * @return Zero (0) on success and non-zero on failure.
    */
-  int whyEntityByRecordIDV2(String        dataSourceCode,
-                            String        recordID,
-                            long          flags,
-                            StringBuffer  response);
+  int whyEntityByRecordID(String        dataSourceCode,
+                          String        recordID,
+                          long          flags,
+                          StringBuffer  response);
 
   /**
    * This method determines why records are included in the resolved entity
@@ -1306,9 +1522,9 @@ public interface G2Engine extends G2Fallible
    *                 document to.
    * @return Zero (0) on success and non-zero on failure.
    */
-  int whyEntityByEntityIDV2(long          entityID,
-                            long          flags,
-                            StringBuffer  response);
+  int whyEntityByEntityID(long          entityID,
+                          long          flags,
+                          StringBuffer  response);
 
   /**
    * This method determines how two records are related to each other.
@@ -1340,14 +1556,14 @@ public interface G2Engine extends G2Fallible
    *                 document to.
    * @return Zero (0) on success and non-zero on failure.
    */
-  int whyRecordsV2(String       dataSourceCode1,
-                   String       recordID1,
-                   String       dataSourceCode2,
-                   String       recordID2,
-                   long         flags,
-                   StringBuffer response);
-  
-  
+  int whyRecords(String       dataSourceCode1,
+                 String       recordID1,
+                 String       dataSourceCode2,
+                 String       recordID2,
+                 long         flags,
+                 StringBuffer response);
+
+
   /**
    * This method determines how two entities are related to each other.
    *
@@ -1370,10 +1586,10 @@ public interface G2Engine extends G2Fallible
    *                 document to.
    * @return Zero (0) on success and non-zero on failure.
    */
-  int whyEntitiesV2(long          entityID1,
-                    long          entityID2,
-                    long          flags,
-                    StringBuffer  response);
+  int whyEntities(long          entityID1,
+                  long          entityID2,
+                  long          flags,
+                  StringBuffer  response);
 
   /**
    * This method is used to retrieve the stored record.
@@ -1399,25 +1615,10 @@ public interface G2Engine extends G2Fallible
    *
    * @return Zero (0) on success and non-zero on failure.
    */
-  int getRecordV2(String        dataSourceCode,
-                  String        recordID,
-                  long          flags,
-                  StringBuffer  response);
-
-  /**
-   * This is used to export entity data from known entities.  This function
-   * returns an export-handle that can be read from to get the export data 
-   * in JSON format.  The export-handle should be read using the "G2_fetchNext"
-   * function, and closed when work is complete. Each output row contains the 
-   * exported entity data for a single resolved entity.
-   *
-   * @param flags A bit mask specifying control flags, such as 
-   *        "G2_EXPORT_INCLUDE_SINGLETONS".  The default and recommended
-   *        value is "G2_EXPORT_DEFAULT_FLAGS".
-   *
-   * @return Returns an export handle that the entity data can be read from.
-   */
-  long exportJSONEntityReport(long flags);
+  int getRecord(String        dataSourceCode,
+                String        recordID,
+                long          flags,
+                StringBuffer  response);
 
   /**
    * This is used to export entity data from known entities.  This function
@@ -1433,28 +1634,7 @@ public interface G2Engine extends G2Fallible
    *                     handle.
    * @return Zero (0) on success and non-zero on failure.
    */
-  int exportJSONEntityReportV3(long flags, Result<Long> exportHandle);
-
-
-  /**
-   * This is used to export entity data from known entities.  This function
-   * returns an export-handle that can be read from to get the export data 
-   * in CSV format.  The export-handle should be read using the "G2_fetchNext"
-   * function, and closed when work is complete. The first output row returned 
-   * by the export-handle contains the JSON column headers as a string.  Each 
-   * following row contains the exported entity data.
-   *
-   * @param csvColumnList Specify <code>"*"</code> to indicate "all columns",
-   *                      specify empty-string to indicate the "standard
-   *                      columns", otherwise specify a comma-sepatated list of
-   *                      column names.
-   * @param flags A bit mask specifying other control flags, such as 
-   *        "G2_EXPORT_INCLUDE_SINGLETONS".  The default and recommended
-   *        value is "G2_EXPORT_DEFAULT_FLAGS".
-   *
-   * @return Returns an export handle that the entity data can be read from.
-   */
-  long exportCSVEntityReportV2(String csvColumnList, long flags);
+  int exportJSONEntityReport(long flags, Result<Long> exportHandle);
 
   /**
    * This is used to export entity data from known entities.  This function
@@ -1476,19 +1656,9 @@ public interface G2Engine extends G2Fallible
    *
    * @return Returns an export handle that the entity data can be read from.
    */
-  int exportCSVEntityReportV3(String        csvColumnList,
-                              long          flags,
-                              Result<Long>  exportHandle);
-
-  /**
-   * This function is used to read entity data from an export handle,
-   * one data row at a time.
-   *
-   * @param exportHandle The export handle to retrieve data from
-   *
-   * @return Returns a pointer to the next block of the report data buffer.
-   */
-  String fetchNext(long exportHandle);
+  int exportCSVEntityReport(String        csvColumnList,
+                            long          flags,
+                            Result<Long>  exportHandle);
 
   /**
    * This function is used to read entity data from an export handle,
@@ -1499,15 +1669,7 @@ public interface G2Engine extends G2Fallible
    *                 record to.
    * @return Zero (0) on success and non-zero on failure.
    */
-  int fetchNextV3(long exportHandle, StringBuffer response);
-
-  
-  /**
-   * This function closes an export handle, to clean up system resources.
-   *
-   * @param exportHandle The export handle of the export to close.
-   */
-  void closeExport(long exportHandle);
+  int fetchNext(long exportHandle, StringBuffer response);
 
   /**
    * This function closes an export handle, to clean up system resources.
@@ -1515,8 +1677,8 @@ public interface G2Engine extends G2Fallible
    * @param exportHandle The export handle of the export to close.
    * @return Zero (0) on success and non-zero on failure.
    */
-  int closeExportV3(long exportHandle);
-  
+  int closeExport(long exportHandle);
+
   /**
    * Processes a redo record.
    *
@@ -1541,7 +1703,7 @@ public interface G2Engine extends G2Fallible
                                 StringBuffer  jsonData,
                                 StringBuffer  response);
 
-  
+
   /**
    * Retrieves a pending redo record from the reevaluation queue.
    *
@@ -1570,7 +1732,7 @@ public interface G2Engine extends G2Fallible
    * @return Zero (0) on success and non-zero on failure.
    */
   int process(String record);
-  
+
   /**
    * This method will send a record for processing in g2. It is a synchronous
    * call, i.e. it will wait until g2 actually processes the record.  This

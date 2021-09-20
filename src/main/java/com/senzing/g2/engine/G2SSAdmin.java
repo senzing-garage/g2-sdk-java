@@ -5,7 +5,7 @@ package com.senzing.g2.engine;
  */
 public interface G2SSAdmin extends G2Fallible
 {
-	int initV2(String moduleName, String iniParams, boolean verboseLogging);
+	int init(String moduleName, String iniParams, boolean verboseLogging);
 	int destroy();
 
 	int initializeNewToken(String defaultSOPin, String newSOPin, String label);

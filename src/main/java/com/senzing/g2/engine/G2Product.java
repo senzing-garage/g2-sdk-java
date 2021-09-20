@@ -21,7 +21,7 @@ public interface G2Product extends G2Fallible
    *
    * @return Zero (0) on success and non-zero on failure.
    */
-  int initV2(String moduleName, String iniParams, boolean verboseLogging);
+  int init(String moduleName, String iniParams, boolean verboseLogging);
 
   /**
    * Uninitializes the G2 product API.

@@ -14,9 +14,9 @@ public class G2ProductJNI implements G2Product
 	 * {@inheritDoc}
 	 */
 	@Override
-	public native int initV2(String 	moduleName,
-													 String 	iniParams,
-													 boolean 	verboseLogging);
+	public native int init(String 	moduleName,
+												 String 	iniParams,
+												 boolean 	verboseLogging);
 
 	/**
 	 * {@inheritDoc}

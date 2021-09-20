@@ -13,24 +13,24 @@ public class G2DiagnosticJNI implements G2Diagnostic {
    * {@inheritDoc}
    */
   @Override
-  public native int initV2(String   moduleName,
-                           String   iniParams,
-                           boolean  verboseLogging);
+  public native int init(String   moduleName,
+                         String   iniParams,
+                         boolean  verboseLogging);
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public native int initWithConfigIDV2(String   moduleName,
-                                       String   iniParams,
-                                       long     initConfigID,
-                                       boolean  verboseLogging);
+  public native int initWithConfigID(String   moduleName,
+                                     String   iniParams,
+                                     long     initConfigID,
+                                     boolean  verboseLogging);
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public native int reinitV2(long initConfigID);
+  public native int reinit(long initConfigID);
 
   /**
    * {@inheritDoc}
@@ -148,39 +148,21 @@ public class G2DiagnosticJNI implements G2Diagnostic {
    * {@inheritDoc}
    */
   @Override
-  public native long getEntityListBySize(long entitySize);
+  public native int getEntityListBySize(long          entitySize,
+                                        Result<Long>  exportHandle);
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public native String fetchNextEntityBySize(long entityListBySizeHandle);
+  public native int fetchNextEntityBySize(long          entityListBySizeHandle,
+                                          StringBuffer  response);
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public native void closeEntityListBySize(long entityListBySizeHandle);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int getEntityListBySizeV2(long          entitySize,
-                                          Result<Long>  exportHandle);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int fetchNextEntityBySizeV2(long          entityListBySizeHandle,
-                                            StringBuffer  response);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int closeEntityListBySizeV2(long entityListBySizeHandle);
+  public native int closeEntityListBySize(long entityListBySizeHandle);
 
   /**
    * {@inheritDoc}

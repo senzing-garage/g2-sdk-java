@@ -20,19 +20,19 @@ public class G2JNI implements G2Engine {
    * {@inheritDoc}
    */
   @Override
-  public native int initV2(String moduleName, String iniParams, boolean verboseLogging);
+  public native int init(String moduleName, String iniParams, boolean verboseLogging);
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public native int initWithConfigIDV2(String moduleName, String iniParams, long initConfigID, boolean verboseLogging);
+  public native int initWithConfigID(String moduleName, String iniParams, long initConfigID, boolean verboseLogging);
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public native int reinitV2(long initConfigID);
+  public native int reinit(long initConfigID);
 
 
   /**
@@ -216,9 +216,9 @@ public class G2JNI implements G2Engine {
    * {@inheritDoc}
    */
   @Override
-  public native int searchByAttributesV2(String       jsonData,
-                                         long         flags,
-                                         StringBuffer response);
+  public native int searchByAttributes(String       jsonData,
+                                       long         flags,
+                                       StringBuffer response);
 
   /**
    * {@inheritDoc}
@@ -230,9 +230,9 @@ public class G2JNI implements G2Engine {
    * {@inheritDoc}
    */
   @Override
-  public native int getEntityByEntityIDV2(long          entityID,
-                                          long          flags,
-                                          StringBuffer  response);
+  public native int getEntityByEntityID(long          entityID,
+                                        long          flags,
+                                        StringBuffer  response);
 
   /**
    * {@inheritDoc}
@@ -246,10 +246,10 @@ public class G2JNI implements G2Engine {
    * {@inheritDoc}
    */
   @Override
-  public native int getEntityByRecordIDV2(String        dataSourceCode,
-                                          String        recordID,
-                                          long          flags,
-                                          StringBuffer  response);
+  public native int getEntityByRecordID(String        dataSourceCode,
+                                        String        recordID,
+                                        long          flags,
+                                        StringBuffer  response);
 
   /**
    * {@inheritDoc}
@@ -264,11 +264,11 @@ public class G2JNI implements G2Engine {
    * {@inheritDoc}
    */
   @Override
-  public native int findPathByEntityIDV2(long         entityID1,
-                                         long         entityID2,
-                                         int          maxDegree,
-                                         long         flags,
-                                         StringBuffer response);
+  public native int findPathByEntityID(long         entityID1,
+                                       long         entityID2,
+                                       int          maxDegree,
+                                       long         flags,
+                                       StringBuffer response);
 
   /**
    * {@inheritDoc}
@@ -285,13 +285,23 @@ public class G2JNI implements G2Engine {
    * {@inheritDoc}
    */
   @Override
-  public native int findPathByRecordIDV2(String       dataSourceCode1,
-                                         String       recordID1,
-                                         String       dataSourceCode2,
-                                         String       recordID2,
-                                         int          maxDegree,
-                                         long         flags,
-                                         StringBuffer response);
+  public native int findPathByRecordID(String       dataSourceCode1,
+                                       String       recordID1,
+                                       String       dataSourceCode2,
+                                       String       recordID2,
+                                       int          maxDegree,
+                                       long         flags,
+                                       StringBuffer response);
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public native int findPathExcludingByEntityID(long          entityID1,
+                                                long          entityID2,
+                                                int           maxDegree,
+                                                String        excludedEntities,
+                                                StringBuffer  response);
 
   /**
    * {@inheritDoc}
@@ -302,6 +312,18 @@ public class G2JNI implements G2Engine {
                                                 int           maxDegree,
                                                 String        excludedEntities,
                                                 long          flags,
+                                                StringBuffer  response);
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public native int findPathExcludingByRecordID(String        dataSourceCode1,
+                                                String        recordID1,
+                                                String        dataSourceCode2,
+                                                String        recordID2,
+                                                int           maxDegree,
+                                                String        excludedEntities,
                                                 StringBuffer  response);
 
   /**
@@ -327,7 +349,33 @@ public class G2JNI implements G2Engine {
       int           maxDegree,
       String        excludedEntities,
       String        requiredDsrcs,
+      StringBuffer  response);
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public native int findPathIncludingSourceByEntityID(
+      long          entityID1,
+      long          entityID2,
+      int           maxDegree,
+      String        excludedEntities,
+      String        requiredDsrcs,
       long          flags,
+      StringBuffer  response);
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public native int findPathIncludingSourceByRecordID(
+      String        dataSourceCode1,
+      String        recordID1,
+      String        dataSourceCode2,
+      String        recordID2,
+      int           maxDegree,
+      String        excludedEntities,
+      String        requiredDsrcs,
       StringBuffer  response);
 
   /**
@@ -359,12 +407,12 @@ public class G2JNI implements G2Engine {
    * {@inheritDoc}
    */
   @Override
-  public native int findNetworkByEntityIDV2(String        entityList,
-                                            int           maxDegree,
-                                            int           buildOutDegree,
-                                            int           maxEntities,
-                                            long          flags,
-                                            StringBuffer  response);
+  public native int findNetworkByEntityID(String        entityList,
+                                          int           maxDegree,
+                                          int           buildOutDegree,
+                                          int           maxEntities,
+                                          long          flags,
+                                          StringBuffer  response);
 
   /**
    * {@inheritDoc}
@@ -380,12 +428,12 @@ public class G2JNI implements G2Engine {
    * {@inheritDoc}
    */
   @Override
-  public native int findNetworkByRecordIDV2(String        recordList,
-                                            int           maxDegree,
-                                            int           buildOutDegree,
-                                            int           maxEntities,
-                                            long          flags,
-                                            StringBuffer  response);
+  public native int findNetworkByRecordID(String        recordList,
+                                          int           maxDegree,
+                                          int           buildOutDegree,
+                                          int           maxEntities,
+                                          long          flags,
+                                          StringBuffer  response);
 
   /**
    * {@inheritDoc}
@@ -399,10 +447,10 @@ public class G2JNI implements G2Engine {
    * {@inheritDoc}
    */
   @Override
-  public native int whyEntityByRecordIDV2(String        dataSourceCode,
-                                          String        recordID,
-                                          long          flags,
-                                          StringBuffer  response);
+  public native int whyEntityByRecordID(String        dataSourceCode,
+                                        String        recordID,
+                                        long          flags,
+                                        StringBuffer  response);
 
   /**
    * {@inheritDoc}
@@ -414,9 +462,9 @@ public class G2JNI implements G2Engine {
    * {@inheritDoc}
    */
   @Override
-  public native int whyEntityByEntityIDV2(long          entityID,
-                                          long          flags,
-                                          StringBuffer  response);
+  public native int whyEntityByEntityID(long          entityID,
+                                        long          flags,
+                                        StringBuffer  response);
 
   /**
    * {@inheritDoc}
@@ -432,12 +480,12 @@ public class G2JNI implements G2Engine {
    * {@inheritDoc}
    */
   @Override
-  public native int whyRecordsV2(String       dataSourceCode1,
-                                 String       recordID1,
-                                 String       dataSourceCode2,
-                                 String       recordID2,
-                                 long         flags,
-                                 StringBuffer response);
+  public native int whyRecords(String       dataSourceCode1,
+                               String       recordID1,
+                               String       dataSourceCode2,
+                               String       recordID2,
+                               long         flags,
+                               StringBuffer response);
 
   /**
    * {@inheritDoc}
@@ -451,10 +499,10 @@ public class G2JNI implements G2Engine {
    * {@inheritDoc}
    */
   @Override
-  public native int whyEntitiesV2(long          entityID1,
-                                  long          entityID2,
-                                  long          flags,
-                                  StringBuffer  response);
+  public native int whyEntities(long          entityID1,
+                                long          entityID2,
+                                long          flags,
+                                StringBuffer  response);
 
   /**
    * {@inheritDoc}
@@ -468,61 +516,37 @@ public class G2JNI implements G2Engine {
    * {@inheritDoc}
    */
   @Override
-  public native int getRecordV2(String        dataSourceCode,
-                                String        recordID,
-                                long          flags,
-                                StringBuffer  response);
+  public native int getRecord(String        dataSourceCode,
+                              String        recordID,
+                              long          flags,
+                              StringBuffer  response);
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public native long exportJSONEntityReport(long flags);
+  public native int exportJSONEntityReport(long         flags,
+                                           Result<Long> exportHandle);
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public native int exportJSONEntityReportV3(long         flags,
-                                             Result<Long> exportHandle);
+  public native int exportCSVEntityReport(String        csvColumnList,
+                                          long          flags,
+                                          Result<Long>  exportHandle);
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public native long exportCSVEntityReportV2(String csvColumnList, long flags);
+  public native int fetchNext(long exportHandle, StringBuffer response);
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public native int exportCSVEntityReportV3(String        csvColumnList,
-                                            long          flags,
-                                            Result<Long>  exportHandle);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native String fetchNext(long exportHandle);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int fetchNextV3(long exportHandle, StringBuffer response);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native void closeExport(long exportHandle);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int closeExportV3(long exportHandle);
+  public native int closeExport(long exportHandle);
 
   /**
    * {@inheritDoc}
