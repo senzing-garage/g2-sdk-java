@@ -777,6 +777,38 @@ public interface G2Engine extends G2Fallible
                           StringBuffer  response);
 
   /**
+   * This method is used to find interesting entities close to a specific resolved
+   * entity.  The information is returned as a JSON document.
+   *
+   * @param entityID The resolved entity to search around
+   * @param flags The flags to control how the operation is performed.
+   * @param response A {@link StringBuffer} for returning the response document.
+   *                 If an error occurred, an error response is stored here.
+   *
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int findInterestingEntitiesByEntityID(long          entityID,
+                                        long          flags,
+                                        StringBuffer  response);
+
+  /**
+   * This method is used to find interesting entities close to a specific resolved
+   * entity containing a particular observation record.
+   *
+   * @param dataSourceCode The data source of the observation to search around
+   * @param recordID The record ID of the observation to search around
+   * @param flags The flags to control how the operation is performed.
+   * @param response A {@link StringBuffer} for returning the response document.
+   *                 If an error occurred, an error response is stored here.
+   *
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int findInterestingEntitiesByRecordID(String        dataSourceCode,
+                                        String        recordID,
+                                        long          flags,
+                                        StringBuffer  response);
+
+  /**
    * This method is used to find a relationship path between entities that
    * are identified by entity ID.
    *

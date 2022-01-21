@@ -255,6 +255,23 @@ public class G2JNI implements G2Engine {
    * {@inheritDoc}
    */
   @Override
+  public native int findInterestingEntitiesByEntityID(long          entityID,
+                                                      long          flags,
+                                                      StringBuffer  response);
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public native int findInterestingEntitiesByRecordID(String        dataSourceCode,
+                                                      String        recordID,
+                                                      long          flags,
+                                                      StringBuffer  response);
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public native int findPathByEntityID(long         entityID1,
                                        long         entityID2,
                                        int          maxDegree,
