@@ -520,7 +520,37 @@ public class G2JNI implements G2Engine {
                                 long          entityID2,
                                 long          flags,
                                 StringBuffer  response);
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public native int howEntityByEntityID(long          entityID,
+                                        StringBuffer  response);
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public native int howEntityByEntityID(long          entityID,
+                                        long          flags,
+                                        StringBuffer  response);
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public native int getVirtualEntityByRecordID(String        recordList,
+                                               StringBuffer  response);
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public native int getVirtualEntityByRecordID(String        recordList,
+                                               long          flags,
+                                               StringBuffer  response);
+  
   /**
    * {@inheritDoc}
    */

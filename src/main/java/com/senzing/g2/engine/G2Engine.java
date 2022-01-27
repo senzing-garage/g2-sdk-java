@@ -1623,6 +1623,65 @@ public interface G2Engine extends G2Fallible
                   long          flags,
                   StringBuffer  response);
 
+  
+  /**
+   * This method gives information on how entities were contructed from
+   * their base records.
+   *
+   * @param entityID The entity ID.
+   * @param response The {@link StringBuffer} to write the JSON response
+   *                 document to.
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int howEntityByEntityID(long          entityID,
+                          StringBuffer  response);
+  
+  /**
+   * This method gives information on how entities were contructed from
+   * their base records.
+   *
+   * @param entityID The entity ID.
+   * @param flags The flags to control how the operation is performed and
+   *              specifically the content of the response JSON document.
+   * @param response The {@link StringBuffer} to write the JSON response
+   *                 document to.
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int howEntityByEntityID(long          entityID,
+                          long          flags,
+                          StringBuffer  response);
+
+
+  /**
+   * This method gives information on how an entity composed of a given set
+   * of records would look.
+   *
+   * @param recordList The list of records used to build the virtual entity.
+   * @param flags The flags to control how the operation is performed and
+   *              specifically the content of the response JSON document.
+   * @param response The {@link StringBuffer} to write the JSON response
+   *                 document to.
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int getVirtualEntityByRecordID(String        recordList,
+                                 StringBuffer  response);
+
+  /**
+   * This method gives information on how an entity composed of a given set
+   * of records would look.
+   *
+   * @param recordList The list of records used to build the virtual entity.
+   * @param flags The flags to control how the operation is performed and
+   *              specifically the content of the response JSON document.
+   * @param response The {@link StringBuffer} to write the JSON response
+   *                 document to.
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int getVirtualEntityByRecordID(String        recordList,
+                                 long          flags,
+                                 StringBuffer  response);
+
+  
   /**
    * This method is used to retrieve the stored record.
    *
