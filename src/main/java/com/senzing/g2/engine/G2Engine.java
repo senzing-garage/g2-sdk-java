@@ -299,7 +299,11 @@ public interface G2Engine extends G2Fallible
   /**
    * The default recommended bitwise flag values for why-analysis on entities
    */
-  long G2_HOW_ENTITY_DEFAULT_FLAGS = (0L);
+  long G2_HOW_ENTITY_DEFAULT_FLAGS
+      = (G2_ENTITY_DEFAULT_FLAGS
+         | G2_ENTITY_INCLUDE_RECORD_FEATURE_IDS
+         | G2_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES
+         | G2_ENTITY_OPTION_INCLUDE_FEATURE_STATS);
 
   /**
    * The default recommended bitwise flag values for searching by attributes,
@@ -1625,7 +1629,7 @@ public interface G2Engine extends G2Fallible
 
   
   /**
-   * This method gives information on how entities were contructed from
+   * This method gives information on how entities were constructed from
    * their base records.
    *
    * @param entityID The entity ID.
@@ -1637,7 +1641,7 @@ public interface G2Engine extends G2Fallible
                           StringBuffer  response);
   
   /**
-   * This method gives information on how entities were contructed from
+   * This method gives information on how entities were constructed from
    * their base records.
    *
    * @param entityID The entity ID.
