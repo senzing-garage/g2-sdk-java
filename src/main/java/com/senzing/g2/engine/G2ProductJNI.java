@@ -41,6 +41,13 @@ public class G2ProductJNI implements G2Product
 	 * {@inheritDoc}
 	 */
 	@Override
+	public native int validateLicenseStringBase64(String 				licenseData,
+																								StringBuffer 	errorResponse);
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public native String version();
 
 	/**
