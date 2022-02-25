@@ -4,7 +4,7 @@
   <groupId>com.senzing</groupId>
   <artifactId>g2</artifactId>
   <packaging>jar</packaging>
-  <version>3.0.0-b01</version>
+  <version>3.0.0-b02</version>
   <name>Senzing G2 Java SDK</name>
   <description>The Java SDK for the Senzing G2 Engine.  This calls through to the native Senzing SDK via JNI.</description>
   <url>http://github.com/Senzing/g2-sdk-java</url>

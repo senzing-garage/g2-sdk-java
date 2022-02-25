@@ -1661,8 +1661,6 @@ public interface G2Engine extends G2Fallible
    * of records would look.
    *
    * @param recordList The list of records used to build the virtual entity.
-   * @param flags The flags to control how the operation is performed and
-   *              specifically the content of the response JSON document.
    * @param response The {@link StringBuffer} to write the JSON response
    *                 document to.
    * @return Zero (0) on success and non-zero on failure.
