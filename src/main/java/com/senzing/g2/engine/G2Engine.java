@@ -299,7 +299,11 @@ public interface G2Engine extends G2Fallible
   /**
    * The default recommended bitwise flag values for why-analysis on entities
    */
-  long G2_HOW_ENTITY_DEFAULT_FLAGS = (0L);
+  long G2_HOW_ENTITY_DEFAULT_FLAGS
+      = (G2_ENTITY_DEFAULT_FLAGS
+         | G2_ENTITY_INCLUDE_RECORD_FEATURE_IDS
+         | G2_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES
+         | G2_ENTITY_OPTION_INCLUDE_FEATURE_STATS);
 
   /**
    * The default recommended bitwise flag values for searching by attributes,
@@ -775,6 +779,38 @@ public interface G2Engine extends G2Fallible
                           String        recordID,
                           long          flags,
                           StringBuffer  response);
+
+  /**
+   * This method is used to find interesting entities close to a specific resolved
+   * entity.  The information is returned as a JSON document.
+   *
+   * @param entityID The resolved entity to search around
+   * @param flags The flags to control how the operation is performed.
+   * @param response A {@link StringBuffer} for returning the response document.
+   *                 If an error occurred, an error response is stored here.
+   *
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int findInterestingEntitiesByEntityID(long          entityID,
+                                        long          flags,
+                                        StringBuffer  response);
+
+  /**
+   * This method is used to find interesting entities close to a specific resolved
+   * entity containing a particular observation record.
+   *
+   * @param dataSourceCode The data source of the observation to search around
+   * @param recordID The record ID of the observation to search around
+   * @param flags The flags to control how the operation is performed.
+   * @param response A {@link StringBuffer} for returning the response document.
+   *                 If an error occurred, an error response is stored here.
+   *
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int findInterestingEntitiesByRecordID(String        dataSourceCode,
+                                        String        recordID,
+                                        long          flags,
+                                        StringBuffer  response);
 
   /**
    * This method is used to find a relationship path between entities that
@@ -1591,6 +1627,65 @@ public interface G2Engine extends G2Fallible
                   long          flags,
                   StringBuffer  response);
 
+  
+  /**
+   * This method gives information on how entities were constructed from
+   * their base records.
+   *
+   * @param entityID The entity ID.
+   * @param response The {@link StringBuffer} to write the JSON response
+   *                 document to.
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int howEntityByEntityID(long          entityID,
+                          StringBuffer  response);
+  
+  /**
+   * This method gives information on how entities were constructed from
+   * their base records.
+   *
+   * @param entityID The entity ID.
+   * @param flags The flags to control how the operation is performed and
+   *              specifically the content of the response JSON document.
+   * @param response The {@link StringBuffer} to write the JSON response
+   *                 document to.
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int howEntityByEntityID(long          entityID,
+                          long          flags,
+                          StringBuffer  response);
+
+
+  /**
+   * This method gives information on how an entity composed of a given set
+   * of records would look.
+   *
+   * @param recordList The list of records used to build the virtual entity.
+   * @param flags The flags to control how the operation is performed and
+   *              specifically the content of the response JSON document.
+   * @param response The {@link StringBuffer} to write the JSON response
+   *                 document to.
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int getVirtualEntityByRecordID(String        recordList,
+                                 StringBuffer  response);
+
+  /**
+   * This method gives information on how an entity composed of a given set
+   * of records would look.
+   *
+   * @param recordList The list of records used to build the virtual entity.
+   * @param flags The flags to control how the operation is performed and
+   *              specifically the content of the response JSON document.
+   * @param response The {@link StringBuffer} to write the JSON response
+   *                 document to.
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int getVirtualEntityByRecordID(String        recordList,
+                                 long          flags,
+                                 StringBuffer  response);
+
+  
   /**
    * This method is used to retrieve the stored record.
    *
