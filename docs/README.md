@@ -1,5 +1,5 @@
-# template-repository
+# g2-sdk-java repository
 
-Placeholder for [GitHub pages](https://pages.github.com/).
+Root page for g2-sdk-java [GitHub pages](https://pages.github.com/).
 
-See [https://senzing.github.io/template-repository](https://senzing.github.io/template-repository).
+For API Reference documentation see [Javadocs](./javadocs/index.html)
