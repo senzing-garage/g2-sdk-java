@@ -15,7 +15,8 @@
 *.war
 *.nar
 *.ear
-*.zip
+# comment out .zip because of javadocs
+#*.zip 
 *.tar.gz
 *.rar
 
