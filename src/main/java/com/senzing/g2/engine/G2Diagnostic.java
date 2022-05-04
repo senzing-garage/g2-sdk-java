@@ -21,7 +21,7 @@ public interface G2Diagnostic extends G2Fallible
    *
    * @return Zero (0) on success, non-zero on failure.
    */
-  int initV2(String moduleName, String iniParams, boolean verboseLogging);
+  int init(String moduleName, String iniParams, boolean verboseLogging);
 
   /**
    * Initializes the G2 Diagnostic object with the module name, initialization
@@ -35,10 +35,10 @@ public interface G2Diagnostic extends G2Fallible
    *
    * @return Zero (0) on success and non-zero on failure.
    */
-  int initWithConfigIDV2(String   moduleName,
-                         String   iniParams,
-                         long     initConfigID,
-                         boolean  verboseLogging);
+  int initWithConfigID(String   moduleName,
+                       String   iniParams,
+                       long     initConfigID,
+                       boolean  verboseLogging);
 
   /**
    * Reinitializes with the specified configuration ID.
@@ -47,7 +47,7 @@ public interface G2Diagnostic extends G2Fallible
    *
    * @return Zero (0) on success and non-zero on failure.
    */
-  int reinitV2(long initConfigID);
+  int reinit(long initConfigID);
 
   /**
    * Uninitializes the G2 diagnostic object.
@@ -272,45 +272,17 @@ public interface G2Diagnostic extends G2Fallible
    *
    * @param entitySize The entity size.
    *
-   * @return The handle for the result set.
-   */
-  long getEntityListBySize(long entitySize);
-
-  /**
-   * Experimental/internal method for obtaining the next sized entity result
-   * with the specified handle obtained from {@link #getEntityListBySize(long)}.
-   *
-   * @param entityListBySizeHandle The handle for the result set.
-   *
-   * @return The next sized entity result.
-   */
-  String fetchNextEntityBySize(long entityListBySizeHandle);
-
-  /**
-   * Experimental/internal method to close the result set associated with the
-   * specified handle obtained from {@link #getEntityListBySize(long)}.
-   *
-   * @param entityListBySizeHandle The handle for the result set.
-   */
-  void closeEntityListBySize(long entityListBySizeHandle);
-
-  /**
-   * Experimental/internal method for obtaining diagnostic information on
-   * sized entities.
-   *
-   * @param entitySize The entity size.
-   *
    * @param exportHandle The {@link Result} object on which the result handle
    *                     will be set.
    *
    * @return Zero (0) on success and non-zero on failure.
    */
-  int getEntityListBySizeV2(long entitySize, Result<Long> exportHandle);
+  int getEntityListBySize(long entitySize, Result<Long> exportHandle);
 
   /**
    * Experimental/internal method for obtaining the next sized entity result
    * with the specified handle obtained from {@link
-   * #getEntityListBySizeV2(long,Result)}.
+   * #getEntityListBySize(long,Result)}.
    *
    * @param entityListBySizeHandle The handle for the result set.
    * @param response The {@link StringBuffer} to write the JSON result
@@ -318,16 +290,16 @@ public interface G2Diagnostic extends G2Fallible
    *
    * @return Zero (0) on success and non-zero on failure.
    */
-  int fetchNextEntityBySizeV2(long entityListBySizeHandle, StringBuffer response);
+  int fetchNextEntityBySize(long entityListBySizeHandle, StringBuffer response);
 
   /**
    * Experimental/internal method to close the result set associated with the
    * specified handle obtained from {@link
-   * #getEntityListBySizeV2(long,Result)}.
+   * #getEntityListBySize(long,Result)}.
    *
    * @param entityListBySizeHandle The handle for the result set.
    * @return Zero (0) on success and non-zero on failure.
    */
-  int closeEntityListBySizeV2(long entityListBySizeHandle);
+  int closeEntityListBySize(long entityListBySizeHandle);
 
 }

@@ -21,7 +21,7 @@ public interface G2Product extends G2Fallible
    *
    * @return Zero (0) on success and non-zero on failure.
    */
-  int initV2(String moduleName, String iniParams, boolean verboseLogging);
+  int init(String moduleName, String iniParams, boolean verboseLogging);
 
   /**
    * Uninitializes the G2 product API.
@@ -48,6 +48,16 @@ public interface G2Product extends G2Fallible
    */
   int validateLicenseFile(String licenseFile, StringBuffer errorResponse);
 
+  /**
+   * Determines whether a specified license Base-64 string is valid.
+   *
+   * @param licenseData The license data as a encoded Base-64 {@link String}.
+   * @param errorResponse The {@link StringBuffer} to write any error response
+   *                      to (if an error occurs).
+   * @return Zero (0) for valid license, one (1) for invalid, and a negative
+   *         number for errors.
+   */
+  int validateLicenseStringBase64(String licenseData,StringBuffer errorResponse);
 
   /**
    * Returns the currently installed version details

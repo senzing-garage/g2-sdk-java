@@ -30,4 +30,5 @@ target/*
 
 # IntelliJ project directory info
 .idea/*
+*.iml
 

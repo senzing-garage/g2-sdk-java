@@ -13,9 +13,9 @@ public class G2ConfigMgrJNI implements G2ConfigMgr {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public native int initV2(String		moduleName,
-													 String		iniParams,
-													 boolean	verboseLogging);
+	public native int init(String		moduleName,
+												 String		iniParams,
+												 boolean	verboseLogging);
 
 	/**
 	 * {@inheritDoc}
