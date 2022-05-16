@@ -16,7 +16,7 @@
 *.nar
 *.ear
 # comment out .zip because of javadocs
-#*.zip 
+#*.zip
 *.tar.gz
 *.rar
 
@@ -31,4 +31,6 @@ target/*
 # IntelliJ project directory info
 .idea/*
 *.iml
+
+.history
 
