@@ -51,12 +51,6 @@ public class G2JNI implements G2Engine {
    * {@inheritDoc}
    */
   @Override
-  public native int purgeRepository();
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public native String stats();
 
   /**

@@ -63,6 +63,12 @@ public class G2DiagnosticJNI implements G2Diagnostic {
   public native int getLogicalCores();
 
   /**
+   * {@inheritDoc}	
+   */
+  @Override
+  public native int purgeRepository();
+
+  /**
    * {@inheritDoc}
    */
   @Override

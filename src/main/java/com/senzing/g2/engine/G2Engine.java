@@ -406,15 +406,6 @@ public interface G2Engine extends G2Fallible
   int primeEngine();
 
   /**
-   * Purges all data in the configured repository
-   * WARNING: There is no undoing from this.  Make sure your repository is
-   * regularly backed up.
-   *
-   * @return Zero (0) on success and non-zero on failure.
-   */
-  int purgeRepository();
-
-  /**
    * Returns the current internal engine workload statistics for the process.
    * The counters are reset after each call.
    *
