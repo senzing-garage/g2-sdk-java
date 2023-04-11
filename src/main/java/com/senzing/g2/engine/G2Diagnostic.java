@@ -98,6 +98,14 @@ public interface G2Diagnostic extends G2Fallible
    */
   int checkDBPerf(int secondsToRun, StringBuffer response);
 
+  /**
+   * Purges all data in the configured repository
+   * WARNING: There is no undoing from this.  Make sure your repository is
+   * regularly backed up.
+   *
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int purgeRepository();
 
   /**
    * Gets information about database connections and generates a JSON document
