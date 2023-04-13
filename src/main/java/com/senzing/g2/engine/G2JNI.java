@@ -99,13 +99,13 @@ public class G2JNI implements G2Engine {
    * {@inheritDoc}
    */
   @Override
-  public native int addRecord(String dataSourceCode, String recordID, String jsonData, String loadID);
+  public native int addRecord(String dataSourceCode, String recordID, String jsonData);
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public native int replaceRecord(String dataSourceCode, String recordID, String jsonData, String loadID);
+  public native int replaceRecord(String dataSourceCode, String recordID, String jsonData);
   
   /**
    * {@inheritDoc}
@@ -114,7 +114,6 @@ public class G2JNI implements G2Engine {
   public native int replaceRecordWithInfo(String        dataSourceCode,
                                           String        recordID,
                                           String        jsonData,
-                                          String        loadID,
                                           long          flags,
                                           StringBuffer  response);
 
@@ -125,8 +124,7 @@ public class G2JNI implements G2Engine {
   @Override
   public native int addRecordWithReturnedRecordID(String        dataSourceCode,
                                                   StringBuffer  recordID,
-                                                  String        jsonData,
-                                                  String        loadID);
+                                                  String        jsonData);
 
   /**
    * {@inheritDoc}
@@ -135,7 +133,6 @@ public class G2JNI implements G2Engine {
   public native int addRecordWithInfo(String        dataSourceCode,
                                       String        recordID,
                                       String        jsonData,
-                                      String        loadID,
                                       long          flags,
                                       StringBuffer  response);
 
@@ -146,7 +143,6 @@ public class G2JNI implements G2Engine {
   public native int addRecordWithInfoWithReturnedRecordID(
       String        dataSourceCode,
       String        jsonData,
-      String        loadID,
       long          flags,
       StringBuffer  recordID,
       StringBuffer  response);
@@ -156,8 +152,7 @@ public class G2JNI implements G2Engine {
    */
   @Override
   public native int deleteRecord(String dataSourceCode,
-                                 String recordID,
-                                 String loadID);
+                                 String recordID);
   
   /**
    * {@inheritDoc}
@@ -165,7 +160,6 @@ public class G2JNI implements G2Engine {
   @Override
   public native int deleteRecordWithInfo(String       dataSourceCode,
                                          String       recordID,
-                                         String       loadID,
                                          long         flags,
                                          StringBuffer response);
 
