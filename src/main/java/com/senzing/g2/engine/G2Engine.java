@@ -464,15 +464,12 @@ public interface G2Engine extends G2Fallible
    * @param recordID The ID for the record
    * @param jsonData A JSON document containing the attribute information
    *        for the observation.
-   * @param loadID The observation load ID for the record, can be null and will
-   *               default to dataSourceCode
    *
    * @return Zero (0) on success and non-zero on failure.
    */
   int addRecord(String  dataSourceCode,
                 String  recordID,
-                String  jsonData,
-                String  loadID);
+                String  jsonData);
 
   /**
    * Replace the JSON record that has already been loaded
@@ -481,15 +478,12 @@ public interface G2Engine extends G2Fallible
    * @param recordID The ID for the record
    * @param jsonData A JSON document containing the attribute information
    *        for the observation.
-   * @param loadID The observation load ID for the record, can be null and will
-   *               default to dataSourceCode.
    *
    * @return Zero (0) on success and non-zero on failure.
    */
   int replaceRecord(String  dataSourceCode,
                     String  recordID,
-                    String  jsonData,
-                    String  loadID);
+                    String  jsonData);
 
   /**
    * Replace the JSON record that has already been loaded and returns
@@ -499,8 +493,6 @@ public interface G2Engine extends G2Fallible
    * @param recordID The ID for the record
    * @param jsonData A JSON document containing the attribute information
    *        for the observation.
-   * @param loadID The observation load ID for the record, can be null and will
-   *               default to dataSourceCode
    * @param flags The flags to control how the operation is performed and
    *              specifically the content of the response JSON document.
    * @param response A {@link StringBuffer} for returning the response document.
@@ -511,7 +503,6 @@ public interface G2Engine extends G2Fallible
   int replaceRecordWithInfo(String        dataSourceCode,
                             String        recordID,
                             String        jsonData,
-                            String        loadID,
                             long          flags,
                             StringBuffer  response);
 
@@ -524,15 +515,12 @@ public interface G2Engine extends G2Fallible
    * @param recordID A buffer that returns the ID for the record
    * @param jsonData A JSON document containing the attribute information
    *        for the observation.
-   * @param loadID The observation load ID for the record, can be null and will
-   *               default to dataSourceCode
    *
    * @return Zero (0) on success and non-zero on failure.
    */
   int addRecordWithReturnedRecordID(String        dataSourceCode,
                                     StringBuffer  recordID,
-                                    String        jsonData,
-                                    String        loadID);
+                                    String        jsonData);
 
   /**
    *
@@ -540,8 +528,6 @@ public interface G2Engine extends G2Fallible
    * @param recordID A buffer that returns the ID for the record
    * @param jsonData A JSON document containing the attribute information
    *        for the observation.
-   * @param loadID The observation load ID for the record, can be null and will
-   *               default to dataSourceCode.
    * @param flags The flags to control how the operation is performed and
    *              specifically the content of the response JSON document.
    * @param response The {@link StringBuffer} to write the response JSON
@@ -550,7 +536,6 @@ public interface G2Engine extends G2Fallible
    */
   int addRecordWithInfoWithReturnedRecordID(String        dataSourceCode,
                                             String        jsonData,
-                                            String        loadID,
                                             long          flags,
                                             StringBuffer  recordID,
                                             StringBuffer  response);
@@ -567,8 +552,6 @@ public interface G2Engine extends G2Fallible
    *                 if empty string, then G2 will generate an ID
    * @param jsonData A JSON document containing the attribute information for
    *                 the observation.
-   * @param loadID The observation load ID for the record, can be NULL and will
-   *               default to dataSourceCode.
    * @param flags The flags to control how the operation is performed and
    *              specifically the content of the response JSON document.
    * @param response A {@link StringBuffer} for returning the response document.
@@ -578,7 +561,6 @@ public interface G2Engine extends G2Fallible
    int addRecordWithInfo(String       dataSourceCode,
                          String       recordID,
                          String       jsonData,
-                         String       loadID,
                          long         flags,
                          StringBuffer response);
 
@@ -587,12 +569,10 @@ public interface G2Engine extends G2Fallible
    *
    * @param dataSourceCode The data source for the observation.
    * @param recordID The ID for the record
-   * @param loadID The observation load ID for the record, can be null and will
-   *               default to <code>dataSourceCode</code>.
    *
    * @return Zero (0) on success and non-zero on failure.
    */
-  int deleteRecord(String dataSourceCode, String recordID, String loadID);
+  int deleteRecord(String dataSourceCode, String recordID);
 
 
   /**
@@ -601,8 +581,6 @@ public interface G2Engine extends G2Fallible
    *
    * @param dataSourceCode The data source for the observation.
    * @param recordID The ID for the record
-   * @param loadID The observation load ID for the record, can be null and will
-   *               default to <code>dataSourceCode</code>.
    * @param flags The flags to control how the operation is performed and
    *              specifically the content of the response JSON document.
    * @param response A {@link StringBuffer} for returning the response document.
@@ -612,7 +590,6 @@ public interface G2Engine extends G2Fallible
    */
   int deleteRecordWithInfo(String       dataSourceCode,
                            String       recordID,
-                           String       loadID,
                            long         flags,
                            StringBuffer response);
 
