@@ -298,7 +298,7 @@ public interface G2Engine extends G2Fallible
          | G2_INCLUDE_FEATURE_SCORES);
 
   /**
-   * The default recommended bitwise flag values for why-analysis on entities
+   * The default recommended bitwise flag values for how-analysis on entities
    */
   long G2_HOW_ENTITY_DEFAULT_FLAGS
       = (G2_ENTITY_DEFAULT_FLAGS
@@ -306,6 +306,15 @@ public interface G2Engine extends G2Fallible
          | G2_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES
          | G2_ENTITY_OPTION_INCLUDE_FEATURE_STATS
          | G2_INCLUDE_FEATURE_SCORES);
+
+  /**
+   * The default recommended bitwise flag values for virtual-entity-analysis on entities
+   */
+  long G2_VIRTUAL_ENTITY_DEFAULT_FLAGS
+      = (G2_ENTITY_DEFAULT_FLAGS
+         | G2_ENTITY_INCLUDE_RECORD_FEATURE_IDS
+         | G2_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES
+         | G2_ENTITY_OPTION_INCLUDE_FEATURE_STATS);
 
   /**
    * The default recommended bitwise flag values for searching by attributes,
