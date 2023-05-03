@@ -123,6 +123,11 @@ public interface G2Engine extends G2Fallible
   long G2_ENTITY_INCLUDE_RECORD_SUMMARY = ( 1L << 13 );
 
   /**
+   * The bitwise flag for including the record types of the entity
+   */
+  long G2_ENTITY_INCLUDE_RECORD_TYPES = ( 1L << 28 );
+
+  /**
    * The bitwise flag for including the basic record data for the entity
    */
   long G2_ENTITY_INCLUDE_RECORD_DATA = ( 1L << 14 );
@@ -162,6 +167,11 @@ public interface G2Engine extends G2Fallible
    * The bitwise flag for including the record summary of the related entities
    */
   long G2_ENTITY_INCLUDE_RELATED_RECORD_SUMMARY = ( 1L << 21 );
+
+  /**
+   * The bitwise flag for including the record types of the related entities
+   */
+  long G2_ENTITY_INCLUDE_RELATED_RECORD_TYPES = ( 1L << 29 );
 
   /**
    * The bitwise flag for including the basic record data of the related
