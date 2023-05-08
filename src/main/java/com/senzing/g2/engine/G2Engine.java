@@ -196,6 +196,12 @@ public interface G2Engine extends G2Fallible
   long G2_FIND_PATH_PREFER_EXCLUDE = ( 1L << 25 );
 
   /**
+   * The bitwise flag for find-path functionality to include
+   * matching info on entity paths
+   */
+  long G2_FIND_PATH_MATCHING_INFO = ( 1L << 30 );
+
+  /**
    * The bitwise flag for including feature scores.
    */
   long G2_INCLUDE_FEATURE_SCORES = ( 1L << 26 );
