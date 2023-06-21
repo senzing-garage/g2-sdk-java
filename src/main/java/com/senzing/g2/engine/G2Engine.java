@@ -709,6 +709,22 @@ public interface G2Engine extends G2Fallible
   int searchByAttributes(String jsonData, long flags, StringBuffer response);
 
   /**
+   * This method searches for entities that contain attribute information
+   * that are relevant to a set of input search attributes.
+   *
+   * @param jsonData A JSON document containing the attribute information
+   *        to search for
+   * @param searchProfile A search-profile identifier
+   * @param flags The flags to control how the operation is performed and
+   *              specifically the content of the response JSON document.
+   * @param response A {@link StringBuffer} for returning the response document.
+   *                 If an error occurred, an error response is stored here.
+   *
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int searchByAttributes(String jsonData, String searchProfile, long flags, StringBuffer response);
+
+  /**
    * This method is used to retrieve information about a specific resolved
    * entity.  The information is returned as a JSON document.
    *
