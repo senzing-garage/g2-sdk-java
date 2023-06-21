@@ -224,6 +224,15 @@ public class G2JNI implements G2Engine {
    * {@inheritDoc}
    */
   @Override
+  public native int searchByAttributes(String       jsonData,
+                                       String       searchProfile,
+                                       long         flags,
+                                       StringBuffer response);
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public native int getEntityByEntityID(long entityID, StringBuffer response);
 
   /**
