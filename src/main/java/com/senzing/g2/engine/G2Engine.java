@@ -298,7 +298,7 @@ public interface G2Engine extends G2Fallible
          | G2_INCLUDE_FEATURE_SCORES);
 
   /**
-   * The default recommended bitwise flag values for why-analysis on entities
+   * The default recommended bitwise flag values for how-analysis on entities
    */
   long G2_HOW_ENTITY_DEFAULT_FLAGS
       = (G2_ENTITY_DEFAULT_FLAGS
@@ -1516,6 +1516,41 @@ public interface G2Engine extends G2Fallible
                             int           maxEntities,
                             long          flags,
                             StringBuffer  response);
+
+  /**
+   * This method determines why a particular record is included in its resolved
+   * entity.
+   *
+   * @param dataSourceCode The data source code for the composite record of the
+   *                       subject entity.
+   * @param recordID The record ID for the composite record of the subject
+   *                 entity.
+   * @param response The {@link StringBuffer} to write the JSON response
+   *                 document to.
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int whyRecordInEntity(String        dataSourceCode,
+                        String        recordID,
+                        StringBuffer  response);
+
+  /**
+   * This method determines why a particular record is included in its resolved
+   * entity.
+   *
+   * @param dataSourceCode The data source code for the composite record of the
+   *                       subject entity.
+   * @param recordID The record ID for the composite record of the subject
+   *                 entity.
+   * @param flags The flags to control how the operation is performed and
+   *              specifically the content of the response JSON document.
+   * @param response The {@link StringBuffer} to write the JSON response
+   *                 document to.
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int whyRecordInEntity(String        dataSourceCode,
+                        String        recordID,
+                        long          flags,
+                        StringBuffer  response);
 
   /**
    * This method determines why records are included in the resolved entity
