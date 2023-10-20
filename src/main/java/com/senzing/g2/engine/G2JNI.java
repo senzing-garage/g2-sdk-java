@@ -453,6 +453,23 @@ public class G2JNI implements G2Engine {
    * {@inheritDoc}
    */
   @Override
+  public native int whyRecordInEntity(String        dataSourceCode,
+                                        String        recordID,
+                                        StringBuffer  response);
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public native int whyRecordInEntity(String        dataSourceCode,
+                                        String        recordID,
+                                        long          flags,
+                                        StringBuffer  response);
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public native int whyEntityByRecordID(String        dataSourceCode,
                                         String        recordID,
                                         StringBuffer  response);

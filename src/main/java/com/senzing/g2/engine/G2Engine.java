@@ -1517,6 +1517,41 @@ public interface G2Engine extends G2Fallible
                             StringBuffer  response);
 
   /**
+   * This method determines why a particular record is included in its resolved
+   * entity.
+   *
+   * @param dataSourceCode The data source code for the composite record of the
+   *                       subject entity.
+   * @param recordID The record ID for the composite record of the subject
+   *                 entity.
+   * @param response The {@link StringBuffer} to write the JSON response
+   *                 document to.
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int whyRecordInEntity(String        dataSourceCode,
+                        String        recordID,
+                        StringBuffer  response);
+
+  /**
+   * This method determines why a particular record is included in its resolved
+   * entity.
+   *
+   * @param dataSourceCode The data source code for the composite record of the
+   *                       subject entity.
+   * @param recordID The record ID for the composite record of the subject
+   *                 entity.
+   * @param flags The flags to control how the operation is performed and
+   *              specifically the content of the response JSON document.
+   * @param response The {@link StringBuffer} to write the JSON response
+   *                 document to.
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int whyRecordInEntity(String        dataSourceCode,
+                        String        recordID,
+                        long          flags,
+                        StringBuffer  response);
+
+  /**
    * This method determines why records are included in the resolved entity
    * they belong to.  The entity for the operation is the one having the
    * record with the specified data source code and record ID.
