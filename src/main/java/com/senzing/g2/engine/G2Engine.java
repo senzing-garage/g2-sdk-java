@@ -19,7 +19,7 @@ public interface G2Engine extends G2Fallible
    * we should include "resolved" relationships
    *
    */
-  long G2_EXPORT_INCLUDE_RESOLVED = ( 1L << 0 );
+  long G2_EXPORT_INCLUDE_MULTI_RECORD_ENTITIES = ( 1L << 0 );
 
   /**
    * The bitwise flag for export functionality to indicate that
@@ -54,7 +54,7 @@ public interface G2Engine extends G2Fallible
    * we should include singleton entities
    *
    */
-  long G2_EXPORT_INCLUDE_SINGLETONS = ( 1L << 5 );
+  long G2_EXPORT_INCLUDE_SINGLE_RECORD_ENTITIES = ( 1L << 5 );
 
   /**
    * The bitwise flag for export functionality to indicate that
@@ -62,14 +62,14 @@ public interface G2Engine extends G2Fallible
    *
    */
   long G2_EXPORT_INCLUDE_ALL_ENTITIES
-      = (G2_EXPORT_INCLUDE_RESOLVED | G2_EXPORT_INCLUDE_SINGLETONS);
+      = (G2_EXPORT_INCLUDE_MULTI_RECORD_ENTITIES | G2_EXPORT_INCLUDE_SINGLE_RECORD_ENTITIES);
 
   /**
    * The bitwise flag for export functionality to indicate that
    * we should include all relationships
    *
    */
-  long G2_EXPORT_INCLUDE_ALL_RELATIONSHIPS
+  long G2_EXPORT_INCLUDE_ALL_HAVING_RELATIONSHIPS
       = (G2_EXPORT_INCLUDE_POSSIBLY_SAME | G2_EXPORT_INCLUDE_POSSIBLY_RELATED
          | G2_EXPORT_INCLUDE_NAME_ONLY | G2_EXPORT_INCLUDE_DISCLOSED);
 
@@ -227,7 +227,7 @@ public interface G2Engine extends G2Fallible
    * we should include "resolved" match level results
    *
    */
-  long G2_SEARCH_INCLUDE_RESOLVED = (G2_EXPORT_INCLUDE_RESOLVED);
+  long G2_SEARCH_INCLUDE_RESOLVED = (G2_EXPORT_INCLUDE_MULTI_RECORD_ENTITIES);
 
   /**
    * The bitwise flag for search functionality to indicate that
@@ -292,29 +292,47 @@ public interface G2Engine extends G2Fallible
    */
   long G2_EXPORT_DEFAULT_FLAGS
       = (G2_EXPORT_INCLUDE_ALL_ENTITIES
-         | G2_EXPORT_INCLUDE_ALL_RELATIONSHIPS
-         | G2_ENTITY_INCLUDE_ALL_RELATIONS
-         | G2_ENTITY_INCLUDE_REPRESENTATIVE_FEATURES
-         | G2_ENTITY_INCLUDE_ENTITY_NAME
-         | G2_ENTITY_INCLUDE_RECORD_DATA
-         | G2_ENTITY_INCLUDE_RECORD_MATCHING_INFO
-         | G2_ENTITY_INCLUDE_RELATED_MATCHING_INFO);
+         | G2_ENTITY_DEFAULT_FLAGS);
 
   /**
    * The default recommended bitwise flag values for finding entity paths
    */
   long G2_FIND_PATH_DEFAULT_FLAGS
-      = (G2_ENTITY_INCLUDE_ALL_RELATIONS
+      = (G2_FIND_PATH_MATCHING_INFO
          | G2_ENTITY_INCLUDE_ENTITY_NAME
-         | G2_ENTITY_INCLUDE_RECORD_SUMMARY
-         | G2_ENTITY_INCLUDE_RELATED_MATCHING_INFO);
+         | G2_ENTITY_INCLUDE_RECORD_SUMMARY);
 
   /**
-   * The default recommended bitwise flag values for why-analysis on entities
+   * The default recommended bitwise flag values for finding entity networks
    */
-  long G2_WHY_ENTITY_DEFAULT_FLAGS
+  long G2_FIND_NETWORK_DEFAULT_FLAGS
+      = (G2_FIND_NETWORK_MATCHING_INFO
+         | G2_ENTITY_INCLUDE_ENTITY_NAME
+         | G2_ENTITY_INCLUDE_RECORD_SUMMARY);
+
+  /**
+   * The default recommended bitwise flag values for why-entities analysis on entities
+   */
+  long G2_WHY_ENTITIES_DEFAULT_FLAGS
       = (G2_ENTITY_DEFAULT_FLAGS
-         | G2_ENTITY_INCLUDE_RECORD_FEATURE_IDS
+         | G2_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES
+         | G2_ENTITY_OPTION_INCLUDE_FEATURE_STATS
+         | G2_INCLUDE_FEATURE_SCORES);
+
+  /**
+   * The default recommended bitwise flag values for why-records analysis on entities
+   */
+  long G2_WHY_RECORDS_DEFAULT_FLAGS
+      = (G2_ENTITY_DEFAULT_FLAGS
+         | G2_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES
+         | G2_ENTITY_OPTION_INCLUDE_FEATURE_STATS
+         | G2_INCLUDE_FEATURE_SCORES);
+
+  /**
+   * The default recommended bitwise flag values for why-record-in analysis on entities
+   */
+  long G2_WHY_RECORD_IN_ENTITY_DEFAULT_FLAGS
+      = (G2_ENTITY_DEFAULT_FLAGS
          | G2_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES
          | G2_ENTITY_OPTION_INCLUDE_FEATURE_STATS
          | G2_INCLUDE_FEATURE_SCORES);
@@ -323,20 +341,13 @@ public interface G2Engine extends G2Fallible
    * The default recommended bitwise flag values for how-analysis on entities
    */
   long G2_HOW_ENTITY_DEFAULT_FLAGS
-      = (G2_ENTITY_DEFAULT_FLAGS
-         | G2_ENTITY_INCLUDE_RECORD_FEATURE_IDS
-         | G2_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES
-         | G2_ENTITY_OPTION_INCLUDE_FEATURE_STATS
-         | G2_INCLUDE_FEATURE_SCORES);
+      = (G2_INCLUDE_FEATURE_SCORES);
 
   /**
    * The default recommended bitwise flag values for virtual-entity-analysis on entities
    */
   long G2_VIRTUAL_ENTITY_DEFAULT_FLAGS
-      = (G2_ENTITY_DEFAULT_FLAGS
-         | G2_ENTITY_INCLUDE_RECORD_FEATURE_IDS
-         | G2_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES
-         | G2_ENTITY_OPTION_INCLUDE_FEATURE_STATS);
+      = (G2_ENTITY_DEFAULT_FLAGS);
 
   /**
    * The default recommended bitwise flag values for searching by attributes,
@@ -1552,69 +1563,6 @@ public interface G2Engine extends G2Fallible
                         StringBuffer  response);
 
   /**
-   * This method determines why records are included in the resolved entity
-   * they belong to.  The entity for the operation is the one having the
-   * record with the specified data source code and record ID.
-   *
-   * @param dataSourceCode The data source code for the composite record of the
-   *                       subject entity.
-   * @param recordID The record ID for the composite record of the subject
-   *                 entity.
-   * @param response The {@link StringBuffer} to write the JSON response
-   *                 document to.
-   * @return Zero (0) on success and non-zero on failure.
-   */
-  int whyEntityByRecordID(String        dataSourceCode,
-                          String        recordID,
-                          StringBuffer  response);
-
-  /**
-   * This method determines why records are included in the resolved entity
-   * they belong to.  The entity for the operation is the one having the
-   * record with the specified data source code and record ID.
-   *
-   * @param dataSourceCode The data source code for the composite record of the
-   *                       subject entity.
-   * @param recordID The record ID for the composite record of the subject
-   *                 entity.
-   * @param flags The flags to control how the operation is performed and
-   *              specifically the content of the response JSON document.
-   * @param response The {@link StringBuffer} to write the JSON response
-   *                 document to.
-   * @return Zero (0) on success and non-zero on failure.
-   */
-  int whyEntityByRecordID(String        dataSourceCode,
-                          String        recordID,
-                          long          flags,
-                          StringBuffer  response);
-
-  /**
-   * This method determines why records are included in the resolved entity
-   * they belong to.  The entity is identified with the specified entity ID.
-   *
-   * @param entityID The entity ID of the subject entity.
-   * @param response The {@link StringBuffer} to write the JSON response
-   *                 document to.
-   * @return Zero (0) on success and non-zero on failure.
-   */
-  int whyEntityByEntityID(long entityID, StringBuffer response);
-
-  /**
-   * This method determines why records are included in the resolved entity
-   * they belong to.  The entity is identified with the specified entity ID.
-   *
-   * @param entityID The entity ID of the subject entity.
-   * @param flags The flags to control how the operation is performed and
-   *              specifically the content of the response JSON document.
-   * @param response The {@link StringBuffer} to write the JSON response
-   *                 document to.
-   * @return Zero (0) on success and non-zero on failure.
-   */
-  int whyEntityByEntityID(long          entityID,
-                          long          flags,
-                          StringBuffer  response);
-
-  /**
    * This method determines how two records are related to each other.
    *
    * @param dataSourceCode1 The data source code for the first record.
@@ -1772,8 +1720,7 @@ public interface G2Engine extends G2Fallible
    * function, and closed when work is complete. Each output row contains the
    * exported entity data for a single resolved entity.
    *
-   * @param flags A bit mask specifying control flags, such as
-   *        "G2_EXPORT_INCLUDE_SINGLETONS".  The default and recommended
+   * @param flags A bit mask specifying control flags.  The default and recommended
    *        value is "G2_EXPORT_DEFAULT_FLAGS".
    * @param exportHandle The {@link Result} object for storing the export
    *                     handle.
@@ -1793,8 +1740,7 @@ public interface G2Engine extends G2Fallible
    *                      specify empty-string to indicate the "standard
    *                      columns", otherwise specify a comma-sepatated list of
    *                      column names.
-   * @param flags A bit mask specifying other control flags, such as
-   *        "G2_EXPORT_INCLUDE_SINGLETONS".  The default and recommended
+   * @param flags A bit mask specifying other control flags.  The default and recommended
    *        value is "G2_EXPORT_DEFAULT_FLAGS".
    * @param exportHandle The {@link Result} object for storing the export
    *                     handle.

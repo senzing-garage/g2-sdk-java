@@ -470,37 +470,6 @@ public class G2JNI implements G2Engine {
    * {@inheritDoc}
    */
   @Override
-  public native int whyEntityByRecordID(String        dataSourceCode,
-                                        String        recordID,
-                                        StringBuffer  response);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int whyEntityByRecordID(String        dataSourceCode,
-                                        String        recordID,
-                                        long          flags,
-                                        StringBuffer  response);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int whyEntityByEntityID(long entityID, StringBuffer response);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int whyEntityByEntityID(long          entityID,
-                                        long          flags,
-                                        StringBuffer  response);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public native int whyRecords(String       dataSourceCode1,
                                String       recordID1,
                                String       dataSourceCode2,
