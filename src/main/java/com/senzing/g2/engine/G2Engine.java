@@ -143,9 +143,9 @@ public interface G2Engine extends G2Fallible
   long G2_ENTITY_INCLUDE_RECORD_JSON_DATA = ( 1L << 16 );
 
   /**
-   * The bitwise flag for including the record formattted data for the entity
+   * The bitwise flag for including the record unmapped data for the entity
    */
-  long G2_ENTITY_INCLUDE_RECORD_FORMATTED_DATA = ( 1L << 17 );
+  long G2_ENTITY_INCLUDE_RECORD_UNMAPPED_DATA = ( 1L << 31 );
 
   /**
    * The bitwise flag for the features identifiers for the records
@@ -190,6 +190,16 @@ public interface G2Engine extends G2Fallible
   long G2_ENTITY_OPTION_INCLUDE_FEATURE_STATS = ( 1L << 24 );
 
   /**
+   * The bitwise flag for including feature elements.
+   */
+  long G2_ENTITY_OPTION_INCLUDE_FEATURE_ELEMENTS = ( 1L << 32 );
+
+  /**
+   * The bitwise flag for including internal features.
+   */
+  long G2_ENTITY_OPTION_INCLUDE_MATCH_KEY_DETAILS = ( 1L << 34 );
+
+  /**
    * The bitwise flag for find-path functionality to indicate that
    * excluded entities are still allowed, but not preferred
    */
@@ -221,6 +231,11 @@ public interface G2Engine extends G2Fallible
    * The bitwise flag for including feature scores from search results.
    */
   long G2_SEARCH_INCLUDE_FEATURE_SCORES = G2_INCLUDE_FEATURE_SCORES;
+
+  /**
+   * The bitwise flag for including detailed match key in search results
+   */
+  long G2_SEARCH_INCLUDE_MATCH_KEY_DETAILS = G2_ENTITY_OPTION_INCLUDE_MATCH_KEY_DETAILS;
 
   /**
    * The bitwise flag for search functionality to indicate that
