@@ -1,8 +1,8 @@
 /**********************************************************************************
-Copyright Senzing, Inc. 2017-2021
-The source code for this program is not published or otherwise divested
-of its trade secrets, irrespective of what has been deposited with the U.S.
-Copyright Office.
+ © Copyright Senzing, Inc. 2017-2024
+ The source code for this program is not published or otherwise divested
+ of its trade secrets, irrespective of what has been deposited with the U.S.
+ Copyright Office.
 **********************************************************************************/
 
 package com.senzing.g2.engine;
@@ -70,8 +70,10 @@ public interface G2Engine extends G2Fallible
    *
    */
   long G2_EXPORT_INCLUDE_ALL_HAVING_RELATIONSHIPS
-      = (G2_EXPORT_INCLUDE_POSSIBLY_SAME | G2_EXPORT_INCLUDE_POSSIBLY_RELATED
-         | G2_EXPORT_INCLUDE_NAME_ONLY | G2_EXPORT_INCLUDE_DISCLOSED);
+      = (G2_EXPORT_INCLUDE_POSSIBLY_SAME
+         | G2_EXPORT_INCLUDE_POSSIBLY_RELATED
+         | G2_EXPORT_INCLUDE_NAME_ONLY 
+         | G2_EXPORT_INCLUDE_DISCLOSED);
 
   /**
    * The bitwise flag for including possibly-same relations for entities
@@ -272,8 +274,10 @@ public interface G2Engine extends G2Fallible
    *
    */
   long G2_SEARCH_INCLUDE_ALL_ENTITIES
-      = (G2_SEARCH_INCLUDE_RESOLVED | G2_SEARCH_INCLUDE_POSSIBLY_SAME
-         | G2_SEARCH_INCLUDE_POSSIBLY_RELATED | G2_SEARCH_INCLUDE_NAME_ONLY);
+      = (G2_SEARCH_INCLUDE_RESOLVED 
+         | G2_SEARCH_INCLUDE_POSSIBLY_SAME
+         | G2_SEARCH_INCLUDE_POSSIBLY_RELATED
+         | G2_SEARCH_INCLUDE_NAME_ONLY);
 
   /**
    * The default recommended bitwise flag values for getting records
@@ -471,27 +475,6 @@ public interface G2Engine extends G2Fallible
   String stats();
 
   /**
-   * Exports the JSON configuration that is currently loaded into the engine.
-   *
-   * @param response The {@link StringBuffer} to retrieve the JSON
-   *                 configuration document.
-   *
-   * @return Zero (0) on success and non-zero on failure.
-   */
-  int exportConfig(StringBuffer response);
-
-  /**
-   * Exports the JSON configuration that is currently loaded into the engine.
-   *
-   * @param response The {@link StringBuffer} to retrieve the JSON
-   *                 configuration document.
-   * @param configID The {@link Result} object to store the configuration ID.
-   *
-   * @return Zero (0) on success and non-zero on failure.
-   */
-  int exportConfig(StringBuffer response, Result<Long> configID);
-
-  /**
    * Returns an identifier for the loaded G2 engine configuration
    *
    * @param configID The identifier value for the config
@@ -562,40 +545,6 @@ public interface G2Engine extends G2Fallible
                             String        jsonData,
                             long          flags,
                             StringBuffer  response);
-
-  /**
-   * Loads the JSON record.  This works similarly to the G2_addRecord function,
-   * except that instead or requiring the recordID as an input parameter, the
-   * recordID is generated internally and returned through the parameter list.
-   *
-   * @param dataSourceCode The data source for the observation.
-   * @param recordID A buffer that returns the ID for the record
-   * @param jsonData A JSON document containing the attribute information
-   *        for the observation.
-   *
-   * @return Zero (0) on success and non-zero on failure.
-   */
-  int addRecordWithReturnedRecordID(String        dataSourceCode,
-                                    StringBuffer  recordID,
-                                    String        jsonData);
-
-  /**
-   *
-   * @param dataSourceCode The data source for the observation.
-   * @param recordID A buffer that returns the ID for the record
-   * @param jsonData A JSON document containing the attribute information
-   *        for the observation.
-   * @param flags The flags to control how the operation is performed and
-   *              specifically the content of the response JSON document.
-   * @param response The {@link StringBuffer} to write the response JSON
-   *                 document to.
-   * @return Zero (0) on success and non-zero on failure.
-   */
-  int addRecordWithInfoWithReturnedRecordID(String        dataSourceCode,
-                                            String        jsonData,
-                                            long          flags,
-                                            StringBuffer  recordID,
-                                            StringBuffer  response);
 
   /**
    * This method is used to add entity data into the system.  This works
@@ -1788,25 +1737,21 @@ public interface G2Engine extends G2Fallible
   /**
    * Processes a redo record.
    *
-   * @param jsonData TBD: Need to find out if this is an input, an output or
-   *                 both.
+   * @param redoRecord The record to be processed.
    * @return Zero (0) on success and non-zero on failure.
    */
-  int processRedoRecord(StringBuffer jsonData);
+  int processRedoRecord(String redoRecord);
 
   /**
    * Processes a redo record.
    *
-   * @param flags The flags to control how the operation is performed and
-   *              specifically the content of the response JSON document.
-   * @param jsonData A returned JSON document containing the info.
+   * @param redoRecord The record to be processed.
    * @param response A {@link StringBuffer} for returning the response document.
    *                 If an error occurred, an error response is stored here.
    *
    * @return Zero (0) on success and non-zero on failure.
    */
-  int processRedoRecordWithInfo(long          flags,
-                                StringBuffer  jsonData,
+  int processRedoRecordWithInfo(String redoRecord,
                                 StringBuffer  response);
 
 
@@ -1826,48 +1771,5 @@ public interface G2Engine extends G2Fallible
    */
   long countRedoRecords();
 
-  /**
-   * This method will send a record for processing in g2. It is a synchronous
-   * call, i.e. it will wait until g2 actually processes the record.  This
-   * is similar to {@link #process(String,StringBuffer)} method, but this
-   * variant does <b>not</b> return a response.  <b>NOTE:</b> there are
-   * performance benefits of calling this variant of process that does not
-   * require a response.
-   *
-   * @param record An input record to be processed.
-   * @return Zero (0) on success and non-zero on failure.
-   */
-  int process(String record);
-
-  /**
-   * This method will send a record for processing in g2. It is a synchronous
-   * call, i.e. it will wait until g2 actually processes the record.  This
-   * is similar to {@link #process(String,StringBuffer)} method, but this
-   * variant does <b>not</b> return a response.  <b>NOTE:</b> there are
-   * performance benefits of calling this variant of process that does not
-   * require a response. Also returns a list of modified resolved entities
-   *
-   * @param record An input record to be processed.
-   * @param flags The flags to control how the operation is performed and
-   *              specifically the content of the response JSON document.
-   * @param response A {@link StringBuffer} for returning the response document.
-   *                 If an error occurred, an error response is stored here.
-   * @return Zero (0) on success and non-zero on failure.
-   */
-  int processWithInfo(String record, long flags, StringBuffer response);
-
-  /**
-   * This method will send a record for processing in g2. It is a synchronous
-   * call, i.e. it will wait until g2 actually processes the record, and then
-   * return a response message.  This is similar to {@link #process(String)}
-   * method, but this variant returns a response.  <b>NOTE:</b> there are
-   * performance benefits of calling the variant of process that does <b>not</b>
-   * require a response.
-   *
-   * @param record An input record to be processed.
-   * @param response A {@link StringBuffer} for returning the response document.
-   * @return Zero (0) on success and non-zero on failure.
-   */
-  int process(String record, StringBuffer response);
 }
 

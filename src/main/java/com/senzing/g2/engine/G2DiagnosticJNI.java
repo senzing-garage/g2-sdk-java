@@ -1,3 +1,10 @@
+/**********************************************************************************
+ © Copyright Senzing, Inc. 2021-2023
+ The source code for this program is not published or otherwise divested
+ of its trade secrets, irrespective of what has been deposited with the U.S.
+ Copyright Office.
+**********************************************************************************/
+
 package com.senzing.g2.engine;
 
 /**
@@ -38,29 +45,6 @@ public class G2DiagnosticJNI implements G2Diagnostic {
   @Override
   public native int destroy();
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native long getTotalSystemMemory();
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native long getAvailableMemory();
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int getPhysicalCores();
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int getLogicalCores();
 
   /**
    * {@inheritDoc}	
@@ -78,97 +62,7 @@ public class G2DiagnosticJNI implements G2Diagnostic {
    * {@inheritDoc}
    */
   @Override
-  public native int getDBInfo(StringBuffer response);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int findEntitiesByFeatureIDs(String       features,
-                                             StringBuffer response);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int getDataSourceCounts(StringBuffer response);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int getMappingStatistics(boolean      includeInternalFeatures,
-                                         StringBuffer response);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int getGenericFeatures(String       featureType,
-                                       long         maximumEstimatedCount,
-                                       StringBuffer response);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int getEntitySizeBreakdown(long         minimumEntitySize,
-                                           boolean      includeInternalFeatures,
-                                           StringBuffer response);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int getEntityDetails(long         entityID,
-                                     boolean      includeInternalFeatures,
-                                     StringBuffer response);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int getResolutionStatistics(StringBuffer response);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int getRelationshipDetails(long         relationshipID,
-                                           boolean      includeInternalFeatures,
-                                           StringBuffer response);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int getEntityResume(long entityID, StringBuffer response);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public native int getFeature(long libFeatID, StringBuffer response);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int getEntityListBySize(long          entitySize,
-                                        Result<Long>  exportHandle);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int fetchNextEntityBySize(long          entityListBySizeHandle,
-                                          StringBuffer  response);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int closeEntityListBySize(long entityListBySizeHandle);
 
   /**
    * {@inheritDoc}
