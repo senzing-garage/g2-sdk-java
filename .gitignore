@@ -33,4 +33,6 @@ target/*
 *.iml
 
 .history
+.vscode
+
 
