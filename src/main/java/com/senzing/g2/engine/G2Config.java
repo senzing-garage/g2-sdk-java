@@ -13,18 +13,18 @@ package com.senzing.g2.engine;
 public interface G2Config extends G2Fallible
 {
   /**
-   * Initializes the G2 config API with the specified module name,
-   * init parameters and flag indicating verbose logging.
+   * Initializes the G2 config API with the specified instance name,
+   * settings and <code>boolean</code> flag indicating verbose logging.
    *
-   * @param moduleName A short name given to this instance of the diagnostic
-   *                   object.
-   * @param iniParams A JSON string containing configuration parameters.
+   * @param instanceName A short name given to this instantiation of Senzing that 
+   *                     will be used in
+   * @param settings A JSON string containing configuration parameters.
    * @param verboseLogging Enable diagnostic logging which will print a massive
    *                       amount of information to stdout.
    *
    * @return Zero (0) on success and non-zero on failure.
    */
-  int init(String moduleName, String iniParams, boolean verboseLogging);
+  int init(String instanceName, String settings, boolean verboseLogging);
 
   /**
    * Uninitializes the G2 config API and cleans up system resources.
