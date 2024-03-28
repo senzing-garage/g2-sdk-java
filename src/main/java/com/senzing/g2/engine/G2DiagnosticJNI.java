@@ -8,10 +8,10 @@
 package com.senzing.g2.engine;
 
 /**
- * Implements the {@link G2Diagnostic} to call the native implementations of
+ * Implements the {@link NativeDiagnostic} to call the native implementations of
  * each function.
  */
-public class G2DiagnosticJNI implements G2Diagnostic {
+public class G2DiagnosticJNI implements NativeDiagnostic {
   static {
     System.loadLibrary("G2");
   }

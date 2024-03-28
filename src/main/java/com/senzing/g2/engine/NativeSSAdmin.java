@@ -10,7 +10,7 @@ package com.senzing.g2.engine;
 /**
  * Defines the Java interface to the G2 secure store admin functions.
  */
-public interface G2SSAdmin extends G2Fallible
+interface NativeSSAdmin extends NativeApi
 {
 	int init(String moduleName, String iniParams, boolean verboseLogging);
 	int destroy();

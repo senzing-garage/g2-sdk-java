@@ -8,10 +8,10 @@
 package com.senzing.g2.engine;
 
 /**
- * Implements the {@link G2SSAdmin} interface to call the native function
+ * Implements the {@link NativeSSAdmin} interface to call the native function
  * implementations.
  */
-public class G2SSAdminJNI implements G2SSAdmin
+class G2SSAdminJNI implements NativeSSAdmin
 {
 	static {
 		System.loadLibrary("G2SSAdm");

@@ -12,7 +12,7 @@ package com.senzing.g2.engine;
  * functions provide diagnostics and statistics pertaining to the host system
  * and the Senzing repository.
  */
-public interface G2Diagnostic extends G2Fallible
+interface NativeDiagnostic extends NativeApi
 {
   /**
    * Initializes the G2 Diagnostic object with the specified module name,

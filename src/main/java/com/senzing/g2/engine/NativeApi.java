@@ -10,7 +10,7 @@ package com.senzing.g2.engine;
 /**
  * Provides a base interface for Senzing native SDK's can have failures occur.
  */
-interface G2Fallible {
+interface NativeApi {
   /**
    * Returns a string about the last error the system received.
    * This is most commonly called after an API function returns an error code (non-zero or NULL)

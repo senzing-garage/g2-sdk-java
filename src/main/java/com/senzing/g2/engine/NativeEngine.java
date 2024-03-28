@@ -12,7 +12,7 @@ package com.senzing.g2.engine;
  * functions primarily provide means of working with identity data records,
  * entities and their relationships.
  */
-public interface G2Engine extends G2Fallible
+interface NativeEngine extends NativeApi
 {
   /**
    * The bitwise flag for export functionality to indicate that

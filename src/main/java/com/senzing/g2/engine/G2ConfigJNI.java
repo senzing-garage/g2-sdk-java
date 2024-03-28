@@ -8,10 +8,10 @@
 package com.senzing.g2.engine;
 
 /**
- * Implements the {@link G2Config} interface to call the native implementations
+ * Implements the {@link NativeConfig} interface to call the native implementations
  * of the functions.
  */
-class G2ConfigJNI implements G2Fallible {
+class G2ConfigJNI implements NativeConfig {
   static {
     System.loadLibrary("G2");
   }
@@ -19,51 +19,60 @@ class G2ConfigJNI implements G2Fallible {
   /**
    * {@inheritDoc}
    */
-  native int init(String  instanceName,
-                  String  settings,
-                  boolean verboseLogging);
+  @Override
+  public native int init(String  instanceName,
+                         String  settings,
+                         boolean verboseLogging);
 
   /**
    * {@inheritDoc}
    */
-  native int destroy();
+  @Override
+  public native int destroy();
 
   /**
    * {@inheritDoc}
    */
-  native int create(Result<Long> configHandle);
+  @Override
+  public native int create(Result<Long> configHandle);
 
   /**
    * {@inheritDoc}
    */
-  native int load(String jsonConfig, Result<Long> configHandle);
+  @Override
+  public native int load(String jsonConfig, Result<Long> configHandle);
 
   /**
    * {@inheritDoc}
    */
-  native int save(long configHandle, StringBuffer response );
+  @Override
+  public native int save(long configHandle, StringBuffer response );
 
   /**
    * {@inheritDoc}
    */
-  native int close(long configHandle);
+  @Override
+  public native int close(long configHandle);
 
   /**
    * {@inheritDoc}
    */
-  native int listDataSources(long configHandle, StringBuffer response);
+  @Override
+  public native int listDataSources(long configHandle, StringBuffer response);
 
   /**
    * {@inheritDoc}
    */
-  native int addDataSource(long          configHandle,
+  @Override
+  public native int addDataSource(long          configHandle,
                            String        inputJson,
                            StringBuffer  response);
 
   /**
    * {@inheritDoc}
    */
-  native int deleteDataSource(long configHandle, String inputJson);
+  @Override
+  public native int deleteDataSource(long configHandle, String inputJson);
 
   /**
    * {@inheritDoc}

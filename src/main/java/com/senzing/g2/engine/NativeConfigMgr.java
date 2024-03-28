@@ -10,7 +10,7 @@ package com.senzing.g2.engine;
 /**
  * Defines the Java interface to the G2 configuration management functions.
  */
-public interface G2ConfigMgr extends G2Fallible 
+interface NativeConfigMgr extends NativeApi 
 {
 	/**
 	 * Initializes the G2 config manager API with the specified module name,

@@ -1,11 +1,16 @@
 package com.senzing.g2.engine;
 
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * Provides a bare-metal implementation of {@link SzFactory} that directly
@@ -206,9 +211,9 @@ public class SenzingSdk implements SzFactory {
     private int threadCount = 0;
 
     /**
-     * The {@link ExecutorService} to be used by the API implementations.
+     * The {@link ThreadPoolExecutor} to be used by the API implementations.
      */
-    private ExecutorService executorService = null;
+    private ThreadPoolExecutor threadPool = null;
 
     /**
      * The {@link SzProductSdk} singleton instance to use.
@@ -263,6 +268,12 @@ public class SenzingSdk implements SzFactory {
         this.configId       = configId;
         this.threadCount    = threadCount;
 
+        // create the executor thread pool
+        this.threadPool = new ThreadPoolExecutor(
+            this.threadCount, this.threadCount, 10L, SECONDS,
+            new LinkedBlockingQueue<>());
+        
+
         synchronized (SenzingSdk.class) {
             SenzingSdk activeSDK = getActiveInstance();
             if (activeSDK != null) {
@@ -270,6 +281,12 @@ public class SenzingSdk implements SzFactory {
                     "At most one active instance of SenzingSDK can be initialized.  "
                     + "Another instance was already initialized.");
             }
+
+            // set the state
+            this.state = State.ACTIVE;
+
+            // set the current instance
+            current_instance = this;
         }
     }
 
@@ -329,7 +346,7 @@ public class SenzingSdk implements SzFactory {
      * @throws IllegalStateException If this {@link SenzingSDK} instance has
      *                               already been destroyed.
      */
-    <T> T execute(Callable<T> task) 
+    <T> T execute(Callable<T> task)
         throws SzException, IllegalStateException
     {
         Future<T> future = null;
@@ -341,7 +358,7 @@ public class SenzingSdk implements SzFactory {
 
             // submit the task
             try {
-                future = this.executorService.submit(task);
+                future = this.threadPool.submit(task);
 
             } catch (RejectedExecutionException e) {
                 // this should NOT happen if not destroyed, but if
@@ -398,10 +415,10 @@ public class SenzingSdk implements SzFactory {
      * {@link SzException} if it is not zero (0).
      * 
      * @param returnCode The return code to handle.
-     * @param fallible The {@link G2Fallible} implementation that produced the
+     * @param fallible The {@link NativeApi} implementation that produced the
      *                 return code on this current thread.
      */
-    void handleReturnCode(int returnCode, G2Fallible fallible) 
+    void handleReturnCode(int returnCode, NativeApi fallible) 
         throws SzException
     {
         if (returnCode == 0) return;
@@ -429,40 +446,106 @@ public class SenzingSdk implements SzFactory {
     public SzConfigManager getConfigManager()
        throws IllegalStateException, SzException 
     {
-        // TODO Auto-generated method stub
-        return null;
+        synchronized (this) {
+            this.ensureActive();
+            if (this.configMgrSdk == null) {
+                this.configMgrSdk = new SzConfigManagerSdk(this);
+            }
+        }
+
+        // return the configured SDK
+        return this.configMgrSdk;
     }
 
     @Override
     public SzDiagnostic getDiagnostic() 
        throws IllegalStateException, SzException 
     {
-        // TODO Auto-generated method stub
-        return null;
+        synchronized (this) {
+            this.ensureActive();
+            if (this.diagnosticSdk == null) {
+                this.diagnosticSdk = new SzDiagnosticSdk(this);
+            }
+        }
+
+        // return the configured SDK
+        return this.diagnosticSdk;
     }
 
     @Override
     public SzEngine getEngine() 
        throws IllegalStateException, SzException 
     {
-        // TODO Auto-generated method stub
-        return null;
+        synchronized (this) {
+            this.ensureActive();
+            if (this.engineSdk == null) {
+                this.engineSdk = new SzEngineSdk(this);
+            }
+        }
+
+        // return the configured SDK
+        return this.engineSdk;
     }
 
     @Override
     public SzProduct getProduct() 
        throws IllegalStateException, SzException 
     {
-        // TODO Auto-generated method stub
-        return null;
+        synchronized (this) {
+            this.ensureActive();
+            if (this.productSdk == null) {
+                this.productSdk = new SzProductSdk(this);
+            }
+        }
+
+        // return the configured SDK
+        return this.productSdk;
     }
 
     @Override
     public void destroy() {
-        // TODO Auto-generated method stub
-        
-    }
+        synchronized (this) {
+            // check if this has already been called
+            if (this.state != State.ACTIVE) return;
+            
+            // set the flag for destroying
+            this.state = State.DESTROYING;
 
+            // shutdown the thread pool
+            this.threadPool.shutdown();
+        }
+
+        // await termination
+        while (!this.threadPool.isTerminated()) {
+            try {
+                this.threadPool.awaitTermination(5, SECONDS);
+            } catch (InterruptedException ignore) {
+                // do nothing
+            }
+        }
+
+        // once we get here we can really shut things down
+        if (this.engineSdk != null) {
+            this.engineSdk.destroy();
+            this.engineSdk = null;
+        }
+        if (this.diagnosticSdk != null) {
+            this.diagnosticSdk.destroy();
+            this.diagnosticSdk = null;
+        }
+        if (this.configMgrSdk != null) {
+            this.configMgrSdk.destroy();
+            this.configMgrSdk = null;
+        }
+        if (this.configSdk != null) {
+            this.configSdk.destroy();
+            this.configSdk = null;
+        }
+        if (this.productSdk != null) {
+            this.productSdk.destroy();
+            this.productSdk = null;
+        }
+    }
 
     /**
      * The builder class for creating an instance of {@link SenzingSdk}.

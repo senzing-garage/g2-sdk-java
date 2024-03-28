@@ -13,7 +13,7 @@ package com.senzing.g2.engine;
  * and user license.
  *
  */
-public interface G2Product extends G2Fallible
+interface NativeProduct extends NativeApi
 {
   /**
    * Initializes the G2 product API with the specified module name,

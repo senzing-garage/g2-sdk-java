@@ -8,10 +8,10 @@
 package com.senzing.g2.engine;
 
 /**
- * Implements the {@link G2Engine} interface to call the native implementations
+ * Implements the {@link NativeEngine} interface to call the native implementations
  * of each function.
  */
-public class G2JNI implements G2Engine {
+public class G2JNI implements NativeEngine {
   static {
     System.loadLibrary("G2");
   }

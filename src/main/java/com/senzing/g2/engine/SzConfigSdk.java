@@ -17,7 +17,7 @@ class SzConfigSdk implements SzConfig {
     /**
      * The underlying {@link G2ConfigJNI} instance.
      */
-    private G2ConfigJNI jniConfig = null;
+    private G2ConfigJNI nativeApi = null;
 
     /**
      * Default constructor.
@@ -29,13 +29,13 @@ class SzConfigSdk implements SzConfig {
     SzConfigSdk(SenzingSdk sdk) throws IllegalStateException, SzException {
         this.sdk = sdk;
         this.sdk.execute(() -> {
-            this.jniConfig = new G2ConfigJNI();
+            this.nativeApi = new G2ConfigJNI();
 
-            int returnCode = this.jniConfig.init(this.sdk.getInstanceName(),
+            int returnCode = this.nativeApi.init(this.sdk.getInstanceName(),
                                                  this.sdk.getSettings(),
                                                  this.sdk.isVerboseLogging());
 
-            this.sdk.handleReturnCode(returnCode, this.jniConfig);
+            this.sdk.handleReturnCode(returnCode, this.nativeApi);
 
             return null;
         });
@@ -46,9 +46,9 @@ class SzConfigSdk implements SzConfig {
      */
     void destroy() {
         synchronized (this) {
-            if (this.jniConfig == null) return;
-            this.jniConfig.destroy();
-            this.jniConfig = null;
+            if (this.nativeApi == null) return;
+            this.nativeApi.destroy();
+            this.nativeApi = null;
         }
     }
 
@@ -59,10 +59,10 @@ class SzConfigSdk implements SzConfig {
             Result<Long> result = new Result<>();
             
             // call the underlying C function
-            int returnCode = this.jniConfig.create(result);
+            int returnCode = this.nativeApi.create(result);
 
             // handle any error code if there is one
-            this.sdk.handleReturnCode(returnCode, this.jniConfig);
+            this.sdk.handleReturnCode(returnCode, this.nativeApi);
 
             // return the config handle
             return result.getValue();
@@ -76,10 +76,10 @@ class SzConfigSdk implements SzConfig {
             Result<Long> result = new Result<>();
             
             // call the underlying C function
-            int returnCode = this.jniConfig.load(configDefinition, result);
+            int returnCode = this.nativeApi.load(configDefinition, result);
 
             // handle any error code if there is one
-            this.sdk.handleReturnCode(returnCode, this.jniConfig);
+            this.sdk.handleReturnCode(returnCode, this.nativeApi);
 
             // return the config handle
             return result.getValue();
@@ -93,10 +93,10 @@ class SzConfigSdk implements SzConfig {
             StringBuffer sb = new StringBuffer();
 
             // call the underlying C function
-            int returnCode = this.jniConfig.save(configHandle, sb);
+            int returnCode = this.nativeApi.save(configHandle, sb);
 
             // handle any error code if there is one
-            this.sdk.handleReturnCode(returnCode, this.jniConfig);
+            this.sdk.handleReturnCode(returnCode, this.nativeApi);
 
             // return the contents of the buffer
             return sb.toString();
@@ -107,10 +107,10 @@ class SzConfigSdk implements SzConfig {
     public void close(long configHandle) throws SzException {
         this.sdk.execute(() -> {
             // call the underlying C function
-            int returnCode = this.jniConfig.close(configHandle);
+            int returnCode = this.nativeApi.close(configHandle);
 
             // handle any error code if there is one
-            this.sdk.handleReturnCode(returnCode, this.jniConfig);
+            this.sdk.handleReturnCode(returnCode, this.nativeApi);
             
             // return null
             return null;
@@ -124,10 +124,10 @@ class SzConfigSdk implements SzConfig {
             StringBuffer sb = new StringBuffer();
 
             // call the underlying C function
-            int returnCode = this.jniConfig.listDataSources(configHandle, sb);
+            int returnCode = this.nativeApi.listDataSources(configHandle, sb);
 
             // handle any error code if there is one
-            this.sdk.handleReturnCode(returnCode, this.jniConfig);
+            this.sdk.handleReturnCode(returnCode, this.nativeApi);
 
             // return the contents of the buffer
             return sb.toString();
@@ -149,11 +149,11 @@ class SzConfigSdk implements SzConfig {
             StringBuffer sb = new StringBuffer();
 
             // call the underlying C function
-            int returnCode = this.jniConfig.addDataSource(
+            int returnCode = this.nativeApi.addDataSource(
                 configHandle, inputJson, sb);
 
             // handle any error code if there is one
-            this.sdk.handleReturnCode(returnCode, this.jniConfig);
+            this.sdk.handleReturnCode(returnCode, this.nativeApi);
 
             // return null
             return null;
@@ -172,11 +172,11 @@ class SzConfigSdk implements SzConfig {
             String inputJson = obj.toString();
 
             // call the underlying C function
-            int returnCode = this.jniConfig.deleteDataSource(
+            int returnCode = this.nativeApi.deleteDataSource(
                 configHandle, inputJson);
             
             // handle any error code if there is one
-            this.sdk.handleReturnCode(returnCode, this.jniConfig);
+            this.sdk.handleReturnCode(returnCode, this.nativeApi);
 
             // return null
             return null;

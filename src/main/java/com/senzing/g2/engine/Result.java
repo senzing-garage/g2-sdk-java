@@ -7,7 +7,7 @@
 
 package com.senzing.g2.engine;
 
-public class Result<T> 
+class Result<T> 
 {
 	public void setValue(T value)
 	{

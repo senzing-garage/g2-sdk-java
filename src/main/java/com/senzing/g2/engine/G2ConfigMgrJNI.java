@@ -8,10 +8,10 @@
 package com.senzing.g2.engine;
 
 /**
- * Implements the {@link G2Config} interface to call the native implementations
+ * Implements the {@link NativeConfig} interface to call the native implementations
  * of the functions.
  */
-public class G2ConfigMgrJNI implements G2ConfigMgr {
+public class G2ConfigMgrJNI implements NativeConfigMgr {
 	static {
 		System.loadLibrary("G2");
 	}
@@ -21,8 +21,8 @@ public class G2ConfigMgrJNI implements G2ConfigMgr {
 	 */
 	@Override
 	public native int init(String		moduleName,
-												 String		iniParams,
-												 boolean	verboseLogging);
+	                       String		iniParams,
+				           boolean	verboseLogging);
 
 	/**
 	 * {@inheritDoc}
