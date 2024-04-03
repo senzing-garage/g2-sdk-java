@@ -13,7 +13,7 @@ public interface SzConfig extends SzProvided {
    * 
    * @throws SzException If a failure occurs.
    */
-  long create() throws SzException;
+  long createConfig() throws SzException;
 
   /**
    * Creates a new in-memory configuration using the specified configuration
@@ -30,7 +30,7 @@ public interface SzConfig extends SzProvided {
    *
    * @throws SzException If a failure occurs.
    */
-  long load(String configDefinition) throws SzException;
+  long importConfig(String configDefinition) throws SzException;
   
   /**
    * Obtains the configuration definition formatted as JSON for the in-memory
@@ -43,7 +43,7 @@ public interface SzConfig extends SzProvided {
    *
    * @throws SzException If a failure occurs.
    */
-  String getJsonString(long configHandle) throws SzException;
+  String exportConfig(long configHandle) throws SzException;
 
   /**
    * Closes the in-memory configuration associated with the specified config
@@ -55,7 +55,7 @@ public interface SzConfig extends SzProvided {
    *
    * @throws SzException If a failure occurs.
    */
-  void close(long configHandle) throws SzException;
+  void closeConfig(long configHandle) throws SzException;
 
   /**
    * Extracts the data sources from the in-memory configuration associated

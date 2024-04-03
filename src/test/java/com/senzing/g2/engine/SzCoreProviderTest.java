@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
@@ -30,6 +32,20 @@ import static com.senzing.g2.engine.SzCoreProvider.*;
 @Execution(ExecutionMode.SAME_THREAD)
 public class SzCoreProviderTest extends AbstractTest {
  
+    @BeforeAll public void initializeEnvironment() {
+        this.beginTests();
+        this.initializeTestEnvironment();
+    }
+
+    @AfterAll public void teardownEnvironment() {
+        try {
+            this.teardownTestEnvironment();
+            this.conditionallyLogCounts(true);
+        } finally {
+            this.endTests();
+        }
+    }
+
     @Test
     void testNewDefaultBuilder() {
         this.performTest(() -> {
@@ -70,10 +86,7 @@ public class SzCoreProviderTest extends AbstractTest {
     @CsvSource({"true,1", "true,2", "false,3", "false,4"})
     void testNewCustomBuilder(boolean verboseLogging, int threadCount) {
         this.performTest(() -> {
-            File testRepoDir = this.createTestRepoDirectory("testNewCustomBuilder");
-            RepositoryManager.createRepo(testRepoDir, true);
-
-            String settings = this.readInitJsonFile(testRepoDir);
+            String settings = this.getRepoSettings();
             
             SzCoreProvider provider = null;
             
@@ -444,9 +457,7 @@ public class SzCoreProviderTest extends AbstractTest {
     @Test
     void testGetConfig() {
         this.performTest(() -> {
-            File testRepoDir = this.createTestRepoDirectory("testGetConfig");
-            RepositoryManager.createRepo(testRepoDir, true);
-            String settings = this.readInitJsonFile(testRepoDir);
+            String settings = this.getRepoSettings();
             
             SzCoreProvider provider = null;
             
@@ -489,9 +500,7 @@ public class SzCoreProviderTest extends AbstractTest {
     @Test
     void testGetConfigManager() {
         this.performTest(() -> {
-            File testRepoDir = this.createTestRepoDirectory("testGetConfigManager");
-            RepositoryManager.createRepo(testRepoDir, true);
-            String settings = this.readInitJsonFile(testRepoDir);
+            String settings = this.getRepoSettings();
             
             SzCoreProvider provider = null;
             
@@ -533,9 +542,7 @@ public class SzCoreProviderTest extends AbstractTest {
     @Test
     void testGetDiagnostic() {
         this.performTest(() -> {
-            File testRepoDir = this.createTestRepoDirectory("testGetDiagnostic");
-            RepositoryManager.createRepo(testRepoDir, true);
-            String settings = this.readInitJsonFile(testRepoDir);
+            String settings = this.getRepoSettings();
             
             SzCoreProvider provider = null;
             
@@ -577,9 +584,7 @@ public class SzCoreProviderTest extends AbstractTest {
     @Test
     void testGetEngine() {
         this.performTest(() -> {
-            File testRepoDir = this.createTestRepoDirectory("testGetEngine");
-            RepositoryManager.createRepo(testRepoDir, true);
-            String settings = this.readInitJsonFile(testRepoDir);
+            String settings = this.getRepoSettings();
             
             SzCoreProvider provider = null;
             
@@ -621,9 +626,7 @@ public class SzCoreProviderTest extends AbstractTest {
     @Test
     void testGetProduct() {
         this.performTest(() -> {
-            File testRepoDir = this.createTestRepoDirectory("testGetProduct");
-            RepositoryManager.createRepo(testRepoDir, true);
-            String settings = this.readInitJsonFile(testRepoDir);
+            String settings = this.getRepoSettings();
             
             SzCoreProvider provider = null;
             
@@ -727,9 +730,37 @@ public class SzCoreProviderTest extends AbstractTest {
         }
     }
 
-    @Test
-    void testHandleReturnCode() {
+    @ParameterizedTest
+    @CsvSource({"1,10,Foo", "0,20,Bar", "2,30,Phoo"})
+    void testHandleReturnCode(int returnCode, int errorCode, String errorMessage) {
+        SzCoreProvider provider = null;
+            
+        try {
+            provider = SzCoreProvider.newBuilder().instanceName(BOOTSTRAP_SETTINGS).build();
 
+            try {
+                provider.handleReturnCode(returnCode, new NativeApi() {
+                    public int getLastExceptionCode() { return errorCode; }
+                    public String getLastException() { return errorMessage; }
+                    public void clearLastException() { }
+                });
+                if (returnCode != 0) {
+                    fail("The handleReturnCode() function did not throw an exception with return code: " + returnCode);
+                }
+
+            } catch (Exception e) {
+                if (returnCode == 0) {
+                    fail("Unexpected exception from handleReturnCode() with return code: " + returnCode, e);
+                } else {
+                    assertInstanceOf(SzException.class, e, "Type of exception is not as expected");
+                    SzException sze = (SzException) e;
+                    assertEquals(errorCode, sze.getErrorCode(), "Error code of exception is not as expected");
+                    assertEquals(errorMessage, e.getMessage(), "Error message of exception is not as expected");
+                }
+            }
+        } finally {
+            if (provider != null) provider.destroy();
+        }
     }
 
 }

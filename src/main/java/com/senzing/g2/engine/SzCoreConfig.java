@@ -19,11 +19,6 @@ class SzCoreConfig implements SzConfig {
      */
     private G2ConfigJNI nativeApi = null;
 
-    /** 
-     * Flag indicating if this instance has been detroyed.
-     */
-    private boolean destroyed = false;
-
     /**
      * Default constructor.
      * 
@@ -76,7 +71,7 @@ class SzCoreConfig implements SzConfig {
     }
 
     @Override
-    public long create() throws SzException {
+    public long createConfig() throws SzException {
         return this.provider.execute(() -> {
             // create the result object
             Result<Long> result = new Result<>();
@@ -93,7 +88,7 @@ class SzCoreConfig implements SzConfig {
     }
 
     @Override
-    public long load(String configDefinition) throws SzException {
+    public long importConfig(String configDefinition) throws SzException {
         return this.provider.execute(() -> {
             // create the result object
             Result<Long> result = new Result<>();
@@ -110,7 +105,7 @@ class SzCoreConfig implements SzConfig {
     }
 
     @Override
-    public String getJsonString(long configHandle) throws SzException {
+    public String exportConfig(long configHandle) throws SzException {
         return this.provider.execute(() -> {
             // create the response buffer
             StringBuffer sb = new StringBuffer();
@@ -127,7 +122,7 @@ class SzCoreConfig implements SzConfig {
     }
 
     @Override
-    public void close(long configHandle) throws SzException {
+    public void closeConfig(long configHandle) throws SzException {
         this.provider.execute(() -> {
             // call the underlying C function
             int returnCode = this.nativeApi.close(configHandle);

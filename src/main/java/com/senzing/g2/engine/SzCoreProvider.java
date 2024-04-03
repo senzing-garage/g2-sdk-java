@@ -222,27 +222,27 @@ public class SzCoreProvider implements SzProvider {
     /**
      * The {@link SzCoreProduct} singleton instance to use.
      */
-    private SzCoreProduct productSdk = null;
+    private SzCoreProduct coreProduct = null;
 
     /**
      * The {@link SzCoreConfig} singleton instance to use.
      */
-    private SzCoreConfig configSdk = null;
+    private SzCoreConfig coreConfig = null;
 
     /**
      * The {@link SzCoreEngine} singleton intance to use.
      */
-    private SzCoreEngine engineSdk = null;
+    private SzCoreEngine coreEngine = null;
 
     /**
      * The {@link SzCoreConfigManager} singleton instance to use.
      */
-    private SzCoreConfigManager configMgrSdk = null;
+    private SzCoreConfigManager coreConfigMgr = null;
 
     /**
      * The {@link SzCoreDiagnostic} singleton instance to use.
      */
-    private SzCoreDiagnostic diagnosticSdk = null;
+    private SzCoreDiagnostic coreDiagnostic = null;
 
     /**
      * The {@link State} for this instance.
@@ -287,7 +287,7 @@ public class SzCoreProvider implements SzProvider {
             SzCoreProvider activeSDK = getActiveInstance();
             if (activeSDK != null) {
                 throw new IllegalStateException(
-                    "At most one active instance of SenzingSdk can be initialized.  "
+                    "At most one active instance of SzCoreProvider can be initialized.  "
                     + "Another instance was already initialized.");
             }
 
@@ -441,8 +441,10 @@ public class SzCoreProvider implements SzProvider {
     {
         if (returnCode == 0) return;
         // TODO(barry): Map the exception properly
-        throw new SzException(nativeApi.getLastExceptionCode() 
-            + ":" + nativeApi.getLastException());
+        int     errorCode   = nativeApi.getLastExceptionCode();
+        String  message     = nativeApi.getLastException();
+        nativeApi.clearLastException();
+        throw new SzException(errorCode, message);
     }
 
     @Override
@@ -451,13 +453,13 @@ public class SzCoreProvider implements SzProvider {
     {
         synchronized (this) {
             this.ensureActive();
-            if (this.configSdk == null) {
-                this.configSdk = new SzCoreConfig(this);
+            if (this.coreConfig == null) {
+                this.coreConfig = new SzCoreConfig(this);
             }
         }
 
         // return the configured SDK
-        return this.configSdk;
+        return this.coreConfig;
     }
 
     @Override
@@ -466,13 +468,13 @@ public class SzCoreProvider implements SzProvider {
     {
         synchronized (this) {
             this.ensureActive();
-            if (this.configMgrSdk == null) {
-                this.configMgrSdk = new SzCoreConfigManager(this);
+            if (this.coreConfigMgr == null) {
+                this.coreConfigMgr = new SzCoreConfigManager(this);
             }
         }
 
         // return the configured SDK
-        return this.configMgrSdk;
+        return this.coreConfigMgr;
     }
 
     @Override
@@ -481,13 +483,13 @@ public class SzCoreProvider implements SzProvider {
     {
         synchronized (this) {
             this.ensureActive();
-            if (this.diagnosticSdk == null) {
-                this.diagnosticSdk = new SzCoreDiagnostic(this);
+            if (this.coreDiagnostic == null) {
+                this.coreDiagnostic = new SzCoreDiagnostic(this);
             }
         }
 
         // return the configured SDK
-        return this.diagnosticSdk;
+        return this.coreDiagnostic;
     }
 
     @Override
@@ -496,13 +498,13 @@ public class SzCoreProvider implements SzProvider {
     {
         synchronized (this) {
             this.ensureActive();
-            if (this.engineSdk == null) {
-                this.engineSdk = new SzCoreEngine(this);
+            if (this.coreEngine == null) {
+                this.coreEngine = new SzCoreEngine(this);
             }
         }
 
         // return the configured SDK
-        return this.engineSdk;
+        return this.coreEngine;
     }
 
     @Override
@@ -511,13 +513,13 @@ public class SzCoreProvider implements SzProvider {
     {
         synchronized (this) {
             this.ensureActive();
-            if (this.productSdk == null) {
-                this.productSdk = new SzCoreProduct(this);
+            if (this.coreProduct == null) {
+                this.coreProduct = new SzCoreProduct(this);
             }
         }
 
         // return the configured SDK
-        return this.productSdk;
+        return this.coreProduct;
     }
 
     @Override
@@ -543,25 +545,25 @@ public class SzCoreProvider implements SzProvider {
         }
 
         // once we get here we can really shut things down
-        if (this.engineSdk != null) {
-            this.engineSdk.destroy();
-            this.engineSdk = null;
+        if (this.coreEngine != null) {
+            this.coreEngine.destroy();
+            this.coreEngine = null;
         }
-        if (this.diagnosticSdk != null) {
-            this.diagnosticSdk.destroy();
-            this.diagnosticSdk = null;
+        if (this.coreDiagnostic != null) {
+            this.coreDiagnostic.destroy();
+            this.coreDiagnostic = null;
         }
-        if (this.configMgrSdk != null) {
-            this.configMgrSdk.destroy();
-            this.configMgrSdk = null;
+        if (this.coreConfigMgr != null) {
+            this.coreConfigMgr.destroy();
+            this.coreConfigMgr = null;
         }
-        if (this.configSdk != null) {
-            this.configSdk.destroy();
-            this.configSdk = null;
+        if (this.coreConfig != null) {
+            this.coreConfig.destroy();
+            this.coreConfig = null;
         }
-        if (this.productSdk != null) {
-            this.productSdk.destroy();
-            this.productSdk = null;
+        if (this.coreProduct != null) {
+            this.coreProduct.destroy();
+            this.coreProduct = null;
         }
 
         // set the state

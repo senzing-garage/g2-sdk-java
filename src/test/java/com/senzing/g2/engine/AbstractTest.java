@@ -3,8 +3,13 @@ package com.senzing.g2.engine;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
+
+import com.senzing.g2.engine.RepositoryManager.Configuration;
 
 import static com.senzing.io.IOUtilities.*;
+import static com.senzing.g2.engine.RepositoryManager.*;
 
 /**
  * 
@@ -26,6 +31,82 @@ public abstract class AbstractTest {
     private long progressLogTimestamp = -1L;
 
     /**
+     * The class-wide repo directory.
+     */
+    private File repoDirectory = null;
+
+    /**
+     * Whether or not the repository has been created.
+     */
+    private boolean repoCreated = false;
+
+    /**
+     * Protected default constructor.
+     */
+    protected AbstractTest() {
+        this(null);
+    }
+
+    /**
+     * Protected constructor allowing the derived class to specify the
+     * location for the entity respository.
+     *
+     * @param repoDirectory The directory in which to include the entity
+     *                      repository.
+     */
+    protected AbstractTest(File repoDirectory) {
+        if (repoDirectory == null) {
+            repoDirectory = createTestRepoDirectory(this.getClass());
+        }
+        this.repoDirectory = repoDirectory;
+    }
+
+    /**
+     * Signals the beginning of the current test suite.
+     *
+     * @return <tt>true</tt> if replaying previous results and <tt>false</tt>
+     *         if using the live API.
+     */
+    protected void beginTests() {
+        // do nothing for now
+    }
+
+    /**
+     * Signals the end of the current test suite.
+     */
+    protected void endTests() {
+        // do nothing for now
+    }
+
+    /**
+     * Returns the module name with which to initialize the server.  By default
+     * this returns <tt>"Test API Server"</tt>.  Override to use a different
+     * module name.
+     *
+     * param suffix The optional suffix to append to the module name.
+     *
+     * @return The module name with which to initialize the server.
+     */
+    protected String getModuleName(String suffix) {
+        if (suffix != null && suffix.trim().length() > 0) {
+            suffix = " - " + suffix.trim();
+        } else {
+            suffix = "";
+        }
+        return this.getClass().getSimpleName() + suffix;
+    }
+
+    /**
+     * Returns the contents of the JSON init file from the default
+     * repository directory.
+     * 
+     * @reutrn The contents of the JSON init file as a {@link String}
+     */
+    protected String getRepoSettings() {
+        return this.readRepoSettingsFile(this.getRepositoryDirectory());
+    }
+
+    /**
      * Returns the contents of the JSON init file as a {@link String}.
      *
      * @param repoDirectory The {@link File} representing the directory
@@ -33,7 +114,7 @@ public abstract class AbstractTest {
      * 
      * @return The contents of the JSON init file as a {@link String}.
      */
-    protected String readInitJsonFile(File repoDirectory) {
+    protected String readRepoSettingsFile(File repoDirectory) {
         try {
             File initJsonFile = new File(repoDirectory, "g2-init.json");
 
@@ -45,14 +126,47 @@ public abstract class AbstractTest {
     }
 
     /**
-     * Creates a temp repository directory.
+     * Creates a temp repository directory for the test class.
+     *
+     * @return The {@link File} representing the directory.
+    */
+    protected File createTestRepoDirectory() {
+        return createTestRepoDirectory(this.getClass(), null);
+    }
+
+    /**
+     * Creates a temp repository directory for a specific test.
      *
      * @param testName The name of the test that the directory will be used for.
      *
      * @return The {@link File} representing the directory.
     */
     protected File createTestRepoDirectory(String testName) {
-        String prefix = "sz-repo-" + this.getClass().getSimpleName() + "-" 
+        return createTestRepoDirectory(this.getClass(), testName);
+    }
+
+    /**
+     * Creates a temp repository directory for a specific test.
+     *
+     * @param c The {@link Class} for which the directory is being created.
+     *
+     * @return The {@link File} representing the directory.
+    */
+    protected static File createTestRepoDirectory(Class<?> c) {
+        return createTestRepoDirectory(c, null);
+    }
+
+    /**
+     * Creates a temp repository directory for a specific test.
+     *
+     * @param c The {@link Class} for which the directory is being created.
+     * 
+     * @param testName The name of the test that the directory will be used for.
+     *
+     * @return The {@link File} representing the directory.
+    */
+    protected static File createTestRepoDirectory(Class<?> c, String testName) {
+        String prefix = "sz-repo-" + c.getSimpleName() + "-" 
             + (testName == null ? "" : (testName + "-"));
         return doCreateTestRepoDirectory(prefix);
     }
@@ -102,6 +216,112 @@ public abstract class AbstractTest {
         } catch (Exception e) {
         throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Returns the {@link File} identifying the repository directory used for
+     * the test.  This can be specified in the constructor, but if not specified
+     * is a newly created temporary directory.
+     * 
+     * @return The {@link File} identifying the repository directory used for
+     *         the test.
+     */
+    protected File getRepositoryDirectory() {
+        return this.repoDirectory;
+    }
+    
+    /**
+     * This method can typically be called from a method annotated with
+     * "@BeforeAll".  It will create a Senzing entity repository and
+     * initialize and start the Senzing API Server.
+     */
+    protected void initializeTestEnvironment() {
+        String moduleName = this.getModuleName("RepoMgr (create)");
+        RepositoryManager.setThreadModuleName(moduleName);
+        boolean concluded = false;
+        try {
+          Configuration config = RepositoryManager.createRepo(
+              this.getRepositoryDirectory(), true);
+          this.repoCreated = true;
+
+          this.prepareRepository();
+    
+          RepositoryManager.conclude();
+          concluded = true;
+              
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            throw e;
+        } catch (Error e) {
+            e.printStackTrace();
+            throw e;
+        } catch (Exception e) {
+        e.printStackTrace();
+            throw new RuntimeException(e);
+        } finally {
+            if (!concluded) RepositoryManager.conclude();
+            RepositoryManager.clearThreadModuleName();
+        }
+    }
+
+    /**
+     * This method can typically be called from a method annotated with
+     * "@AfterAll".  It will delete the entity repository that was created
+     * for the tests if there are no test failures recorded via 
+     * {@link #incrementFailureCount()}.
+     */
+    protected void teardownTestEnvironment() {
+        int failureCount = this.getFailureCount();
+        teardownTestEnvironment((failureCount == 0));
+    }
+
+    /**
+     * This method can typically be called from a method annotated with
+     * "@AfterAll".  It will optionally delete the entity repository that
+     * was created for the tests.
+     *
+     * @param deleteRepository <tt>true</tt> if the test repository should be
+     *                         deleted, otherwise <tt>false</tt>
+     */
+    protected void teardownTestEnvironment(boolean deleteRepository) {
+        String preserveProp = System.getProperty("senzing.test.preserve.repos");
+        if (preserveProp != null) preserveProp = preserveProp.trim().toLowerCase();
+        boolean preserve = (preserveProp != null && preserveProp.equals("true"));
+
+        // cleanup the repo directory
+        if (this.repoCreated && deleteRepository && !preserve) {
+            deleteRepository(this.repoDirectory);
+        }
+    }
+
+    /**
+     * Deletes the repository at the specified repository directory.
+     * 
+     * @param repoDirectory The repository directory to delete.
+     */
+    protected static void deleteRepository(File repoDirectory) {
+        if (repoDirectory.exists() && repoDirectory.isDirectory()) {
+            try {
+                // delete the repository
+                Files.walk(repoDirectory.toPath())
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     * Override this function to prepare the repository by configuring
+     * data sources or loading records.  By default this function does nothing.
+     * The repository directory can be obtained via {@link
+     * #getRepositoryDirectory()}.
+     */
+    protected void prepareRepository() {
+        // do nothing
     }
 
     /**
