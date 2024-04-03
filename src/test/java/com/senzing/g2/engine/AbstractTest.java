@@ -4,12 +4,16 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import com.senzing.g2.engine.RepositoryManager.Configuration;
 
 import static com.senzing.io.IOUtilities.*;
-import static com.senzing.g2.engine.RepositoryManager.*;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * 
@@ -423,4 +427,207 @@ public abstract class AbstractTest {
         else this.incrementSuccessCount();
         }
     }
+
+      /**
+   * Validates the json data and ensures the expected JSON property keys are
+   * present and that no unexpected keys are present.
+   *
+   * @param jsonData      The json data to validate.
+   * @param expectedKeys The zero or more expected property keys.
+   */
+  public static void validateJsonDataMap(Object jsonData, String... expectedKeys)
+  {
+    validateJsonDataMap(null,
+                            jsonData,
+                            true,
+                            expectedKeys);
+  }
+
+  /**
+   * Validates the json data and ensures the expected JSON property keys are
+   * present and that no unexpected keys are present.
+   *
+   * @param testInfo     Additional test information to be logged with failures.
+   * @param jsonData      The json data to validate.
+   * @param expectedKeys The zero or more expected property keys.
+   */
+  public static void validateJsonDataMap(String    testInfo,
+                                         Object    jsonData,
+                                         String... expectedKeys)
+  {
+    validateJsonDataMap(testInfo, jsonData, true, expectedKeys);
+  }
+
+  /**
+   * Validates the json data and ensures the expected JSON property keys are
+   * present and that, optionally, no unexpected keys are present.
+   *
+   * @param jsonData      The json data to validate.
+   * @param strict       Whether or not property keys other than those specified are
+   *                     allowed to be present.
+   * @param expectedKeys The zero or more expected property keys -- these are
+   *                     either a minimum or exact set depending on the
+   *                     <tt>strict</tt> parameter.
+   */
+  public static void validateJsonDataMap(Object    jsonData,
+                                         boolean   strict,
+                                         String... expectedKeys)
+  {
+    validateJsonDataMap(null, jsonData, strict, expectedKeys);
+  }
+
+  /**
+   * Validates the json data and ensures the expected JSON property keys are
+   * present and that, optionally, no unexpected keys are present.
+   *
+   *
+   * @param testInfo     Additional test information to be logged with failures.
+   * @param jsonData      The json data to validate.
+   * @param strict       Whether or not property keys other than those specified are
+   *                     allowed to be present.
+   * @param expectedKeys The zero or more expected property keys -- these are
+   *                     either a minimum or exact set depending on the
+   *                     <tt>strict</tt> parameter.
+   */
+  public static void validateJsonDataMap(String    testInfo,
+                                         Object    jsonData,
+                                         boolean   strict,
+                                         String... expectedKeys)
+  {
+    String suffix = (testInfo != null && testInfo.trim().length() > 0)
+        ? " ( " + testInfo + " )" : "";
+
+    if (jsonData == null) {
+      fail("Expected json data but got null value" + suffix);
+    }
+
+    if (!(jsonData instanceof Map)) {
+      fail("Raw data is not a JSON object: " + jsonData + suffix);
+    }
+
+    Map<String, Object> map = (Map<String, Object>) jsonData;
+    Set<String> expectedKeySet = new HashSet<>();
+    Set<String> actualKeySet = map.keySet();
+    for (String key : expectedKeys) {
+      expectedKeySet.add(key);
+      if (!actualKeySet.contains(key)) {
+        fail("JSON property missing from json data: " + key + " / " + map
+                 + suffix);
+      }
+    }
+    if (strict && expectedKeySet.size() != actualKeySet.size()) {
+      Set<String> extraKeySet = new HashSet<>(actualKeySet);
+      extraKeySet.removeAll(expectedKeySet);
+      fail("Unexpected JSON properties in json data: " + extraKeySet + suffix);
+    }
+
+  }
+
+
+  /**
+   * Validates the json data and ensures it is a collection of objects and the
+   * expected JSON property keys are present in the array objects and that no
+   * unexpected keys are present.
+   *
+   * @param jsonData      The json data to validate.
+   * @param expectedKeys The zero or more expected property keys.
+   */
+  public static void validateJsonDataMapArray(Object     jsonData,
+                                              String...  expectedKeys)
+  {
+    validateJsonDataMapArray(null, jsonData, true, expectedKeys);
+  }
+
+  /**
+   * Validates the json data and ensures it is a collection of objects and the
+   * expected JSON property keys are present in the array objects and that no
+   * unexpected keys are present.
+   *
+   * @param testInfo     Additional test information to be logged with failures.
+   * @param jsonData      The json data to validate.
+   * @param expectedKeys The zero or more expected property keys.
+   */
+  public static void validateJsonDataMapArray(String     testInfo,
+                                              Object     jsonData,
+                                              String...  expectedKeys)
+  {
+    validateJsonDataMapArray(testInfo, jsonData, true, expectedKeys);
+  }
+
+  /**
+   * Validates the json data and ensures it is a collection of objects and the
+   * expected JSON property keys are present in the array objects and that,
+   * optionally, no unexpected keys are present.
+   *
+   * @param jsonData      The json data to validate.
+   * @param strict       Whether or not property keys other than those specified are
+   *                     allowed to be present.
+   * @param expectedKeys The zero or more expected property keys for the array
+   *                     objects -- these are either a minimum or exact set
+   *                     depending on the <tt>strict</tt> parameter.
+   */
+  public static void validateJsonDataMapArray(Object     jsonData,
+                                             boolean    strict,
+                                             String...  expectedKeys)
+  {
+    validateJsonDataMapArray(null, jsonData, strict, expectedKeys);
+  }
+
+  /**
+   * Validates the json data and ensures it is a collection of objects and the
+   * expected JSON property keys are present in the array objects and that,
+   * optionally, no unexpected keys are present.
+   *
+   * @param testInfo     Additional test information to be logged with failures.
+   * @param jsonData      The json data to validate.
+   * @param strict       Whether or not property keys other than those specified are
+   *                     allowed to be present.
+   * @param expectedKeys The zero or more expected property keys for the array
+   *                     objects -- these are either a minimum or exact set
+   *                     depending on the <tt>strict</tt> parameter.
+   */
+  public static void validateJsonDataMapArray(String     testInfo,
+                                              Object     jsonData,
+                                              boolean    strict,
+                                              String...  expectedKeys)
+  {
+    String suffix = (testInfo != null && testInfo.trim().length() > 0)
+        ? " ( " + testInfo + " )" : "";
+
+    if (jsonData == null) {
+      fail("Expected json data but got null value" + suffix);
+    }
+
+    if (!(jsonData instanceof Collection)) {
+      fail("Raw data is not a JSON array: " + jsonData + suffix);
+    }
+
+    Collection<Object> collection = (Collection<Object>) jsonData;
+    Set<String> expectedKeySet = new HashSet<>();
+    for (String key : expectedKeys) {
+      expectedKeySet.add(key);
+    }
+
+    for (Object obj : collection) {
+      if (!(obj instanceof Map)) {
+        fail("Raw data is not a JSON array of JSON objects: " + jsonData + suffix);
+      }
+
+      Map<String, Object> map = (Map<String, Object>) obj;
+
+      Set<String> actualKeySet = map.keySet();
+      for (String key : expectedKeySet) {
+        if (!actualKeySet.contains(key)) {
+          fail("JSON property missing from json data array element: "
+                   + key + " / " + map + suffix);
+        }
+      }
+      if (strict && expectedKeySet.size() != actualKeySet.size()) {
+        Set<String> extraKeySet = new HashSet<>(actualKeySet);
+        extraKeySet.removeAll(expectedKeySet);
+        fail("Unexpected JSON properties in json data: " + extraKeySet + suffix);
+      }
+    }
+  }
+
 }

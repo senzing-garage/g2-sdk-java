@@ -66,4 +66,20 @@ public class SzCoreProduct implements SzProduct {
         return this.provider;
     }
 
+    @Override
+    public String getLicense() throws SzException {
+        return this.provider.execute(() -> {
+            return this.nativeApi.license();
+        });
+    }
+
+    @Override
+    public String getVersion() throws SzException {
+        return this.provider.execute(() -> {
+            return this.nativeApi.version();
+        });
+    }
+
+
+
 }
