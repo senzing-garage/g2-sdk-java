@@ -1,5 +1,8 @@
 package com.senzing.g2.engine;
 
-public interface SzProduct {
+/**
+ * 
+ */
+public interface SzProduct extends SzProvided {
     
 }

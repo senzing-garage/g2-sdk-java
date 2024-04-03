@@ -1,5 +1,8 @@
 package com.senzing.g2.engine;
 
-public interface SzDiagnostic {
-    
+/**
+ * 
+ */
+public interface SzDiagnostic extends SzProvided {
+
 }

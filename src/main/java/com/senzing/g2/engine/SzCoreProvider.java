@@ -2,42 +2,43 @@ package com.senzing.g2.engine;
 
 import java.util.Objects;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
- * Provides a bare-metal implementation of {@link SzFactory} that directly
+ * Provides a bare-metal implementation of {@link SzProvider} that directly
  * initializes the Senzing SDK interfaces and provides singleton access 
  * to those interfaces that will be valid until the created instance of 
- * {@link SenzingSdk}.
+ * {@link SzCoreProvider}.
  */
-public class SenzingSdk implements SzFactory {
+public class SzCoreProvider implements SzProvider {
     /**
      * The environment variable for obtaining the Senzing SDK settings
      * from the environment.  If a value is set in the environment then
      * it will be used by default for initializing the Senzing SDK unless
      * the {@link Builder#settings(String)} method is used to provide
      * different settings.
+     * <p>
+     * The value of this constant is <code>{@value}</code>.
      * 
-     * @value <code>"SENZING_ENGINE_CONFIGURATION_JSON"</code>
      * @see Builder#settings(String)
      */
-    private static final String SETTINGS_ENVIRONMENT_VARIABLE
+    public static final String SETTINGS_ENVIRONMENT_VARIABLE
         = "SENZING_ENGINE_CONFIGURATION_JSON";
 
     /**
      * The default instance name to use for the Senzing SDK.  The value is
      * <code>"Senzing Instance"</code>.  An explicit vaklue can be provided
      * via {@link Builder#instanceName(String)} during SDK initialization.
+     * <p>
+     * The value of this constant is <code>{@value}</code>.
      * 
-     * @value <code>"Senzing Instance"</code>
      * @see Builder#instanceName(String)
      */
     public static final String DEFAULT_INSTANCE_NAME = "Senzing Instance";
@@ -56,8 +57,10 @@ public class SenzingSdk implements SzFactory {
      * SzEngine}, {@link SzConfigManager} and {@link SzDiagnostic} require
      * database configuration to connect to the Senzing repository.
      * 
-     * @value <code>"{ }"</code>
-     * @see SenzingSdk#SETTINGS_ENVIRONMENT_VARIABLE
+     * <p>
+     * The value of this constant is <code>{@value}</code>.
+     * 
+     * @see SzCoreProvider#SETTINGS_ENVIRONMENT_VARIABLE
      * @see Builder#settings(String)
      */
     public static final String BOOTSTRAP_SETTINGS = "{ }";
@@ -67,42 +70,43 @@ public class SenzingSdk implements SzFactory {
      * operations to restrain memory consumption for use by Senzing.  This
      * defaults to one (<code>1</code>) but can be modified via {@link
      * Builder#threads(int)}.
-     * 
-     * @value <code>1</code>
+     * <p>
+     * The value of this constant is <code>{@value}</code>.
+     *
      * @see Builder#threads(int) 
      */
     public static final int DEFAULT_THREAD_COUNT = 1;
 
     /**
-     * Enumerates the possible states for an instance of {@link SenzingSdk}.
+     * Enumerates the possible states for an instance of {@link SzCoreProvider}.
      */
     private static enum State {
         /**
-         * If an {@link SenzingSDK} instance is in the "active" state then it
-         * is initialized and ready to use.  Only one instance of {@link SenzingSDK}
+         * If an {@link SenzingSdk} instance is in the "active" state then it
+         * is initialized and ready to use.  Only one instance of {@link SenzingSdk}
          * can exist in the {@link #ACTIVE} or {@link #DESTROYING} state.   is
          * the one and only instance that will exist in that state since the
          * Senzing SDK cannot be initialized heterogeneously within a single 
          * process.
          * 
-         * @see SenzingSDK#getActiveInstance()
+         * @see SenzingSdk#getActiveInstance()
          */
         ACTIVE,
 
         /**
-         * An instance {@link SenzingSDK} moves to the "destroying" state when
-         * the {@link SenzingSDK#destroy()} method has been called but has not
+         * An instance {@link SenzingSdk} moves to the "destroying" state when
+         * the {@link SenzingSdk#destroy()} method has been called but has not
          * yet completed any Senzing operations that are already in-progress.
-         * In this state, the {@link SenzingSDK} will fast-fail any newly attempted
+         * In this state, the {@link SenzingSdk} will fast-fail any newly attempted
          * operations with an {@link IllegalStateException}, but will complete
          * those Senzing operations that were initiated before {@link
-         * SenzingSDK#destroy()} was called.
+         * SenzingSdk#destroy()} was called.
          */
         DESTROYING,
 
         /**
-         * An instance of {@link SenzingSDK} moves to the "destroyed" state when
-         * the {@link SenzingSDK#destroy()} method has completed and there are no
+         * An instance of {@link SenzingSdk} moves to the "destroyed" state when
+         * the {@link SenzingSdk#destroy()} method has completed and there are no
          * more Senzing operations that are in-progress.  Once an {@link #ACTIVE}
          * instance moves to {@link #DESTROYED} then a new active instance can 
          * be created and initialized.
@@ -113,8 +117,8 @@ public class SenzingSdk implements SzFactory {
 
     /**
      * Creates a new instance of {@link Builder} for setting up an instance
-     * of {@link SenzingSdk}.  Keep in mind that while multiple {@link Builder}
-     * instances can exists, <b>only one active instance</b> of {@link SenzingSdk}
+     * of {@link SzCoreProvider}.  Keep in mind that while multiple {@link Builder}
+     * instances can exists, <b>only one active instance</b> of {@link SzCoreProvider}
      * can exist at time.  An active instance is one that has not yet been
      * destroyed.
      * 
@@ -125,21 +129,21 @@ public class SenzingSdk implements SzFactory {
     }
 
     /**
-     * The currently instance of the {@link SenzingSdk}.
+     * The currently instance of the {@link SzCoreProvider}.
      */
-    private static SenzingSdk current_instance = null;
+    private static SzCoreProvider current_instance = null;
 
     /** 
-     * Gets the current active instance of {@link SenzingSdk}.  An active instance
+     * Gets the current active instance of {@link SzCoreProvider}.  An active instance
      * is is one that has been constructed and has not yet been destroyed.  There
      * can be at most one active instance.  If no active instance exists then 
      * <code>null</code> is returned.
      * 
-     * @return The current active instance of {@link SenzingSdk}, or 
+     * @return The current active instance of {@link SzCoreProvider}, or 
      *         <code>null</code> if there is no active instance.
      */
-    public static SenzingSdk getActiveInstance() {
-        synchronized (SenzingSdk.class) {
+    public static SzCoreProvider getActiveInstance() {
+        synchronized (SzCoreProvider.class) {
             if (current_instance == null) return null;
             synchronized (current_instance) {
                 State state = current_instance.state;
@@ -162,17 +166,17 @@ public class SenzingSdk implements SzFactory {
     }
 
     /**
-     * Waits until the specified {@link SenzingSdk} instance has been destroyed.
-     * Use this when obtaining an instance of {@link SenzingSdk} in the {@link 
+     * Waits until the specified {@link SzCoreProvider} instance has been destroyed.
+     * Use this when obtaining an instance of {@link SzCoreProvider} in the {@link 
      * State#DESTROYING} and you want to wait until it is fully destroyed.
      * 
-     * @param sdkInstacne The non-null {@link SenzingSdk} instance to wait on.
+     * @param sdkInstacne The non-null {@link SzCoreProvider} instance to wait on.
      * 
      * @throws NullPointerException If the specified parameter is <code>null</code>.
      */
-    private static void waitUntilDestroyed(SenzingSdk sdkInstance) 
+    private static void waitUntilDestroyed(SzCoreProvider sdkInstance) 
     {
-        Objects.requireNonNull(sdkInstance, "The specified SenzingSDK cannot be null");
+        Objects.requireNonNull(sdkInstance, "The specified SenzingSdk cannot be null");
         synchronized (sdkInstance) {
             while (sdkInstance.state != State.DESTROYED) {
                 try {
@@ -216,29 +220,29 @@ public class SenzingSdk implements SzFactory {
     private ThreadPoolExecutor threadPool = null;
 
     /**
-     * The {@link SzProductSdk} singleton instance to use.
+     * The {@link SzCoreProduct} singleton instance to use.
      */
-    private SzProductSdk productSdk = null;
+    private SzCoreProduct productSdk = null;
 
     /**
-     * The {@link SzConfigSdk} singleton instance to use.
+     * The {@link SzCoreConfig} singleton instance to use.
      */
-    private SzConfigSdk configSdk = null;
+    private SzCoreConfig configSdk = null;
 
     /**
-     * The {@link SzEngineSdk} singleton intance to use.
+     * The {@link SzCoreEngine} singleton intance to use.
      */
-    private SzEngineSdk engineSdk = null;
+    private SzCoreEngine engineSdk = null;
 
     /**
-     * The {@link SzConfigManagerSdk} singleton instance to use.
+     * The {@link SzCoreConfigManager} singleton instance to use.
      */
-    private SzConfigManagerSdk configMgrSdk = null;
+    private SzCoreConfigManager configMgrSdk = null;
 
     /**
-     * The {@link SzDiagnosticSdk} singleton instance to use.
+     * The {@link SzCoreDiagnostic} singleton instance to use.
      */
-    private SzDiagnosticSdk diagnosticSdk = null;
+    private SzCoreDiagnostic diagnosticSdk = null;
 
     /**
      * The {@link State} for this instance.
@@ -255,11 +259,11 @@ public class SenzingSdk implements SzFactory {
      *                 <code>null</code> if using the default configuration.
      * @param threadCount The number of threads to initialize the executor pool with.
      */
-    private SenzingSdk(String   instanceName,
-                       String   settings,
-                       boolean  verboseLogging,
-                       Long     configId,
-                       int      threadCount) 
+    private SzCoreProvider(String   instanceName,
+                           String   settings,
+                           boolean  verboseLogging,
+                           Long     configId,
+                           int      threadCount) 
     {
         // set the fields
         this.instanceName   = instanceName;
@@ -271,14 +275,19 @@ public class SenzingSdk implements SzFactory {
         // create the executor thread pool
         this.threadPool = new ThreadPoolExecutor(
             this.threadCount, this.threadCount, 10L, SECONDS,
-            new LinkedBlockingQueue<>());
-        
+            new LinkedBlockingQueue<>(),
+            new ThreadFactory() {
+                private int threadIndex = 0;
+                public synchronized Thread newThread(Runnable r) {
+                  return new Thread(r, "Executor-" + instanceName + "-" + this.threadIndex++);
+                }
+            });
 
-        synchronized (SenzingSdk.class) {
-            SenzingSdk activeSDK = getActiveInstance();
+        synchronized (SzCoreProvider.class) {
+            SzCoreProvider activeSDK = getActiveInstance();
             if (activeSDK != null) {
                 throw new IllegalStateException(
-                    "At most one active instance of SenzingSDK can be initialized.  "
+                    "At most one active instance of SenzingSdk can be initialized.  "
                     + "Another instance was already initialized.");
             }
 
@@ -333,6 +342,15 @@ public class SenzingSdk implements SzFactory {
     }
     
     /**
+     * Gets the configued thread count for the executor thread pool.
+     * 
+     * @return The configued thread count for the executor thread pool.
+     */
+    int getThreadCount() {
+        return this.threadCount;
+    }
+
+    /**
      * Executes the specified {@link Callable} task using this instance's
      * executor thread pool and returns the result if successful.  This
      * will throw any exception produced by the {@link Callable} task,
@@ -343,7 +361,7 @@ public class SenzingSdk implements SzFactory {
      * @param task The {@link Callable} task to execute.
      * @return The result from the {@link Callable} task.
      * @throws SzException If the {@link Callable} task triggers a failure.
-     * @throws IllegalStateException If this {@link SenzingSDK} instance has
+     * @throws IllegalStateException If this {@link SzCoreProvider} instance has
      *                               already been destroyed.
      */
     <T> T execute(Callable<T> task)
@@ -353,7 +371,7 @@ public class SenzingSdk implements SzFactory {
         synchronized (this) {
             if (this.state != State.ACTIVE) {
                 throw new IllegalStateException(
-                    "SenzingSDK has been destroyed");
+                    "SenzingSdk has been destroyed");
             }
 
             // submit the task
@@ -415,16 +433,16 @@ public class SenzingSdk implements SzFactory {
      * {@link SzException} if it is not zero (0).
      * 
      * @param returnCode The return code to handle.
-     * @param fallible The {@link NativeApi} implementation that produced the
-     *                 return code on this current thread.
+     * @param nativeApi The {@link NativeApi} implementation that produced the
+     *                  return code on this current thread.
      */
-    void handleReturnCode(int returnCode, NativeApi fallible) 
+    void handleReturnCode(int returnCode, NativeApi nativeApi) 
         throws SzException
     {
         if (returnCode == 0) return;
         // TODO(barry): Map the exception properly
-        throw new SzException(fallible.getLastExceptionCode() 
-            + ":" + fallible.getLastException());
+        throw new SzException(nativeApi.getLastExceptionCode() 
+            + ":" + nativeApi.getLastException());
     }
 
     @Override
@@ -434,7 +452,7 @@ public class SenzingSdk implements SzFactory {
         synchronized (this) {
             this.ensureActive();
             if (this.configSdk == null) {
-                this.configSdk = new SzConfigSdk(this);
+                this.configSdk = new SzCoreConfig(this);
             }
         }
 
@@ -449,7 +467,7 @@ public class SenzingSdk implements SzFactory {
         synchronized (this) {
             this.ensureActive();
             if (this.configMgrSdk == null) {
-                this.configMgrSdk = new SzConfigManagerSdk(this);
+                this.configMgrSdk = new SzCoreConfigManager(this);
             }
         }
 
@@ -464,7 +482,7 @@ public class SenzingSdk implements SzFactory {
         synchronized (this) {
             this.ensureActive();
             if (this.diagnosticSdk == null) {
-                this.diagnosticSdk = new SzDiagnosticSdk(this);
+                this.diagnosticSdk = new SzCoreDiagnostic(this);
             }
         }
 
@@ -479,7 +497,7 @@ public class SenzingSdk implements SzFactory {
         synchronized (this) {
             this.ensureActive();
             if (this.engineSdk == null) {
-                this.engineSdk = new SzEngineSdk(this);
+                this.engineSdk = new SzCoreEngine(this);
             }
         }
 
@@ -494,7 +512,7 @@ public class SenzingSdk implements SzFactory {
         synchronized (this) {
             this.ensureActive();
             if (this.productSdk == null) {
-                this.productSdk = new SzProductSdk(this);
+                this.productSdk = new SzCoreProduct(this);
             }
         }
 
@@ -545,21 +563,34 @@ public class SenzingSdk implements SzFactory {
             this.productSdk.destroy();
             this.productSdk = null;
         }
+
+        // set the state
+        synchronized (this) {
+            this.state = State.DESTROYED;
+        }
+
+    }
+
+    @Override
+    public boolean isDestroyed() {
+        synchronized (this) {
+            return this.state != State.ACTIVE;
+        }
     }
 
     /**
-     * The builder class for creating an instance of {@link SenzingSdk}.
+     * The builder class for creating an instance of {@link SzCoreProvider}.
      */
     public static class Builder {
         /**
          * The settings for the builder which default to {@link 
-         * SenzingSdk#BOOTSTRAP_SETTINGS}.
+         * SzCoreProvider#BOOTSTRAP_SETTINGS}.
          */
         private String settings = BOOTSTRAP_SETTINGS;
 
         /**
          * The instance name for the builder which defaults to {@link 
-         * SenzingSdk#DEFAULT_INSTANCE_NAME}.
+         * SzCoreProvider#DEFAULT_INSTANCE_NAME}.
          */
         private String instanceName = DEFAULT_INSTANCE_NAME;
 
@@ -571,7 +602,7 @@ public class SenzingSdk implements SzFactory {
 
         /**
          * The default number of threads for the builder which defaults
-         * to {@link SenzingSdk#DEFAULT_THREAD_COUNT}.
+         * to {@link SzCoreProvider#DEFAULT_THREAD_COUNT}.
          */
         private int threadCount = DEFAULT_THREAD_COUNT;
 
@@ -591,14 +622,13 @@ public class SenzingSdk implements SzFactory {
             this.threadCount    = DEFAULT_THREAD_COUNT;
             this.verboseLogging = false;
             this.configId       = null;
-
         }
 
         /**
          * Obtains the default Senzing SDK settings from the system environment 
-         * using the {@link SenzingSdk#SETTINGS_ENVIRONMENT_VARIABLE}.  If the 
+         * using the {@link SzCoreProvider#SETTINGS_ENVIRONMENT_VARIABLE}.  If the 
          * settings are not available from the environment then the bootstrap
-         * settings defined by {@link SenzingSdk#BOOTSTRAP_SETTINGS} are returned.
+         * settings defined by {@link SzCoreProvider#BOOTSTRAP_SETTINGS} are returned.
          * 
          * @return The default Senzing SDK settings.
          */
@@ -615,8 +645,8 @@ public class SenzingSdk implements SzFactory {
          * Provides the Senzing SDK settings to configure the Senzing SDK.
          * If this is set to <code>null</code> or empty-string then an attempt
          * will be made to obtain the settings from the system environment via
-         * the {@link SenzingSdk#SETTINGS_ENVIRONMENT_VARIABLE} with a fallback
-         * to the {@link SenzingSdk#BOOTSTRAP_SETTINGS} if the environment
+         * the {@link SzCoreProvider#SETTINGS_ENVIRONMENT_VARIABLE} with a fallback
+         * to the {@link SzCoreProvider#BOOTSTRAP_SETTINGS} if the environment
          * variable is not set.
          * 
          * @param settings The Senzing SDK settings, or <code>null</code> or 
@@ -624,8 +654,8 @@ public class SenzingSdk implements SzFactory {
          * 
          * @return A reference to this instance.
          * 
-         * @see SenzingSdk#SETTINGS_ENVIRONMENT_VARIABLE
-         * @see SenzingSdk#BOOTSTRAP_SETTINGS                
+         * @see SzCoreProvider#SETTINGS_ENVIRONMENT_VARIABLE
+         * @see SzCoreProvider#BOOTSTRAP_SETTINGS                
          */
         public Builder settings(String settings) {
             if (settings != null && settings.trim().length() == 0) {
@@ -639,7 +669,7 @@ public class SenzingSdk implements SzFactory {
         /**
          * Provides the Senzing SDK instance name to configure the Senzing SDK.
          * Call this method to override the default value of {@link 
-         * SenzingSdk#DEFAULT_INSTANCE_NAME}.
+         * SzCoreProvider#DEFAULT_INSTANCE_NAME}.
          * 
          * @param instanceName The instance name to initialize the Senzing SDK, or
          *                     <code>null</code> or empty-string to restore the 
@@ -647,7 +677,7 @@ public class SenzingSdk implements SzFactory {
          * 
          * @return A reference to this instance.
          * 
-         * @see SenzingSdk#DEFAULT_INSTANCE_NAME
+         * @see SzCoreProvider#DEFAULT_INSTANCE_NAME
          */
         public Builder instanceName(String instanceName) {
             if (instanceName != null && instanceName.trim().length() == 0) {
@@ -663,7 +693,7 @@ public class SenzingSdk implements SzFactory {
          * Call this method to explicitly set the value.  If not called, the
          * default value is <code>false</code>.
          * 
-         * @parma verboseLogging <code>true</code> if verbose logging should be
+         * @param verboseLogging <code>true</code> if verbose logging should be
          *                       enabled, otherwise <code>false</code>.
          * 
          * @return A reference to this instance.
@@ -693,10 +723,12 @@ public class SenzingSdk implements SzFactory {
         /**
          * Sets the number of Senzing SDK execution threads to initialize for 
          * using the Senzing SDK.  This defaults to {@link 
-         * SenzingSdk#DEFAULT_THREAD_COUNT} if not expliitly set.
+         * SzCoreProvider#DEFAULT_THREAD_COUNT} if not expliitly set.
          * 
          * @param threadCount The number of Senzing SDK to initialize for use 
          *                    with Senzing operations.
+         * 
+         * @return A reference to this instance.
          * 
          * @throws IllegalArgumentException If the specifed thread count is less-than
          *                                  or equal-to zero (0).
@@ -712,10 +744,22 @@ public class SenzingSdk implements SzFactory {
         }
 
         /**
-         * This method 
+         * This method creates a new {@link SzCoreProvider} instance based on this
+         * {@link Builder} instance.  This method will throw an {@link 
+         * IllegalStateException} if another active {@link SzCoreProvider} instance
+         * exists since only one active instance can exist within a process at
+         * any given time.  An active instance is one that has been constructed, 
+         * but has not yet been destroyed.
+         * 
+         * @return The newly created {@link SzCoreProvider} instance.
+         * 
+         * @throws IllegalStateException If another active {@link SzCoreProvider}
+         *                               instance exists when this method is
+         *                               invoked.
          */
-        public SenzingSdk create() {
-            return new SenzingSdk(this.instanceName,
+        public SzCoreProvider build() throws IllegalStateException
+        {
+            return new SzCoreProvider(this.instanceName,
                                   this.settings,
                                   this.verboseLogging,
                                   this.configId,
