@@ -67,14 +67,14 @@ public class SzCoreProviderTest extends AbstractTest {
                 provider = SzCoreProvider.newBuilder().build();
     
                 assertEquals(provider.getInstanceName(), SzCoreProvider.DEFAULT_INSTANCE_NAME,
-                    "SDK instance name is not default instance name");
+                    "Provider instance name is not default instance name");
                 assertEquals(provider.getSettings(), defaultSettings,
-                    "SDK settings are not bootstrap settings");
+                    "Provider settings are not bootstrap settings");
                 assertFalse(provider.isVerboseLogging(),
-                    "SDK verbose logging did not default to false");
+                    "Provider verbose logging did not default to false");
                 assertEquals(provider.getThreadCount(), SzCoreProvider.DEFAULT_THREAD_COUNT,
-                    "SDK thread count is not default thread count");
-                assertNull(provider.getConfigId(), "SDK config ID is not null");
+                    "Provider thread count is not default thread count");
+                assertNull(provider.getConfigId(), "Provider config ID is not null");
     
             } finally {
                 if (provider != null) provider.destroy();
@@ -99,14 +99,14 @@ public class SzCoreProviderTest extends AbstractTest {
                                          .build();
 
                 assertEquals(provider.getInstanceName(), "Custom Instance",
-                        "SDK instance name is not as expected");
+                        "Provider instance name is not as expected");
                 assertEquals(provider.getSettings(), settings,
-                        "SDK settings are not as expected");
+                        "Provider settings are not as expected");
                 assertEquals(provider.isVerboseLogging(), verboseLogging,
-                        "SDK verbose logging did not default to false");
+                        "Provider verbose logging did not default to false");
                 assertEquals(provider.getThreadCount(), threadCount,
-                    "SDK thread count is not default thread count");
-                assertNull(provider.getConfigId(), "SDK config ID is not null");
+                    "Provider thread count is not default thread count");
+                assertNull(provider.getConfigId(), "Provider config ID is not null");
     
             } finally {
                 if (provider != null) provider.destroy();
@@ -176,23 +176,23 @@ public class SzCoreProviderTest extends AbstractTest {
             SzCoreProvider provider1 = null;
             SzCoreProvider provider2 = null;
             try {
-                // get the first SDK
+                // get the first Provider
                 provider1 = SzCoreProvider.newBuilder().instanceName("Instance 1").build();
     
                 // ensure it is active
                 try {
                     provider1.ensureActive();
                 } catch (Exception e) {
-                    fail("First SDK instance is not active.", e);
+                    fail("First Provider instance is not active.", e);
                 }
     
-                // destroy the first SDK
+                // destroy the first Provider
                 provider1.destroy();
     
                 // check it is now inactive
                 try {
                     provider1.ensureActive();
-                    fail("First SDK instance is still active.");
+                    fail("First Provider instance is still active.");
     
                 } catch (Exception expected) {
                     // do nothing
@@ -201,23 +201,23 @@ public class SzCoreProviderTest extends AbstractTest {
                     provider1 = null;
                 }
     
-                // create a second SDK instance
+                // create a second Provider instance
                 provider2 = SzCoreProvider.newBuilder().instanceName("Instance 2").settings(BOOTSTRAP_SETTINGS).build();
     
                 // ensure it is active
                 try {
                     provider2.ensureActive();
                 } catch (Exception e) {
-                    fail("Second SDK instance is not active.", e);
+                    fail("Second Provider instance is not active.", e);
                 }
     
-                // destroy the second SDK
+                // destroy the second Provider
                 provider2.destroy();
     
                 // check it is now inactive
                 try {
                     provider2.ensureActive();
-                    fail("Second SDK instance is still active.");
+                    fail("Second Provider instance is still active.");
     
                 } catch (Exception expected) {
                     // do nothing
@@ -402,7 +402,7 @@ public class SzCoreProviderTest extends AbstractTest {
             SzCoreProvider provider1 = null;
             SzCoreProvider provider2 = null;
             try {
-                // get the first SDK
+                // get the first Provider
                 provider1 = SzCoreProvider.newBuilder().instanceName("Instance 1").build();
     
                 SzCoreProvider active = SzCoreProvider.getActiveInstance();
@@ -413,7 +413,7 @@ public class SzCoreProviderTest extends AbstractTest {
                             "Active instance was not as expected: " 
                             + ((active == null) ? null : active.getInstanceName()));
     
-                // destroy the first SDK
+                // destroy the first Provider
                 provider1.destroy();
     
                 active = SzCoreProvider.getActiveInstance();
@@ -421,7 +421,7 @@ public class SzCoreProviderTest extends AbstractTest {
                            "Active instance found when there should be none: " 
                            + ((active == null) ? "" : active.getInstanceName()));
                             
-                // create a second SDK instance
+                // create a second Provider instance
                 provider2 = SzCoreProvider.newBuilder()
                     .instanceName("Instance 2").settings(BOOTSTRAP_SETTINGS).build();
     
@@ -432,7 +432,7 @@ public class SzCoreProviderTest extends AbstractTest {
                            "Active instance was not as expected: " 
                            + ((active == null) ? null : active.getInstanceName()));
                     
-                // destroy the second SDK
+                // destroy the second Provider
                 provider2.destroy();
     
                 active = SzCoreProvider.getActiveInstance();
