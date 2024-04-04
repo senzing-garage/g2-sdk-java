@@ -3,7 +3,18 @@ package com.senzing.g2.engine;
 import java.io.File;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.List;
+import java.util.ArrayList;
 
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.TestInstance;
@@ -72,8 +83,6 @@ public class SzCoreProviderTest extends AbstractTest {
                     "Provider settings are not bootstrap settings");
                 assertFalse(provider.isVerboseLogging(),
                     "Provider verbose logging did not default to false");
-                assertEquals(provider.getThreadCount(), SzCoreProvider.DEFAULT_THREAD_COUNT,
-                    "Provider thread count is not default thread count");
                 assertNull(provider.getConfigId(), "Provider config ID is not null");
     
             } finally {
@@ -83,8 +92,8 @@ public class SzCoreProviderTest extends AbstractTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"true,1", "true,2", "false,3", "false,4"})
-    void testNewCustomBuilder(boolean verboseLogging, int threadCount) {
+    @ValueSource(booleans = { true, false})
+    void testNewCustomBuilder(boolean verboseLogging) {
         this.performTest(() -> {
             String settings = this.getRepoSettings();
             
@@ -95,7 +104,6 @@ public class SzCoreProviderTest extends AbstractTest {
                                          .instanceName("Custom Instance")
                                          .settings(settings)
                                          .verboseLogging(verboseLogging)
-                                         .threads(threadCount)
                                          .build();
 
                 assertEquals(provider.getInstanceName(), "Custom Instance",
@@ -104,8 +112,6 @@ public class SzCoreProviderTest extends AbstractTest {
                         "Provider settings are not as expected");
                 assertEquals(provider.isVerboseLogging(), verboseLogging,
                         "Provider verbose logging did not default to false");
-                assertEquals(provider.getThreadCount(), threadCount,
-                    "Provider thread count is not default thread count");
                 assertNull(provider.getConfigId(), "Provider config ID is not null");
     
             } finally {
@@ -244,18 +250,34 @@ public class SzCoreProviderTest extends AbstractTest {
     @CsvSource({"1, Foo", "2, Bar", "3, Phoo", "4, Phoox"})
     void testExecute(int threadCount, String expected) {
         SzCoreProvider provider = null;
+
+        ThreadPoolExecutor threadPool = new ThreadPoolExecutor(
+            threadCount, threadCount, 10L, SECONDS, new LinkedBlockingQueue<>());
+
+        List<Future<String>> futures = new ArrayList<>(threadCount);
         try {
-            provider = SzCoreProvider.newBuilder().threads(threadCount).build();
+            provider = SzCoreProvider.newBuilder().build();
 
-            try {
-               String actual = provider.execute(() -> {
-                    return expected;
-               });
+            final SzCoreProvider prov = provider;
 
-               assertEquals(expected, actual, "Unexpected result from execute()");
+            // loop through the threads
+            for (int index = 0; index < threadCount; index++) {
+                Future<String> future = threadPool.submit(() -> {
+                    return prov.execute(() -> {
+                        return expected;
+                    });
+                });
+                futures.add(future);
+            }
 
-            } catch (Exception e) {
-                fail("Failed execute with exception", e);
+            // loop through the futures
+            for (Future<String> future : futures) {
+                try {
+                    String actual = future.get();
+                    assertEquals(expected, actual, "Unexpected result from execute()");
+                } catch (Exception e) {
+                    fail("Failed execute with exception", e);
+                }
             }
 
 
@@ -267,11 +289,11 @@ public class SzCoreProviderTest extends AbstractTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"1, Foo", "2, Bar", "3, Phoo", "4, Phoox"})
-    void testExecuteFail(int threadCount, String expected) {
+    @ValueSource(strings = {"Foo", "Bar", "Phoo", "Phoox"})
+    void testExecuteFail(String expected) {
         SzCoreProvider provider = null;
         try {
-            provider = SzCoreProvider.newBuilder().threads(threadCount).build();
+            provider = SzCoreProvider.newBuilder().build();
 
             try {
                provider.execute(() -> {
@@ -296,17 +318,17 @@ public class SzCoreProviderTest extends AbstractTest {
 
     @ParameterizedTest
     @CsvSource({"1, Foo", "2, Bar", "3, Phoo", "4, Phoox"})
-    void testExecuteThreadPool(int threadCount, String expected) {
+    void testGetExecutingCount(int threadCount, String expected) {
+        int executeCount = threadCount * 3;
+
+        final Object[] monitors = new Object[executeCount];
+        for (int index = 0; index < executeCount; index++) {
+            monitors[index] = new Object();
+        }
         SzCoreProvider provider = null;
         try {
-            final long delay = 300L;
+            provider = SzCoreProvider.newBuilder().instanceName(expected).build();
 
-            provider = SzCoreProvider.newBuilder()
-                .instanceName(expected).threads(threadCount).build();
-
-            int executeCount = threadCount * 3;
-            final String[]      threadNames = new String[executeCount];
-            final long[]        startTimes  = new long[executeCount];
             final Thread[]      threads     = new Thread[executeCount];
             final String[]      results     = new String[executeCount];
             final Exception[]   failures    = new Exception[executeCount];
@@ -318,9 +340,11 @@ public class SzCoreProviderTest extends AbstractTest {
                     public void run() {
                         try {
                             String actual = prov.execute(() -> {
-                                startTimes[threadIndex]  = System.nanoTime();
-                                threadNames[threadIndex] = Thread.currentThread().getName();
-                                Thread.sleep(delay);
+                                Object monitor = monitors[threadIndex];
+                                synchronized (monitor) {
+                                    monitor.notifyAll();
+                                    monitor.wait();
+                                }
                                 return expected + "-" + threadIndex;
                             });
                             results[threadIndex]    = actual;
@@ -333,63 +357,60 @@ public class SzCoreProviderTest extends AbstractTest {
                     }
                 };
             }
+            int prevExecutingCount = 0;
             for (int index = 0; index < executeCount; index++) {
-                threads[index].start();
+                Object monitor = monitors[index];
+
+                synchronized (monitor) {
+
+                    threads[index].start();
+                    try {
+                        monitor.wait();
+                    } catch (InterruptedException ignore) {
+                        // do nothing
+                    }
+                }
+                int executingCount = provider.getExecutingCount();
+                assertTrue(executingCount > 0, "Executing count is zero");
+                assertTrue(executingCount > prevExecutingCount, 
+                        "Executing count (" + executingCount + ") decremented from previous ("
+                        + prevExecutingCount + ")");
+                prevExecutingCount = executingCount;
             }
+
             for (int index = 0; index < executeCount; index++) {
                 try {
+                    Object monitor = monitors[index];
+                    synchronized (monitor) {
+                        monitor.notifyAll();
+                    }
                     threads[index].join();
                 } catch (InterruptedException e) {
                     fail("Interrupted while joining threads");
                 }
+                int executingCount = provider.getExecutingCount();
+                assertTrue(executingCount >= 0, "Executing count is negative");
+                assertTrue(executingCount < prevExecutingCount, 
+                        "Executing count (" + executingCount + ") incremented from previous ("
+                        + prevExecutingCount + ")");
+                prevExecutingCount = executingCount;
             }
             
             // check the basics
             for (int index = 0; index < executeCount; index++) {
-                assertTrue((threadNames[index].indexOf(expected) >= 0),
-                       "Thread name does not contain expected instance name");
                 assertEquals(expected + "-" + index, results[index],
                             "At least one thread returned an unexpected result");
                 assertNull(failures[index], 
                                     "At least one thread threw an exception");
             }
             
-            // check the start time differences
-            Map<Integer, Integer> phaseCounts = new TreeMap<>();
-            long    minStart        = -1L;
-            int     maxPhase        = 0;
-            int     maxPhaseCount   = 0;
-            for (int index = 0; index < executeCount; index++) {
-                if (minStart < 0L || minStart > startTimes[index]) {
-                    minStart = startTimes[index];
-                }
-            }
-            for (int index = 0; index < executeCount; index++) {
-                long diff = (startTimes[index] - minStart) / 1000000L;
-                int phase = (int) (diff / delay);
-                if (phaseCounts.containsKey(phase)) {
-                    int phaseCount = phaseCounts.get(phase) + 1;
-                    phaseCounts.put(phase, phaseCount);
-                    if (phaseCount > maxPhase) maxPhase = phaseCount;
-                } else {
-                    phaseCounts.put(phase, 1);
-                    if (maxPhaseCount == 0) maxPhaseCount = 1;
-                }
-                if (phase > maxPhase) maxPhase = phase;
-            }
-            int minPhaseCount = phaseCounts.values().stream().min(Integer::compareTo).get();
-
-            assertNotEquals(1, phaseCounts.size(),
-                            "Threads all executed in the same phase: " + phaseCounts);
-            assertTrue(maxPhase < 5, 
-                       "Maximum execution phase exceeded thread multiple: " + phaseCounts);
-            assertTrue(maxPhaseCount <= threadCount,
-                        "Too many threads (" + maxPhaseCount + ") executed in the same phase.  "
-                        + "At most " + threadCount + " should have been possible: " + phaseCounts);
-            assertNotEquals(threadCount - 1, minPhaseCount,
-                            "Too few threads executed in at least one phase: " + phaseCounts);
-
         } finally {
+            for (int index = 0; index < executeCount; index++) {
+                Object monitor = monitors[index];
+                synchronized (monitor) {
+                    monitor.notifyAll();
+                }
+            }
             if (provider != null) {
                 provider.destroy();
             }

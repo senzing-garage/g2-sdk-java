@@ -1,27 +1,19 @@
 package com.senzing.g2.engine;
 
 import java.util.Objects;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
-
-import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * Provides a bare-metal implementation of {@link SzProvider} that directly
- * initializes the Senzing SDK interfaces and provides singleton access 
+ * initializes the Senzing provider interfaces and provides singleton access 
  * to those interfaces that will be valid until the created instance of 
  * {@link SzCoreProvider}.
  */
 public class SzCoreProvider implements SzProvider {
     /**
-     * The environment variable for obtaining the Senzing SDK settings
+     * The environment variable for obtaining the Senzing provider settings
      * from the environment.  If a value is set in the environment then
-     * it will be used by default for initializing the Senzing SDK unless
+     * it will be used by default for initializing the Senzing provider unless
      * the {@link Builder#settings(String)} method is used to provide
      * different settings.
      * <p>
@@ -33,9 +25,9 @@ public class SzCoreProvider implements SzProvider {
         = "SENZING_ENGINE_CONFIGURATION_JSON";
 
     /**
-     * The default instance name to use for the Senzing SDK.  The value is
+     * The default instance name to use for the Senzing provider.  The value is
      * <code>"Senzing Instance"</code>.  An explicit vaklue can be provided
-     * via {@link Builder#instanceName(String)} during SDK initialization.
+     * via {@link Builder#instanceName(String)} during provider initialization.
      * <p>
      * The value of this constant is <code>{@value}</code>.
      * 
@@ -44,7 +36,7 @@ public class SzCoreProvider implements SzProvider {
     public static final String DEFAULT_INSTANCE_NAME = "Senzing Instance";
 
     /**
-     * The bootstrap settings with which to initialize the SDK when the {@link 
+     * The bootstrap settings with which to initialize the provider when the {@link 
      * #SETTINGS_ENVIRONMENT_VARIABLE} is <b>not</b> set and an explicit value
      * settings value has not been provided via {@link 
      * Builder#settings(String)}.  If this is used it will initialize Senzing
@@ -66,18 +58,6 @@ public class SzCoreProvider implements SzProvider {
     public static final String BOOTSTRAP_SETTINGS = "{ }";
 
     /**
-     * The default number of threads to allocate for executing Senzing SDK
-     * operations to restrain memory consumption for use by Senzing.  This
-     * defaults to one (<code>1</code>) but can be modified via {@link
-     * Builder#threads(int)}.
-     * <p>
-     * The value of this constant is <code>{@value}</code>.
-     *
-     * @see Builder#threads(int) 
-     */
-    public static final int DEFAULT_THREAD_COUNT = 1;
-
-    /**
      * Enumerates the possible states for an instance of {@link SzCoreProvider}.
      */
     private static enum State {
@@ -86,7 +66,7 @@ public class SzCoreProvider implements SzProvider {
          * is initialized and ready to use.  Only one instance of {@link SenzingSdk}
          * can exist in the {@link #ACTIVE} or {@link #DESTROYING} state.   is
          * the one and only instance that will exist in that state since the
-         * Senzing SDK cannot be initialized heterogeneously within a single 
+         * Senzing provider cannot be initialized heterogeneously within a single 
          * process.
          * 
          * @see SenzingSdk#getActiveInstance()
@@ -122,7 +102,7 @@ public class SzCoreProvider implements SzProvider {
      * can exist at time.  An active instance is one that has not yet been
      * destroyed.
      * 
-     * @return The {@link Builder} for configuring and initializing the Senzing SDK.
+     * @return The {@link Builder} for configuring and initializing the Senzing provider.
      */
     public static Builder newBuilder() {
         return new Builder();
@@ -159,7 +139,7 @@ public class SzCoreProvider implements SzProvider {
                         return current_instance;
                     default:
                         throw new IllegalStateException(
-                            "Unrecognized Senzing SDK state: " + state);
+                            "Unrecognized Senzing provider state: " + state);
                 }
             }
         }
@@ -170,17 +150,17 @@ public class SzCoreProvider implements SzProvider {
      * Use this when obtaining an instance of {@link SzCoreProvider} in the {@link 
      * State#DESTROYING} and you want to wait until it is fully destroyed.
      * 
-     * @param sdkInstacne The non-null {@link SzCoreProvider} instance to wait on.
+     * @param provider The non-null {@link SzCoreProvider} instance to wait on.
      * 
      * @throws NullPointerException If the specified parameter is <code>null</code>.
      */
-    private static void waitUntilDestroyed(SzCoreProvider sdkInstance) 
+    private static void waitUntilDestroyed(SzCoreProvider provider) 
     {
-        Objects.requireNonNull(sdkInstance, "The specified SenzingSdk cannot be null");
-        synchronized (sdkInstance) {
-            while (sdkInstance.state != State.DESTROYED) {
+        Objects.requireNonNull(provider, "The specified SenzingSdk cannot be null");
+        synchronized (provider) {
+            while (provider.state != State.DESTROYED) {
                 try {
-                    sdkInstance.wait(5000L);
+                    provider.wait(5000L);
                 } catch (InterruptedException ignore) {
                     // ignore the exception
                 }
@@ -208,16 +188,6 @@ public class SzCoreProvider implements SzProvider {
      * using the default configuration.
      */
     private Long configId = null;
-
-    /**
-     * The number of executor threads to initialize with.
-     */
-    private int threadCount = 0;
-
-    /**
-     * The {@link ThreadPoolExecutor} to be used by the API implementations.
-     */
-    private ThreadPoolExecutor threadPool = null;
 
     /**
      * The {@link SzCoreProduct} singleton instance to use.
@@ -249,43 +219,34 @@ public class SzCoreProvider implements SzProvider {
      */
     private State state = null;
 
+    /** 
+     * The number of currently executing operations.
+     */
+    private int executingCount = 0;
+
     /**
-     * Private constructor used by the builder to construct the SDK.
+     * Private constructor used by the builder to construct the provider.
      *  
-     * @param instanceName The Senzing SDK instance name.
-     * @param settings The Senzing SDK settings.
-     * @param verboseLogging The verbose logging setting for Senzing SDK.
-     * @param configId The explicit config ID for the Senzing SDK initialization, or
+     * @param instanceName The Senzing provider instance name.
+     * @param settings The Senzing provider settings.
+     * @param verboseLogging The verbose logging setting for Senzing provider.
+     * @param configId The explicit config ID for the Senzing provider initialization, or
      *                 <code>null</code> if using the default configuration.
-     * @param threadCount The number of threads to initialize the executor pool with.
      */
     private SzCoreProvider(String   instanceName,
                            String   settings,
                            boolean  verboseLogging,
-                           Long     configId,
-                           int      threadCount) 
+                           Long     configId) 
     {
         // set the fields
         this.instanceName   = instanceName;
         this.settings       = settings;
         this.verboseLogging = verboseLogging;
         this.configId       = configId;
-        this.threadCount    = threadCount;
-
-        // create the executor thread pool
-        this.threadPool = new ThreadPoolExecutor(
-            this.threadCount, this.threadCount, 10L, SECONDS,
-            new LinkedBlockingQueue<>(),
-            new ThreadFactory() {
-                private int threadIndex = 0;
-                public synchronized Thread newThread(Runnable r) {
-                  return new Thread(r, "Executor-" + instanceName + "-" + this.threadIndex++);
-                }
-            });
 
         synchronized (SzCoreProvider.class) {
-            SzCoreProvider activeSDK = getActiveInstance();
-            if (activeSDK != null) {
+            SzCoreProvider activeprovider = getActiveInstance();
+            if (activeprovider != null) {
                 throw new IllegalStateException(
                     "At most one active instance of SzCoreProvider can be initialized.  "
                     + "Another instance was already initialized.");
@@ -300,18 +261,18 @@ public class SzCoreProvider implements SzProvider {
     }
 
     /**
-     * Gets the associated Senzing SDK instance name for initialization.
+     * Gets the associated Senzing provider instance name for initialization.
      * 
-     * @return The associated Senzing SDK instance name for initialization.
+     * @return The associated Senzing provider instance name for initialization.
      */
     String getInstanceName() {
         return this.instanceName;
     }
 
     /**
-     * Gets the associated Senzing SDK settings for initialization.
+     * Gets the associated Senzing provider settings for initialization.
      * 
-     * @return The associated Senzing SDK settings for initialization.
+     * @return The associated Senzing provider settings for initialization.
      */
     String getSettings() {
         return this.settings;
@@ -329,11 +290,11 @@ public class SzCoreProvider implements SzProvider {
     }   
 
     /**
-     * Gets the explicit configuraiton ID with which to initialize the Senzing SDK.
+     * Gets the explicit configuraiton ID with which to initialize the Senzing provider.
      * This returns <code>null</code> if the default configuration ID configured in
      * the repository should be used.
      * 
-     * @return The explicit configuration ID with which to initialize the Senzing SDK,
+     * @return The explicit configuration ID with which to initialize the Senzing provider,
      *         or <code>null</code> if the default configuration ID configured in the
      *         repository should be used.
      */
@@ -342,20 +303,10 @@ public class SzCoreProvider implements SzProvider {
     }
     
     /**
-     * Gets the configued thread count for the executor thread pool.
-     * 
-     * @return The configued thread count for the executor thread pool.
-     */
-    int getThreadCount() {
-        return this.threadCount;
-    }
-
-    /**
-     * Executes the specified {@link Callable} task using this instance's
-     * executor thread pool and returns the result if successful.  This
-     * will throw any exception produced by the {@link Callable} task,
-     * wrapping it in an {@link SzException} if it is a checked exception
-     * that is not of type {@link SzException}.
+     * Executes the specified {@link Callable} task and returns the result
+     * if successful.  This will throw any exception produced by the {@link 
+     * Callable} task, wrapping it in an {@link SzException} if it is a
+     * checked exception that is not of type {@link SzException}.
      * 
      * @param <T> The return type.
      * @param task The {@link Callable} task to execute.
@@ -367,52 +318,40 @@ public class SzCoreProvider implements SzProvider {
     <T> T execute(Callable<T> task)
         throws SzException, IllegalStateException
     {
-        Future<T> future = null;
         synchronized (this) {
             if (this.state != State.ACTIVE) {
                 throw new IllegalStateException(
                     "SenzingSdk has been destroyed");
             }
 
-            // submit the task
-            try {
-                future = this.threadPool.submit(task);
-
-            } catch (RejectedExecutionException e) {
-                // this should NOT happen if not destroyed, but if
-                // it does then rethrow it
-                throw e;
-            }
+            // increment the executing count
+            this.executingCount++;
         }
         
         try {
-            return future.get();
+            return task.call();
 
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        } catch (SzException|RuntimeException e) {
+            throw e;
 
-        } catch (ExecutionException e) {
-            // get the cause
-            Throwable cause = e.getCause();
+        } catch (Exception e) {
+            throw new SzException(e);
 
-            // rethrow SzException's as SzException
-            if (cause instanceof SzException) {
-                throw ((SzException) cause);
+        } finally {
+            synchronized (this) {
+                this.executingCount--;
+                this.notifyAll();
             }
-
-            // rethrow runtime exceptions as runtime exceptions
-            if (cause instanceof RuntimeException) {
-                throw ((RuntimeException) cause);
-            }
-
-            // rethrow errors as errors
-            if (cause instanceof Error) {
-                throw ((Error) cause);
-            }
-
-            // wrap any checked exception in SzException and rethrow
-            throw new SzException(cause);
         }
+    }
+
+    /**
+     * Gets the number of currently executing operations.
+     * 
+     * @return The number of currently executing operations.
+     */
+    synchronized int getExecutingCount() {
+        return this.executingCount;
     }
 
     /**
@@ -424,7 +363,7 @@ public class SzCoreProvider implements SzProvider {
     synchronized void ensureActive() throws IllegalStateException {
         if (this.state != State.ACTIVE) {
             throw new IllegalStateException(
-                "The Senzing SDK has already been destroyed.");
+                "The Senzing provider has already been destroyed.");
         }
     }
 
@@ -458,7 +397,7 @@ public class SzCoreProvider implements SzProvider {
             }
         }
 
-        // return the configured SDK
+        // return the configured provider
         return this.coreConfig;
     }
 
@@ -473,7 +412,7 @@ public class SzCoreProvider implements SzProvider {
             }
         }
 
-        // return the configured SDK
+        // return the configured provider
         return this.coreConfigMgr;
     }
 
@@ -488,7 +427,7 @@ public class SzCoreProvider implements SzProvider {
             }
         }
 
-        // return the configured SDK
+        // return the configured provider
         return this.coreDiagnostic;
     }
 
@@ -503,7 +442,7 @@ public class SzCoreProvider implements SzProvider {
             }
         }
 
-        // return the configured SDK
+        // return the configured provider
         return this.coreEngine;
     }
 
@@ -518,7 +457,7 @@ public class SzCoreProvider implements SzProvider {
             }
         }
 
-        // return the configured SDK
+        // return the configured provider
         return this.coreProduct;
     }
 
@@ -530,17 +469,18 @@ public class SzCoreProvider implements SzProvider {
             
             // set the flag for destroying
             this.state = State.DESTROYING;
-
-            // shutdown the thread pool
-            this.threadPool.shutdown();
+            this.notifyAll();
         }
 
-        // await termination
-        while (!this.threadPool.isTerminated()) {
-            try {
-                this.threadPool.awaitTermination(5, SECONDS);
-            } catch (InterruptedException ignore) {
-                // do nothing
+        // await completion of in-flight executions
+        while (this.getExecutingCount() > 0) {
+            synchronized (this) {
+                try {
+                    // this should be notified every time the count decrements
+                    this.wait(5000L);
+                } catch (InterruptedException e) {
+                    // ignore
+                }
             }
         }
 
@@ -569,6 +509,7 @@ public class SzCoreProvider implements SzProvider {
         // set the state
         synchronized (this) {
             this.state = State.DESTROYED;
+            this.notifyAll();
         }
 
     }
@@ -603,12 +544,6 @@ public class SzCoreProvider implements SzProvider {
         private boolean verboseLogging = false;
 
         /**
-         * The default number of threads for the builder which defaults
-         * to {@link SzCoreProvider#DEFAULT_THREAD_COUNT}.
-         */
-        private int threadCount = DEFAULT_THREAD_COUNT;
-
-        /**
          * The config ID for the builder.  If not provided explicitly then
          * the configured default configuration in the Senzing repository
          * is used.
@@ -621,18 +556,17 @@ public class SzCoreProvider implements SzProvider {
         public Builder() {
             this.settings       = getDefaultSettings();
             this.instanceName   = DEFAULT_INSTANCE_NAME;
-            this.threadCount    = DEFAULT_THREAD_COUNT;
             this.verboseLogging = false;
             this.configId       = null;
         }
 
         /**
-         * Obtains the default Senzing SDK settings from the system environment 
+         * Obtains the default Senzing provider settings from the system environment 
          * using the {@link SzCoreProvider#SETTINGS_ENVIRONMENT_VARIABLE}.  If the 
          * settings are not available from the environment then the bootstrap
          * settings defined by {@link SzCoreProvider#BOOTSTRAP_SETTINGS} are returned.
          * 
-         * @return The default Senzing SDK settings.
+         * @return The default Senzing provider settings.
          */
         protected static String getDefaultSettings() {
             String envSettings = System.getenv(SETTINGS_ENVIRONMENT_VARIABLE);
@@ -644,14 +578,14 @@ public class SzCoreProvider implements SzProvider {
         }
 
         /**
-         * Provides the Senzing SDK settings to configure the Senzing SDK.
+         * Provides the Senzing provider settings to configure the Senzing provider.
          * If this is set to <code>null</code> or empty-string then an attempt
          * will be made to obtain the settings from the system environment via
          * the {@link SzCoreProvider#SETTINGS_ENVIRONMENT_VARIABLE} with a fallback
          * to the {@link SzCoreProvider#BOOTSTRAP_SETTINGS} if the environment
          * variable is not set.
          * 
-         * @param settings The Senzing SDK settings, or <code>null</code> or 
+         * @param settings The Senzing provider settings, or <code>null</code> or 
          *                 empty-string to restore the default value.
          * 
          * @return A reference to this instance.
@@ -669,11 +603,11 @@ public class SzCoreProvider implements SzProvider {
         }
 
         /**
-         * Provides the Senzing SDK instance name to configure the Senzing SDK.
+         * Provides the Senzing provider instance name to configure the Senzing provider.
          * Call this method to override the default value of {@link 
          * SzCoreProvider#DEFAULT_INSTANCE_NAME}.
          * 
-         * @param instanceName The instance name to initialize the Senzing SDK, or
+         * @param instanceName The instance name to initialize the Senzing provider, or
          *                     <code>null</code> or empty-string to restore the 
          *                     default value.
          * 
@@ -691,7 +625,7 @@ public class SzCoreProvider implements SzProvider {
         }
 
         /**
-         * Sets the verbose logging flag for configuring the Senzing SDK.
+         * Sets the verbose logging flag for configuring the Senzing provider.
          * Call this method to explicitly set the value.  If not called, the
          * default value is <code>false</code>.
          * 
@@ -706,12 +640,12 @@ public class SzCoreProvider implements SzProvider {
         }
 
         /**
-         * Sets the explicit configuration ID to use to initialize the Senzing SDK.
+         * Sets the explicit configuration ID to use to initialize the Senzing provider.
          * If not specified then the default configuration ID obtained from the
          * Senzing repository is used.
          * 
          * @param configId The explicit configuration ID to use to initialize the
-         *                 Senzing SDK, or <code>null</code> if the default 
+         *                 Senzing provider, or <code>null</code> if the default 
          *                 configuration ID from the Senzing repository should be
          *                 used.
          * 
@@ -719,29 +653,6 @@ public class SzCoreProvider implements SzProvider {
          */
         public Builder configId(Long configId) {
             this.configId = configId;
-            return this;
-        }
-
-        /**
-         * Sets the number of Senzing SDK execution threads to initialize for 
-         * using the Senzing SDK.  This defaults to {@link 
-         * SzCoreProvider#DEFAULT_THREAD_COUNT} if not expliitly set.
-         * 
-         * @param threadCount The number of Senzing SDK to initialize for use 
-         *                    with Senzing operations.
-         * 
-         * @return A reference to this instance.
-         * 
-         * @throws IllegalArgumentException If the specifed thread count is less-than
-         *                                  or equal-to zero (0).
-         */
-        public Builder threads(int threadCount) throws IllegalArgumentException {
-            if (threadCount <= 0) {
-                throw new IllegalArgumentException(
-                    "The specified thread count must be a positive number: " 
-                    + threadCount);
-            }
-            this.threadCount = threadCount;
             return this;
         }
 
@@ -762,10 +673,9 @@ public class SzCoreProvider implements SzProvider {
         public SzCoreProvider build() throws IllegalStateException
         {
             return new SzCoreProvider(this.instanceName,
-                                  this.settings,
-                                  this.verboseLogging,
-                                  this.configId,
-                                  this.threadCount);
+                                      this.settings,
+                                      this.verboseLogging,
+                                      this.configId);
         }
 
     }
