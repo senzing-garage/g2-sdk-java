@@ -240,12 +240,25 @@ public abstract class AbstractTest {
      * initialize and start the Senzing API Server.
      */
     protected void initializeTestEnvironment() {
+        this.initializeTestEnvironment(false);
+    }
+
+    /**
+     * This method can typically be called from a method annotated with
+     * "@BeforeAll".  It will create a Senzing entity repository and
+     * initialize and start the Senzing API Server.
+     * 
+     * @param excludeConfig <code>true</code> if the default configuration
+     *                      should be excluded from the repository, and
+     *                      <code>false</code> if it should be included.
+     */
+    protected void initializeTestEnvironment(boolean excludeConfig) {
         String moduleName = this.getModuleName("RepoMgr (create)");
         RepositoryManager.setThreadModuleName(moduleName);
         boolean concluded = false;
         try {
           Configuration config = RepositoryManager.createRepo(
-              this.getRepositoryDirectory(), true);
+              this.getRepositoryDirectory(), excludeConfig, true);
           this.repoCreated = true;
 
           this.prepareRepository();

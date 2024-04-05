@@ -459,7 +459,7 @@ public class RepositoryManager {
     return createRepo(directory, false);
   }
 
-  /**
+    /**
    * Creates a new Senzing SQLite repository from the default repository data.
    *
    * @param directory The directory at which to create the repository.
@@ -467,6 +467,23 @@ public class RepositoryManager {
    * @return The {@link Configuration} describing the initial configuration.
    */
   public static Configuration createRepo(File directory, boolean silent) {
+    return createRepo(directory, false, false);
+  }
+
+  /**
+   * Creates a new Senzing SQLite repository from the default repository data.
+   *
+   * @param directory The directory at which to create the repository.
+   *
+   * @param excludeConfig <code>true</code> if the default configuration
+   *                      should be excluded from the repository, and
+   *                      <code>false</code> if it should be included.
+   * @return The {@link Configuration} describing the initial configuration.
+   */
+  public static Configuration createRepo(File directory, 
+                                         boolean excludeConfig, 
+                                         boolean silent) 
+  {
     JsonObject resultConfig = null;
     Long resultConfigId = null;
     try {
@@ -579,51 +596,52 @@ public class RepositoryManager {
         osw.flush();
       }
 
-      // setup the initial configuration
-      initBaseApis(directory, false);
-      try {
-        Result<Long> configIdResult = new Result<>();
-        int returnCode = CONFIG_API.create(configIdResult);
-        if (returnCode != 0) {
-          System.err.println("RETURN CODE: " + returnCode);
-          String msg = logError("NativeConfig.create()", CONFIG_API);
-          throw new IllegalStateException(msg);
+      if (!excludeConfig) {
+        // setup the initial configuration
+        initBaseApis(directory, false);
+        try {
+          Result<Long> configIdResult = new Result<>();
+          int returnCode = CONFIG_API.create(configIdResult);
+          if (returnCode != 0) {
+            System.err.println("RETURN CODE: " + returnCode);
+            String msg = logError("NativeConfig.create()", CONFIG_API);
+            throw new IllegalStateException(msg);
+          }
+          long configId = configIdResult.getValue();
+          StringBuffer sb = new StringBuffer();
+          returnCode = CONFIG_API.save(configId, sb);
+          if (returnCode != 0) {
+            String msg = logError("NativeConfig.save()", CONFIG_API);
+            throw new IllegalStateException(msg);
+          }
+          CONFIG_API.close(configId);
+
+          String configJsonText = sb.toString();
+
+          resultConfig = JsonUtilities.parseJsonObject(configJsonText);
+
+          Result<Long> result = new Result<>();
+          returnCode = CONFIG_MGR_API.addConfig(configJsonText,
+                                                "Initial Config",
+                                                result);
+          if (returnCode != 0) {
+            String msg = logError("NativeConfigMgr.addConfig()",
+                                  CONFIG_MGR_API);
+            throw new IllegalStateException(msg);
+          }
+
+          resultConfigId = result.getValue();
+          returnCode = CONFIG_MGR_API.setDefaultConfigID(resultConfigId);
+          if (returnCode != 0) {
+            String msg = logError("NativeConfigMgr.setDefaultConfigID()",
+                                  CONFIG_MGR_API);
+            throw new IllegalStateException(msg);
+          }
+
+        } finally {
+          destroyBaseApis();
         }
-        long configId = configIdResult.getValue();
-        StringBuffer sb = new StringBuffer();
-        returnCode = CONFIG_API.save(configId, sb);
-        if (returnCode != 0) {
-          String msg = logError("NativeConfig.save()", CONFIG_API);
-          throw new IllegalStateException(msg);
-        }
-        CONFIG_API.close(configId);
-
-        String configJsonText = sb.toString();
-
-        resultConfig = JsonUtilities.parseJsonObject(configJsonText);
-
-        Result<Long> result = new Result<>();
-        returnCode = CONFIG_MGR_API.addConfig(configJsonText,
-                                              "Initial Config",
-                                              result);
-        if (returnCode != 0) {
-          String msg = logError("NativeConfigMgr.addConfig()",
-                                CONFIG_MGR_API);
-          throw new IllegalStateException(msg);
-        }
-
-        resultConfigId = result.getValue();
-        returnCode = CONFIG_MGR_API.setDefaultConfigID(resultConfigId);
-        if (returnCode != 0) {
-          String msg = logError("NativeConfigMgr.setDefaultConfigID()",
-                                CONFIG_MGR_API);
-          throw new IllegalStateException(msg);
-        }
-
-      } finally {
-        destroyBaseApis();
       }
-
       if (!silent) {
         System.out.println("Entity repository created at: " + directory);
       }
@@ -633,6 +651,7 @@ public class RepositoryManager {
       deleteRecursively(directory);
       throw new RuntimeException(e);
     }
+    if (excludeConfig) return null;
     return new Configuration(resultConfigId, resultConfig);
   }
 
