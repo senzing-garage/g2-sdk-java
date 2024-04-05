@@ -318,9 +318,8 @@ public class SzCoreConfigManagerTest extends AbstractTest {
                 
                 fail("Replaced default config ID when it should not have been possible");
 
-            } catch (SzException e) {
-                // expected
-                // TODO(Barry): Update with correct exception type
+            } catch (SzReplaceConflictException e) {
+                // expected exception
 
             } catch (Exception e) {
                 fail("Failed testNotReplaceDefaultConfigId test with exception", e);

@@ -84,17 +84,23 @@ public interface SzConfigManager extends SzProvided {
 	 * repository is equal to the specified old configuration ID.  If the current
 	 * configuration ID is not the same as the specified old configuration ID then
 	 * this method fails to replace the default configuration ID with the new
-	 * value and an exception is thrown.
+	 * value and an {@link SzReplaceConflictException} is thrown.
 	 *
 	 * @param currentDefaultConfigId The configuration ID that is believed to be the
 	 *                               current default configuration ID.
      * 
 	 * @param newDefaultConfigId The new configuration ID for the repository.
      * 
+	 * @throws SzReplaceConflictException If the default configuration ID was not updated
+	 *                                    to the specified new value because the current
+	 * 									  default configuration ID found in the repository
+	 *                                    was not equal to the specified expected current
+	 *                                    default configuration ID value.
+	 *                                    
      * @throws SzException If a failure occurs.
 	 */
 	void replaceDefaultConfigId(long currentDefaultConfigId, long newDefaultConfigId)
-        throws SzException;
+        throws SzReplaceConflictException, SzException;
 
     /**
 	 * Sets the default configuration for the repository to the specified

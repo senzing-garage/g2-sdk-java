@@ -85,5 +85,52 @@ public class SzCoreDiagnostic implements SzDiagnostic {
         return this.provider;
     }
 
+    @Override
+    public String checkDatabasePerformance(int secondsToRun) throws SzException {
+        return this.provider.execute(() -> {
+            // declare the buffer for the result
+            StringBuffer sb = new StringBuffer();
 
+            // call the underlying C function
+            int returnCode = this.nativeApi.checkDBPerf(secondsToRun, sb);
+
+            // handle any error code if there is one
+            this.provider.handleReturnCode(returnCode, this.nativeApi);
+
+            // return null
+            return sb.toString();
+        });
+    }
+
+    @Override
+    public String getFeature(long featureId) throws SzException {
+        return this.provider.execute(() -> {
+            // declare the buffer for the result
+            StringBuffer sb = new StringBuffer();
+
+            // call the underlying C function
+            int returnCode = this.nativeApi.getFeature(featureId, sb);
+
+            // handle any error code if there is one
+            this.provider.handleReturnCode(returnCode, this.nativeApi);
+
+            // return null
+            return sb.toString();
+        });
+    }
+
+    @Override
+    public void purgeRepository() throws SzException {
+        this.provider.execute(() -> {
+            // call the underlying C function
+            int returnCode = this.nativeApi.purgeRepository();
+            
+            // handle any error code if there is one
+            this.provider.handleReturnCode(returnCode, this.nativeApi);
+
+            // return null
+            return null;
+        });
+        
+    }
 }

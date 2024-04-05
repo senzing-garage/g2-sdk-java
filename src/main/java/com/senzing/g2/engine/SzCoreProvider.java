@@ -383,7 +383,12 @@ public class SzCoreProvider implements SzProvider {
         int     errorCode   = nativeApi.getLastExceptionCode();
         String  message     = nativeApi.getLastException();
         nativeApi.clearLastException();
-        throw new SzException(errorCode, message);
+        switch (errorCode) {
+            case 7245:
+                throw new SzReplaceConflictException(errorCode, message);
+            default:
+                throw new SzException(errorCode, message);
+        }
     }
 
     @Override
