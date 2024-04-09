@@ -2,13 +2,13 @@ package com.senzing.g2.engine;
 
 /**
  * The package-protected implementation of {@link SzDiagnostic} that works
- * with the {@link SzCoreProvider} class.
+ * with the {@link SzCoreEnvironment} class.
  */
 public class SzCoreDiagnostic implements SzDiagnostic {
     /**
-     * The {@link SzCoreProvider} that constructed this instance.
+     * The {@link SzCoreEnvironment} that constructed this instance.
      */
-    private SzCoreProvider provider = null;
+    private SzCoreEnvironment env = null;
 
     /**
      * The underlying {@link G2DiagnosticJNI} instance.
@@ -16,40 +16,43 @@ public class SzCoreDiagnostic implements SzDiagnostic {
     private G2DiagnosticJNI nativeApi = null;
 
     /**
-     * Default constructor.
+     * Constructs with the specified {@link SzCoreEnvironment}.
      * 
-     * @throws IllegalStateException If the underlying {@link SzCoreProvider} instance 
+     * @param environment The {@link SzCoreEnvironment} with which to 
+     *                    construct.
+     * 
+     * @throws IllegalStateException If the underlying {@link SzCoreEnvironment} instance 
      *                               has already been destroyed.
      * @throws SzException If a Senzing failure occurs during initialization.
      */
-    SzCoreDiagnostic(SzCoreProvider provider) 
+    SzCoreDiagnostic(SzCoreEnvironment environment) 
         throws IllegalStateException, SzException 
     {
-        this.provider = provider;
-        this.provider.execute(() -> {
+        this.env = environment;
+        this.env.execute(() -> {
             this.nativeApi = new G2DiagnosticJNI();
 
             // check if we are initializing with a config ID
-            if (this.provider.getConfigId() == null) {
+            if (this.env.getConfigId() == null) {
                 // if not then call the basic init
                 int returnCode = this.nativeApi.init(
-                    this.provider.getInstanceName(),
-                    this.provider.getSettings(),
-                    this.provider.isVerboseLogging());
+                    this.env.getInstanceName(),
+                    this.env.getSettings(),
+                    this.env.isVerboseLogging());
  
                 // handle any failure
-                this.provider.handleReturnCode(returnCode, this.nativeApi);
+                this.env.handleReturnCode(returnCode, this.nativeApi);
 
             } else {
                 // if so then call init with config ID
                 int returnCode = this.nativeApi.initWithConfigID(
-                    this.provider.getInstanceName(),
-                    this.provider.getSettings(),
-                    this.provider.getConfigId(),
-                    this.provider.isVerboseLogging());
+                    this.env.getInstanceName(),
+                    this.env.getSettings(),
+                    this.env.getConfigId(),
+                    this.env.isVerboseLogging());
 
                 // handle any failure
-                this.provider.handleReturnCode(returnCode, this.nativeApi);
+                this.env.handleReturnCode(returnCode, this.nativeApi);
             }
 
             return null;
@@ -69,7 +72,7 @@ public class SzCoreDiagnostic implements SzDiagnostic {
 
     /**
      * Checks if this instance has been destroyed by the associated
-     * {@link SzProvider}.
+     * {@link SzEnvironment}.
      * 
      * @return <code>true</code> if this instance has been destroyed,
      *         otherwise <code>false</code>.
@@ -81,13 +84,8 @@ public class SzCoreDiagnostic implements SzDiagnostic {
     }
     
     @Override
-    public SzProvider getProvider() {
-        return this.provider;
-    }
-
-    @Override
     public String checkDatabasePerformance(int secondsToRun) throws SzException {
-        return this.provider.execute(() -> {
+        return this.env.execute(() -> {
             // declare the buffer for the result
             StringBuffer sb = new StringBuffer();
 
@@ -95,7 +93,7 @@ public class SzCoreDiagnostic implements SzDiagnostic {
             int returnCode = this.nativeApi.checkDBPerf(secondsToRun, sb);
 
             // handle any error code if there is one
-            this.provider.handleReturnCode(returnCode, this.nativeApi);
+            this.env.handleReturnCode(returnCode, this.nativeApi);
 
             // return null
             return sb.toString();
@@ -104,7 +102,7 @@ public class SzCoreDiagnostic implements SzDiagnostic {
 
     @Override
     public String getFeature(long featureId) throws SzException {
-        return this.provider.execute(() -> {
+        return this.env.execute(() -> {
             // declare the buffer for the result
             StringBuffer sb = new StringBuffer();
 
@@ -112,7 +110,7 @@ public class SzCoreDiagnostic implements SzDiagnostic {
             int returnCode = this.nativeApi.getFeature(featureId, sb);
 
             // handle any error code if there is one
-            this.provider.handleReturnCode(returnCode, this.nativeApi);
+            this.env.handleReturnCode(returnCode, this.nativeApi);
 
             // return null
             return sb.toString();
@@ -121,12 +119,12 @@ public class SzCoreDiagnostic implements SzDiagnostic {
 
     @Override
     public void purgeRepository() throws SzException {
-        this.provider.execute(() -> {
+        this.env.execute(() -> {
             // call the underlying C function
             int returnCode = this.nativeApi.purgeRepository();
             
             // handle any error code if there is one
-            this.provider.handleReturnCode(returnCode, this.nativeApi);
+            this.env.handleReturnCode(returnCode, this.nativeApi);
 
             // return null
             return null;

@@ -2,13 +2,13 @@ package com.senzing.g2.engine;
 
 /**
  * The package-protected implementation of {@link SzProduct} that works
- * with the {@link SzCoreProvider} class.
+ * with the {@link SzCoreEnvironment} class.
  */
 public class SzCoreProduct implements SzProduct {
     /**
-     * The {@link SzCoreProvider} that constructed this instance.
+     * The {@link SzCoreEnvironment} that constructed this instance.
      */
-    private SzCoreProvider provider = null;
+    private SzCoreEnvironment env = null;
 
     /**
      * The underlying {@link G2ProductJNI} instance.
@@ -18,20 +18,20 @@ public class SzCoreProduct implements SzProduct {
     /**
      * Default constructor.
      * 
-     * @throws IllegalStateException If the underlying {@link SzCoreProvider} instance 
+     * @throws IllegalStateException If the underlying {@link SzCoreEnvironment} instance 
      *                               has already been destroyed.
      * @throws SzException If a Senzing failure occurs during initialization.
      */
-    SzCoreProduct(SzCoreProvider provider) throws IllegalStateException, SzException {
-        this.provider = provider;
-        this.provider.execute(() -> {
+    SzCoreProduct(SzCoreEnvironment environment) throws IllegalStateException, SzException {
+        this.env = environment;
+        this.env.execute(() -> {
             this.nativeApi = new G2ProductJNI();
 
-            int returnCode = this.nativeApi.init(this.provider.getInstanceName(),
-                                                 this.provider.getSettings(),
-                                                 this.provider.isVerboseLogging());
+            int returnCode = this.nativeApi.init(this.env.getInstanceName(),
+                                                 this.env.getSettings(),
+                                                 this.env.isVerboseLogging());
 
-            this.provider.handleReturnCode(returnCode, this.nativeApi);
+            this.env.handleReturnCode(returnCode, this.nativeApi);
 
             return null;
         });
@@ -50,7 +50,7 @@ public class SzCoreProduct implements SzProduct {
 
     /**
      * Checks if this instance has been destroyed by the associated
-     * {@link SzProvider}.
+     * {@link SzEnvironment}.
      * 
      * @return <code>true</code> if this instance has been destroyed,
      *         otherwise <code>false</code>.
@@ -60,22 +60,17 @@ public class SzCoreProduct implements SzProduct {
             return (this.nativeApi == null);
         }
     }
-    
-    @Override
-    public SzProvider getProvider() {
-        return this.provider;
-    }
 
     @Override
     public String getLicense() throws SzException {
-        return this.provider.execute(() -> {
+        return this.env.execute(() -> {
             return this.nativeApi.license();
         });
     }
 
     @Override
     public String getVersion() throws SzException {
-        return this.provider.execute(() -> {
+        return this.env.execute(() -> {
             return this.nativeApi.version();
         });
     }

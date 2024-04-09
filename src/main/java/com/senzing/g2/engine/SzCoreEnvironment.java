@@ -4,17 +4,18 @@ import java.util.Objects;
 import java.util.concurrent.Callable;
 
 /**
- * Provides a bare-metal implementation of {@link SzProvider} that directly
- * initializes the Senzing provider interfaces and provides singleton access 
- * to those interfaces that will be valid until the created instance of 
- * {@link SzCoreProvider}.
+ * Provides the core implementation of {@link SzEnvironment} that directly
+ * initializes the Senzing SDK modules and provides management of the Senzing
+ * environment in this process.
+ * 
+ * {@link SzCoreEnvironment}.
  */
-public class SzCoreProvider implements SzProvider {
+public class SzCoreEnvironment implements SzEnvironment {
     /**
-     * The environment variable for obtaining the Senzing provider settings
-     * from the environment.  If a value is set in the environment then
-     * it will be used by default for initializing the Senzing provider unless
-     * the {@link Builder#settings(String)} method is used to provide
+     * The environment variable for obtaining the initialization settings
+     * from the system environment.  If a value is set in the system environment
+     * then it will be used by default for initializing the {@link SzCoreEnvironment}
+     * unless the {@link Builder#settings(String)} method is used to provide
      * different settings.
      * <p>
      * The value of this constant is <code>{@value}</code>.
@@ -25,9 +26,9 @@ public class SzCoreProvider implements SzProvider {
         = "SENZING_ENGINE_CONFIGURATION_JSON";
 
     /**
-     * The default instance name to use for the Senzing provider.  The value is
-     * <code>"Senzing Instance"</code>.  An explicit vaklue can be provided
-     * via {@link Builder#instanceName(String)} during provider initialization.
+     * The default instance name to use for the Senzing intialization.  The
+     * value is <code>"{@value}</code>.  An explicit value can be
+     * provided via {@link Builder#instanceName(String)} during initialization.
      * <p>
      * The value of this constant is <code>{@value}</code>.
      * 
@@ -36,13 +37,13 @@ public class SzCoreProvider implements SzProvider {
     public static final String DEFAULT_INSTANCE_NAME = "Senzing Instance";
 
     /**
-     * The bootstrap settings with which to initialize the provider when the {@link 
-     * #SETTINGS_ENVIRONMENT_VARIABLE} is <b>not</b> set and an explicit value
-     * settings value has not been provided via {@link 
-     * Builder#settings(String)}.  If this is used it will initialize Senzing
-     * for access to only the {@link SzProduct} and {@link SzConfig} interfaces
-     * when Senzing installed in the default location for the platform.  The
-     * value of this constant is <code>"{ }"</code>.
+     * The bootstrap settings with which to initialize the {@link
+     * SzCoreEnvironment} when the {@link #SETTINGS_ENVIRONMENT_VARIABLE} is
+     * <b>not</b> set and an explicit settings value has not been provided via
+     * {@link Builder#settings(String)}.  If this is used it will initialize
+     * Senzing for access to only the {@link SzProduct} and {@link SzConfig}
+     * interfaces when Senzing installed in the default location for the
+     * platform.  The value of this constant is <code>"{ }"</code>.
      * <p>
      * <b>NOTE:</b> Using these settings is only useful for accessing the
      * {@link SzProduct} and {@link SzConfig} interfaces since {@link
@@ -52,13 +53,13 @@ public class SzCoreProvider implements SzProvider {
      * <p>
      * The value of this constant is <code>{@value}</code>.
      * 
-     * @see SzCoreProvider#SETTINGS_ENVIRONMENT_VARIABLE
+     * @see SzCoreEnvironment#SETTINGS_ENVIRONMENT_VARIABLE
      * @see Builder#settings(String)
      */
     public static final String BOOTSTRAP_SETTINGS = "{ }";
 
     /**
-     * Enumerates the possible states for an instance of {@link SzCoreProvider}.
+     * Enumerates the possible states for an instance of {@link SzCoreEnvironment}.
      */
     private static enum State {
         /**
@@ -66,7 +67,7 @@ public class SzCoreProvider implements SzProvider {
          * is initialized and ready to use.  Only one instance of {@link SenzingSdk}
          * can exist in the {@link #ACTIVE} or {@link #DESTROYING} state.   is
          * the one and only instance that will exist in that state since the
-         * Senzing provider cannot be initialized heterogeneously within a single 
+         * Senzing environment cannot be initialized heterogeneously within a single 
          * process.
          * 
          * @see SenzingSdk#getActiveInstance()
@@ -97,33 +98,34 @@ public class SzCoreProvider implements SzProvider {
 
     /**
      * Creates a new instance of {@link Builder} for setting up an instance
-     * of {@link SzCoreProvider}.  Keep in mind that while multiple {@link Builder}
-     * instances can exists, <b>only one active instance</b> of {@link SzCoreProvider}
+     * of {@link SzCoreEnvironment}.  Keep in mind that while multiple {@link Builder}
+     * instances can exists, <b>only one active instance</b> of {@link SzCoreEnvironment}
      * can exist at time.  An active instance is one that has not yet been
      * destroyed.
      * 
-     * @return The {@link Builder} for configuring and initializing the Senzing provider.
+     * @return The {@link Builder} for configuring and initializing the
+     *         {@link SzCoreEnvironment}.
      */
     public static Builder newBuilder() {
         return new Builder();
     }
 
     /**
-     * The currently instance of the {@link SzCoreProvider}.
+     * The currently instance of the {@link SzCoreEnvironment}.
      */
-    private static SzCoreProvider current_instance = null;
+    private static SzCoreEnvironment current_instance = null;
 
     /** 
-     * Gets the current active instance of {@link SzCoreProvider}.  An active instance
+     * Gets the current active instance of {@link SzCoreEnvironment}.  An active instance
      * is is one that has been constructed and has not yet been destroyed.  There
      * can be at most one active instance.  If no active instance exists then 
      * <code>null</code> is returned.
      * 
-     * @return The current active instance of {@link SzCoreProvider}, or 
+     * @return The current active instance of {@link SzCoreEnvironment}, or 
      *         <code>null</code> if there is no active instance.
      */
-    public static SzCoreProvider getActiveInstance() {
-        synchronized (SzCoreProvider.class) {
+    public static SzCoreEnvironment getActiveInstance() {
+        synchronized (SzCoreEnvironment.class) {
             if (current_instance == null) return null;
             synchronized (current_instance) {
                 State state = current_instance.state;
@@ -139,28 +141,28 @@ public class SzCoreProvider implements SzProvider {
                         return current_instance;
                     default:
                         throw new IllegalStateException(
-                            "Unrecognized Senzing provider state: " + state);
+                            "Unrecognized SzCoreEnvironment state: " + state);
                 }
             }
         }
     }
 
     /**
-     * Waits until the specified {@link SzCoreProvider} instance has been destroyed.
-     * Use this when obtaining an instance of {@link SzCoreProvider} in the {@link 
+     * Waits until the specified {@link SzCoreEnvironment} instance has been destroyed.
+     * Use this when obtaining an instance of {@link SzCoreEnvironment} in the {@link 
      * State#DESTROYING} and you want to wait until it is fully destroyed.
      * 
-     * @param provider The non-null {@link SzCoreProvider} instance to wait on.
+     * @param environment The non-null {@link SzCoreEnvironment} instance to wait on.
      * 
      * @throws NullPointerException If the specified parameter is <code>null</code>.
      */
-    private static void waitUntilDestroyed(SzCoreProvider provider) 
+    private static void waitUntilDestroyed(SzCoreEnvironment environment) 
     {
-        Objects.requireNonNull(provider, "The specified SenzingSdk cannot be null");
-        synchronized (provider) {
-            while (provider.state != State.DESTROYED) {
+        Objects.requireNonNull(environment, "The specified instance cannot be null");
+        synchronized (environment) {
+            while (environment.state != State.DESTROYED) {
                 try {
-                    provider.wait(5000L);
+                    environment.wait(5000L);
                 } catch (InterruptedException ignore) {
                     // ignore the exception
                 }
@@ -225,18 +227,19 @@ public class SzCoreProvider implements SzProvider {
     private int executingCount = 0;
 
     /**
-     * Private constructor used by the builder to construct the provider.
+     * Private constructor used by the builder to construct the instance.
      *  
-     * @param instanceName The Senzing provider instance name.
-     * @param settings The Senzing provider settings.
-     * @param verboseLogging The verbose logging setting for Senzing provider.
-     * @param configId The explicit config ID for the Senzing provider initialization, or
-     *                 <code>null</code> if using the default configuration.
+     * @param instanceName The Senzing instance name.
+     * @param settings The Senzing core settings.
+     * @param verboseLogging The verbose logging setting for Senzing environment.
+     * @param configId The explicit config ID for the Senzing environment
+     *                 initialization, or <code>null</code> if using the default
+     *                 configuration.
      */
-    private SzCoreProvider(String   instanceName,
-                           String   settings,
-                           boolean  verboseLogging,
-                           Long     configId) 
+    private SzCoreEnvironment(String    instanceName,
+                              String    settings,
+                              boolean   verboseLogging,
+                              Long      configId) 
     {
         // set the fields
         this.instanceName   = instanceName;
@@ -244,12 +247,13 @@ public class SzCoreProvider implements SzProvider {
         this.verboseLogging = verboseLogging;
         this.configId       = configId;
 
-        synchronized (SzCoreProvider.class) {
-            SzCoreProvider activeprovider = getActiveInstance();
-            if (activeprovider != null) {
+        synchronized (SzCoreEnvironment.class) {
+            SzCoreEnvironment activeEnvironment = getActiveInstance();
+            if (activeEnvironment != null) {
                 throw new IllegalStateException(
-                    "At most one active instance of SzCoreProvider can be initialized.  "
-                    + "Another instance was already initialized.");
+                    "At most one active instance of SzCoreEnvironment can be "
+                    + "initialized.  Another instance was previously initialized "
+                    + "and has not yet been destroyed.");
             }
 
             // set the state
@@ -261,18 +265,18 @@ public class SzCoreProvider implements SzProvider {
     }
 
     /**
-     * Gets the associated Senzing provider instance name for initialization.
+     * Gets the associated Senzing instance name for initialization.
      * 
-     * @return The associated Senzing provider instance name for initialization.
+     * @return The associated Senzing instance name for initialization.
      */
     String getInstanceName() {
         return this.instanceName;
     }
 
     /**
-     * Gets the associated Senzing provider settings for initialization.
+     * Gets the associated Senzing settings for initialization.
      * 
-     * @return The associated Senzing provider settings for initialization.
+     * @return The associated Senzing settings for initialization.
      */
     String getSettings() {
         return this.settings;
@@ -290,13 +294,13 @@ public class SzCoreProvider implements SzProvider {
     }   
 
     /**
-     * Gets the explicit configuraiton ID with which to initialize the Senzing provider.
-     * This returns <code>null</code> if the default configuration ID configured in
-     * the repository should be used.
+     * Gets the explicit configuraiton ID with which to initialize the Senzing 
+     * environment.  This returns <code>null</code> if the default
+     * configuration ID configured in the repository should be used.
      * 
-     * @return The explicit configuration ID with which to initialize the Senzing provider,
-     *         or <code>null</code> if the default configuration ID configured in the
-     *         repository should be used.
+     * @return The explicit configuration ID with which to initialize the Senzing
+     *         environment, or <code>null</code> if the default configuration ID
+     *         configured in the repository should be used.
      */
     Long getConfigId() {
         return this.configId;
@@ -312,7 +316,7 @@ public class SzCoreProvider implements SzProvider {
      * @param task The {@link Callable} task to execute.
      * @return The result from the {@link Callable} task.
      * @throws SzException If the {@link Callable} task triggers a failure.
-     * @throws IllegalStateException If this {@link SzCoreProvider} instance has
+     * @throws IllegalStateException If this {@link SzCoreEnvironment} instance has
      *                               already been destroyed.
      */
     <T> T execute(Callable<T> task)
@@ -363,7 +367,7 @@ public class SzCoreProvider implements SzProvider {
     synchronized void ensureActive() throws IllegalStateException {
         if (this.state != State.ACTIVE) {
             throw new IllegalStateException(
-                "The Senzing provider has already been destroyed.");
+                "The SzCoreEnvironment instance has already been destroyed.");
         }
     }
 
@@ -402,7 +406,7 @@ public class SzCoreProvider implements SzProvider {
             }
         }
 
-        // return the configured provider
+        // return the configured instance
         return this.coreConfig;
     }
 
@@ -417,7 +421,7 @@ public class SzCoreProvider implements SzProvider {
             }
         }
 
-        // return the configured provider
+        // return the configured instance
         return this.coreConfigMgr;
     }
 
@@ -432,7 +436,7 @@ public class SzCoreProvider implements SzProvider {
             }
         }
 
-        // return the configured provider
+        // return the configured instance
         return this.coreDiagnostic;
     }
 
@@ -447,7 +451,7 @@ public class SzCoreProvider implements SzProvider {
             }
         }
 
-        // return the configured provider
+        // return the configured instance
         return this.coreEngine;
     }
 
@@ -462,7 +466,7 @@ public class SzCoreProvider implements SzProvider {
             }
         }
 
-        // return the configured provider
+        // return the configured instance
         return this.coreProduct;
     }
 
@@ -527,18 +531,18 @@ public class SzCoreProvider implements SzProvider {
     }
 
     /**
-     * The builder class for creating an instance of {@link SzCoreProvider}.
+     * The builder class for creating an instance of {@link SzCoreEnvironment}.
      */
     public static class Builder {
         /**
          * The settings for the builder which default to {@link 
-         * SzCoreProvider#BOOTSTRAP_SETTINGS}.
+         * SzCoreEnvironment#BOOTSTRAP_SETTINGS}.
          */
         private String settings = BOOTSTRAP_SETTINGS;
 
         /**
          * The instance name for the builder which defaults to {@link 
-         * SzCoreProvider#DEFAULT_INSTANCE_NAME}.
+         * SzCoreEnvironment#DEFAULT_INSTANCE_NAME}.
          */
         private String instanceName = DEFAULT_INSTANCE_NAME;
 
@@ -566,12 +570,13 @@ public class SzCoreProvider implements SzProvider {
         }
 
         /**
-         * Obtains the default Senzing provider settings from the system environment 
-         * using the {@link SzCoreProvider#SETTINGS_ENVIRONMENT_VARIABLE}.  If the 
-         * settings are not available from the environment then the bootstrap
-         * settings defined by {@link SzCoreProvider#BOOTSTRAP_SETTINGS} are returned.
+         * Obtains the default Senzing settings from the system environment 
+         * using the {@link SzCoreEnvironment#SETTINGS_ENVIRONMENT_VARIABLE}.
+         * If the settings are not available from the environment then the
+         * bootstrap settings defined by {@link 
+         * SzCoreEnvironment#BOOTSTRAP_SETTINGS} are returned.
          * 
-         * @return The default Senzing provider settings.
+         * @return The default Senzing settings.
          */
         protected static String getDefaultSettings() {
             String envSettings = System.getenv(SETTINGS_ENVIRONMENT_VARIABLE);
@@ -583,20 +588,20 @@ public class SzCoreProvider implements SzProvider {
         }
 
         /**
-         * Provides the Senzing provider settings to configure the Senzing provider.
+         * Provides the Senzing settings to configure the {@link SzCoreEnvironment}.
          * If this is set to <code>null</code> or empty-string then an attempt
          * will be made to obtain the settings from the system environment via
-         * the {@link SzCoreProvider#SETTINGS_ENVIRONMENT_VARIABLE} with a fallback
-         * to the {@link SzCoreProvider#BOOTSTRAP_SETTINGS} if the environment
+         * the {@link SzCoreEnvironment#SETTINGS_ENVIRONMENT_VARIABLE} with a fallback
+         * to the {@link SzCoreEnvironment#BOOTSTRAP_SETTINGS} if the environment
          * variable is not set.
          * 
-         * @param settings The Senzing provider settings, or <code>null</code> or 
+         * @param settings The Senzing settings, or <code>null</code> or 
          *                 empty-string to restore the default value.
          * 
          * @return A reference to this instance.
          * 
-         * @see SzCoreProvider#SETTINGS_ENVIRONMENT_VARIABLE
-         * @see SzCoreProvider#BOOTSTRAP_SETTINGS                
+         * @see SzCoreEnvironment#SETTINGS_ENVIRONMENT_VARIABLE
+         * @see SzCoreEnvironment#BOOTSTRAP_SETTINGS                
          */
         public Builder settings(String settings) {
             if (settings != null && settings.trim().length() == 0) {
@@ -608,17 +613,16 @@ public class SzCoreProvider implements SzProvider {
         }
 
         /**
-         * Provides the Senzing provider instance name to configure the Senzing provider.
+         * Provides the Senzing instance name to configure the {@link SzCoreEnvironment}.
          * Call this method to override the default value of {@link 
-         * SzCoreProvider#DEFAULT_INSTANCE_NAME}.
+         * SzCoreEnvironment#DEFAULT_INSTANCE_NAME}.
          * 
-         * @param instanceName The instance name to initialize the Senzing provider, or
-         *                     <code>null</code> or empty-string to restore the 
-         *                     default value.
+         * @param instanceName The instance name to initialize the {@link SzCoreEnvironment},
+         *                     or <code>null</code> or empty-string to restore the default.
          * 
          * @return A reference to this instance.
          * 
-         * @see SzCoreProvider#DEFAULT_INSTANCE_NAME
+         * @see SzCoreEnvironment#DEFAULT_INSTANCE_NAME
          */
         public Builder instanceName(String instanceName) {
             if (instanceName != null && instanceName.trim().length() == 0) {
@@ -630,7 +634,7 @@ public class SzCoreProvider implements SzProvider {
         }
 
         /**
-         * Sets the verbose logging flag for configuring the Senzing provider.
+         * Sets the verbose logging flag for configuring the {@link SzCoreEnvironment}.
          * Call this method to explicitly set the value.  If not called, the
          * default value is <code>false</code>.
          * 
@@ -645,14 +649,14 @@ public class SzCoreProvider implements SzProvider {
         }
 
         /**
-         * Sets the explicit configuration ID to use to initialize the Senzing provider.
-         * If not specified then the default configuration ID obtained from the
-         * Senzing repository is used.
+         * Sets the explicit configuration ID to use to initialize the {@link
+         * SzCoreEnvironment}.  If not specified then the default configuration
+         * ID obtained from the Senzing repository is used.
          * 
          * @param configId The explicit configuration ID to use to initialize the
-         *                 Senzing provider, or <code>null</code> if the default 
-         *                 configuration ID from the Senzing repository should be
-         *                 used.
+         *                 {@link SzCoreEnvironment}, or <code>null</code> if the
+         *                 default configuration ID from the Senzing repository
+         *                 should be used.
          * 
          * @return A reference to this instance.
          */
@@ -662,25 +666,25 @@ public class SzCoreProvider implements SzProvider {
         }
 
         /**
-         * This method creates a new {@link SzCoreProvider} instance based on this
+         * This method creates a new {@link SzCoreEnvironment} instance based on this
          * {@link Builder} instance.  This method will throw an {@link 
-         * IllegalStateException} if another active {@link SzCoreProvider} instance
+         * IllegalStateException} if another active {@link SzCoreEnvironment} instance
          * exists since only one active instance can exist within a process at
          * any given time.  An active instance is one that has been constructed, 
          * but has not yet been destroyed.
          * 
-         * @return The newly created {@link SzCoreProvider} instance.
+         * @return The newly created {@link SzCoreEnvironment} instance.
          * 
-         * @throws IllegalStateException If another active {@link SzCoreProvider}
+         * @throws IllegalStateException If another active {@link SzCoreEnvironment}
          *                               instance exists when this method is
          *                               invoked.
          */
-        public SzCoreProvider build() throws IllegalStateException
+        public SzCoreEnvironment build() throws IllegalStateException
         {
-            return new SzCoreProvider(this.instanceName,
-                                      this.settings,
-                                      this.verboseLogging,
-                                      this.configId);
+            return new SzCoreEnvironment(this.instanceName,
+                                         this.settings,
+                                         this.verboseLogging,
+                                         this.configId);
         }
 
     }

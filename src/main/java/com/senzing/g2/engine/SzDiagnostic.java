@@ -5,7 +5,7 @@ package com.senzing.g2.engine;
  * diagnostic functions provide diagnostics and statistics pertaining to the 
  * host system and the Senzing repository.
  */
-public interface SzDiagnostic extends SzProvided {
+public interface SzDiagnostic {
     /**
      * Runs non-destruction DB performance tests and returns detail of the 
      * result as a JSON {@link String}.

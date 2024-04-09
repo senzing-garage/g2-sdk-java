@@ -5,15 +5,15 @@ package com.senzing.g2.engine;
  * singleton instances that have been initialized.
  * 
  */
-public interface SzProvider {
+public interface SzEnvironment {
     /**
      * Provides a reference to the {@link SzProduct} singleton associated with
-     * this {@link SzProvider}.
+     * this {@link SzEnvironment}.
      * 
      * @return The {@link SzProduct} instance associated with this 
-     *         {@link SzProvider}.
+     *         {@link SzEnvironment}.
      * 
-     * @throws IllegalStateException If this {@link SzProvider} instance has
+     * @throws IllegalStateException If this {@link SzEnvironment} instance has
      *                               been {@linkplain #destroy() destroyed}.
      * 
      * @throws SzException If there was a failure in obtaining or initializing
@@ -23,12 +23,12 @@ public interface SzProvider {
 
     /**
      * Provides a reference to the {@link SzConfig} singleton associated with
-     * this {@link SzProvider}.
+     * this {@link SzEnvironment}.
      * 
      * @return The {@link SzProduct} instance associated with this 
-     *         {@link SzProvider}.
+     *         {@link SzEnvironment}.
      * 
-     * @throws IllegalStateException If this {@link SzProvider} instance has
+     * @throws IllegalStateException If this {@link SzEnvironment} instance has
      *                               been {@linkplain #destroy() destroyed}.
      * 
      * @throws SzException If there was a failure in obtaining or initializing
@@ -38,12 +38,12 @@ public interface SzProvider {
 
     /**
      * Provides a reference to the {@link SzEngine} singleton associated with
-     * this {@link SzProvider}.
+     * this {@link SzEnvironment}.
      * 
      * @return The {@link SzEngine} instance associated with this 
-     *         {@link SzProvider}.
+     *         {@link SzEnvironment}.
      * 
-     * @throws IllegalStateException If this {@link SzProvider} instance has
+     * @throws IllegalStateException If this {@link SzEnvironment} instance has
      *                               been {@linkplain #destroy() destroyed}.
      * 
      * @throws SzException If there was a failure in obtaining or initializing
@@ -53,12 +53,12 @@ public interface SzProvider {
 
     /**
      * Provides a reference to the {@link SzConfigManager} singleton associated with
-     * this {@link SzProvider}.
+     * this {@link SzEnvironment}.
      * 
      * @return The {@link SzConfigManager} instance associated with this 
-     *         {@link SzProvider}.
+     *         {@link SzEnvironment}.
      * 
-     * @throws IllegalStateException If this {@link SzProvider} instance has
+     * @throws IllegalStateException If this {@link SzEnvironment} instance has
      *                               been {@linkplain #destroy() destroyed}.
      * 
      * @throws SzException If there was a failure in obtaining or initializing
@@ -68,12 +68,12 @@ public interface SzProvider {
 
     /**
      * Provides a reference to the {@link SzDiagnostic} singleton associated with
-     * this {@link SzProvider}.
+     * this {@link SzEnvironment}.
      * 
      * @return The {@link SzDiagnostic} instance associated with this 
-     *         {@link SzProvider}.
+     *         {@link SzEnvironment}.
      * 
-     * @throws IllegalStateException If this {@link SzProvider} instance has
+     * @throws IllegalStateException If this {@link SzEnvironment} instance has
      *                               been {@linkplain #destroy() destroyed}.
      * 
      * @throws SzException If there was a failure in obtaining or initializing
@@ -82,7 +82,7 @@ public interface SzProvider {
     SzDiagnostic getDiagnostic() throws IllegalStateException, SzException;
 
    /**
-    * Destroys this {@link SzProvider} and invalidates any SDK singleton
+    * Destroys this {@link SzEnvironment} and invalidates any SDK singleton
     * references that has previously provided.  If this instance has already
     * been destroyed then this method has no effect.
     */

@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static com.senzing.util.JsonUtilities.*;
 
 @TestInstance(Lifecycle.PER_CLASS)
@@ -27,7 +26,7 @@ public class SzCoreConfigTest extends AbstractTest {
 
     private static final String EMPLOYEES_DATA_SOURCE = "EMPLOYEES";
 
-    private SzCoreProvider provider = null;
+    private SzCoreEnvironment session = null;
 
     private String defaultConfig = null;
 
@@ -100,7 +99,7 @@ public class SzCoreConfigTest extends AbstractTest {
             nativeConfig.destroy();
         }
 
-        this.provider = SzCoreProvider.newBuilder()
+        this.session = SzCoreEnvironment.newBuilder()
                                       .instanceName(instanceName)
                                       .settings(settings)
                                       .verboseLogging(false)
@@ -109,9 +108,9 @@ public class SzCoreConfigTest extends AbstractTest {
 
     @AfterAll
     public void teardownEnvironment() {
-        if (this.provider != null) {
-            this.provider.destroy();
-            this.provider = null;
+        if (this.session != null) {
+            this.session.destroy();
+            this.session = null;
         }
         this.teardownTestEnvironment();
     }
@@ -120,7 +119,7 @@ public class SzCoreConfigTest extends AbstractTest {
     void testCreateConfig() {
         this.performTest(() -> {
             try {
-                SzConfig config = this.provider.getConfig();
+                SzConfig config = this.session.getConfig();
 
                 long configHandle = 0L;
                 
@@ -147,7 +146,7 @@ public class SzCoreConfigTest extends AbstractTest {
     void testImportConfig() {
         this.performTest(() -> {
             try {
-                SzConfig config = this.provider.getConfig();
+                SzConfig config = this.session.getConfig();
 
                 long configHandle = 0L;
                 
@@ -174,7 +173,7 @@ public class SzCoreConfigTest extends AbstractTest {
     void testExportConfig() {
         this.performTest(() -> {
             try {
-                SzConfig config = this.provider.getConfig();
+                SzConfig config = this.session.getConfig();
 
                 long configHandle = 0L;
                 
@@ -216,7 +215,7 @@ public class SzCoreConfigTest extends AbstractTest {
     @Test
     void testCloseConfig() {
         try {
-            SzConfig config = this.provider.getConfig();
+            SzConfig config = this.session.getConfig();
 
             long configHandle = 0L;
             
@@ -252,7 +251,7 @@ public class SzCoreConfigTest extends AbstractTest {
     void testAddDataSource() {
         this.performTest(() -> {
             try {
-                SzConfig config = this.provider.getConfig();
+                SzConfig config = this.session.getConfig();
 
                 long configHandle = 0L;
                 
@@ -296,7 +295,7 @@ public class SzCoreConfigTest extends AbstractTest {
     void testDeleteDataSource() {
         this.performTest(() -> {
             try {
-                SzConfig config = this.provider.getConfig();
+                SzConfig config = this.session.getConfig();
 
                 long configHandle = 0L;
                 
@@ -346,7 +345,7 @@ public class SzCoreConfigTest extends AbstractTest {
     void testGetDataSources() {
         this.performTest(() -> {
             try {
-                SzConfig config = this.provider.getConfig();
+                SzConfig config = this.session.getConfig();
 
                 long configHandle = 0L;
                 
@@ -389,15 +388,5 @@ public class SzCoreConfigTest extends AbstractTest {
                 fail("Failed getDataSources test with exception", e);
             }
         });
-    }
-
-    @Test
-    void testGetProvider() {
-        try {
-            SzProvider provider = this.provider.getConfig().getProvider();
-            assertSame(this.provider, provider, "Unexpected provider from getProvider() function");
-        } catch (Exception e) {
-            fail("Failed testGetProvider test with exception", e);
-        }
     }
 }

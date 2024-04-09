@@ -3,7 +3,7 @@ package com.senzing.g2.engine;
 /**
  * Defines the Java interface to the Senzing configuration management functions.
  */
-public interface SzConfigManager extends SzProvided {
+public interface SzConfigManager {
   	/**
 	 * Adds the configuration described by the specified JSON to the repository
 	 * with the specified comment and returns the identifier for referencing the

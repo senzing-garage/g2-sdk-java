@@ -37,11 +37,11 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 import org.junit.jupiter.api.Test;
 
-import static com.senzing.g2.engine.SzCoreProvider.*;
+import static com.senzing.g2.engine.SzCoreEnvironment.*;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @Execution(ExecutionMode.SAME_THREAD)
-public class SzCoreProviderTest extends AbstractTest {
+public class SzCoreEnvironmentTest extends AbstractTest {
  
     @BeforeAll public void initializeEnvironment() {
         this.beginTests();
@@ -61,7 +61,7 @@ public class SzCoreProviderTest extends AbstractTest {
     void testNewDefaultBuilder() {
         this.performTest(() -> {
             String envSettings = System.getenv(
-                SzCoreProvider.SETTINGS_ENVIRONMENT_VARIABLE);
+                SzCoreEnvironment.SETTINGS_ENVIRONMENT_VARIABLE);
     
             if (envSettings != null && envSettings.trim().length() == 0) {
                 envSettings = null;
@@ -70,23 +70,23 @@ public class SzCoreProviderTest extends AbstractTest {
             }
     
             String defaultSettings = (envSettings == null) 
-                ? SzCoreProvider.BOOTSTRAP_SETTINGS : envSettings;
+                ? SzCoreEnvironment.BOOTSTRAP_SETTINGS : envSettings;
     
-            SzCoreProvider provider = null;
+            SzCoreEnvironment env  = null;
             
             try {
-                provider = SzCoreProvider.newBuilder().build();
+                env  = SzCoreEnvironment.newBuilder().build();
     
-                assertEquals(provider.getInstanceName(), SzCoreProvider.DEFAULT_INSTANCE_NAME,
-                    "Provider instance name is not default instance name");
-                assertEquals(provider.getSettings(), defaultSettings,
-                    "Provider settings are not bootstrap settings");
-                assertFalse(provider.isVerboseLogging(),
-                    "Provider verbose logging did not default to false");
-                assertNull(provider.getConfigId(), "Provider config ID is not null");
+                assertEquals(env.getInstanceName(), SzCoreEnvironment.DEFAULT_INSTANCE_NAME,
+                    "Environment instance name is not default instance name");
+                assertEquals(env.getSettings(), defaultSettings,
+                    "Environment settings are not bootstrap settings");
+                assertFalse(env.isVerboseLogging(),
+                    "Environment verbose logging did not default to false");
+                assertNull(env.getConfigId(), "Environment config ID is not null");
     
             } finally {
-                if (provider != null) provider.destroy();
+                if (env != null) env.destroy();
             }    
         });
     }
@@ -97,25 +97,25 @@ public class SzCoreProviderTest extends AbstractTest {
         this.performTest(() -> {
             String settings = this.getRepoSettings();
             
-            SzCoreProvider provider = null;
+            SzCoreEnvironment env  = null;
             
             try {
-                provider = SzCoreProvider.newBuilder()
-                                         .instanceName("Custom Instance")
-                                         .settings(settings)
-                                         .verboseLogging(verboseLogging)
-                                         .build();
+                env  = SzCoreEnvironment.newBuilder()
+                                        .instanceName("Custom Instance")
+                                        .settings(settings)
+                                        .verboseLogging(verboseLogging)
+                                        .build();
 
-                assertEquals(provider.getInstanceName(), "Custom Instance",
-                        "Provider instance name is not as expected");
-                assertEquals(provider.getSettings(), settings,
-                        "Provider settings are not as expected");
-                assertEquals(provider.isVerboseLogging(), verboseLogging,
-                        "Provider verbose logging did not default to false");
-                assertNull(provider.getConfigId(), "Provider config ID is not null");
+                assertEquals(env.getInstanceName(), "Custom Instance",
+                        "Environment instance name is not as expected");
+                assertEquals(env.getSettings(), settings,
+                        "Environment settings are not as expected");
+                assertEquals(env.isVerboseLogging(), verboseLogging,
+                        "Environment verbose logging did not default to false");
+                assertNull(env.getConfigId(), "Environment config ID is not null");
     
             } finally {
-                if (provider != null) provider.destroy();
+                if (env != null) env.destroy();
             }    
         });
     }
@@ -123,13 +123,13 @@ public class SzCoreProviderTest extends AbstractTest {
     @Test
     void testSingletonViolation() {
         this.performTest(() -> {
-            SzCoreProvider provider1 = null;
-            SzCoreProvider provider2 = null;
+            SzCoreEnvironment env1 = null;
+            SzCoreEnvironment env2 = null;
             try {
-                provider1 = SzCoreProvider.newBuilder().build();
+                env1 = SzCoreEnvironment.newBuilder().build();
     
                 try {
-                    provider2 = SzCoreProvider.newBuilder().settings(BOOTSTRAP_SETTINGS).build();
+                    env2 = SzCoreEnvironment.newBuilder().settings(BOOTSTRAP_SETTINGS).build();
         
                     // if we get here then we failed
                     fail("Was able to construct a second factory when first was not yet destroyed");
@@ -137,13 +137,13 @@ public class SzCoreProviderTest extends AbstractTest {
                 } catch (IllegalStateException expected) {
                     // this exception was expected
                 } finally {
-                    if (provider2 != null) {
-                        provider2.destroy();
+                    if (env2 != null) {
+                        env2.destroy();
                     }
                 }
             } finally {
-                if (provider1 != null) {
-                    provider1.destroy();
+                if (env1 != null) {
+                    env1.destroy();
                 }
             }    
         });
@@ -152,25 +152,25 @@ public class SzCoreProviderTest extends AbstractTest {
     @Test
     void testSingletonAdherence() {
         this.performTest(() -> {
-            SzCoreProvider provider1 = null;
-            SzCoreProvider provider2 = null;
+            SzCoreEnvironment env1 = null;
+            SzCoreEnvironment env2 = null;
             try {
-                provider1 = SzCoreProvider.newBuilder().instanceName("Instance 1").build();
+                env1 = SzCoreEnvironment.newBuilder().instanceName("Instance 1").build();
     
-                provider1.destroy();
-                provider1 = null;
+                env1.destroy();
+                env1 = null;
     
-                provider2 = SzCoreProvider.newBuilder().instanceName("Instance 2").settings(BOOTSTRAP_SETTINGS).build();
+                env2 = SzCoreEnvironment.newBuilder().instanceName("Instance 2").settings(BOOTSTRAP_SETTINGS).build();
     
-                provider2.destroy();
-                provider2 = null;
+                env2.destroy();
+                env2 = null;
     
             } finally {
-                if (provider1 != null) {
-                    provider1.destroy();
+                if (env1 != null) {
+                    env1.destroy();
                 }
-                if (provider2 != null) {
-                    provider2.destroy();
+                if (env2 != null) {
+                    env2.destroy();
                 }
             }    
         });
@@ -179,67 +179,67 @@ public class SzCoreProviderTest extends AbstractTest {
     @Test
     void testDestroy() {
         this.performTest(() -> {
-            SzCoreProvider provider1 = null;
-            SzCoreProvider provider2 = null;
+            SzCoreEnvironment env1 = null;
+            SzCoreEnvironment env2 = null;
             try {
-                // get the first Provider
-                provider1 = SzCoreProvider.newBuilder().instanceName("Instance 1").build();
+                // get the first environment
+                env1 = SzCoreEnvironment.newBuilder().instanceName("Instance 1").build();
     
                 // ensure it is active
                 try {
-                    provider1.ensureActive();
+                    env1.ensureActive();
                 } catch (Exception e) {
-                    fail("First Provider instance is not active.", e);
+                    fail("First Environment instance is not active.", e);
                 }
     
-                // destroy the first Provider
-                provider1.destroy();
+                // destroy the first environment
+                env1.destroy();
     
                 // check it is now inactive
                 try {
-                    provider1.ensureActive();
-                    fail("First Provider instance is still active.");
+                    env1.ensureActive();
+                    fail("First Environment instance is still active.");
     
                 } catch (Exception expected) {
                     // do nothing
                 } finally {
-                    // clear the provider1 reference
-                    provider1 = null;
+                    // clear the env1 reference
+                    env1 = null;
                 }
     
-                // create a second Provider instance
-                provider2 = SzCoreProvider.newBuilder().instanceName("Instance 2").settings(BOOTSTRAP_SETTINGS).build();
+                // create a second environment instance
+                env2 = SzCoreEnvironment.newBuilder().instanceName("Instance 2").settings(BOOTSTRAP_SETTINGS).build();
     
                 // ensure it is active
                 try {
-                    provider2.ensureActive();
+                    env2.ensureActive();
                 } catch (Exception e) {
-                    fail("Second Provider instance is not active.", e);
+                    fail("Second Environment instance is not active.", e);
                 }
     
-                // destroy the second Provider
-                provider2.destroy();
+                // destroy the second environment
+                env2.destroy();
     
                 // check it is now inactive
                 try {
-                    provider2.ensureActive();
-                    fail("Second Provider instance is still active.");
+                    env2.ensureActive();
+                    fail("Second Environment instance is still active.");
     
                 } catch (Exception expected) {
                     // do nothing
                 } finally {
-                    // clear the provider2 reference
-                    provider2 = null;
+                    // clear the env2 reference
+                    env2 = null;
                 }
     
-                provider2 = null;
+                env2 = null;
     
             } finally {
-                if (provider1 != null) {
-                    provider1.destroy();
+                if (env1 != null) {
+                    env1.destroy();
                 }
-                if (provider2 != null) {
-                    provider2.destroy();
+                if (env2 != null) {
+                    env2.destroy();
                 }
             }    
         });
@@ -249,16 +249,16 @@ public class SzCoreProviderTest extends AbstractTest {
     @ParameterizedTest
     @CsvSource({"1, Foo", "2, Bar", "3, Phoo", "4, Phoox"})
     void testExecute(int threadCount, String expected) {
-        SzCoreProvider provider = null;
+        SzCoreEnvironment env  = null;
 
         ThreadPoolExecutor threadPool = new ThreadPoolExecutor(
             threadCount, threadCount, 10L, SECONDS, new LinkedBlockingQueue<>());
 
         List<Future<String>> futures = new ArrayList<>(threadCount);
         try {
-            provider = SzCoreProvider.newBuilder().build();
+            env  = SzCoreEnvironment.newBuilder().build();
 
-            final SzCoreProvider prov = provider;
+            final SzCoreEnvironment prov = env;
 
             // loop through the threads
             for (int index = 0; index < threadCount; index++) {
@@ -282,8 +282,8 @@ public class SzCoreProviderTest extends AbstractTest {
 
 
         } finally {
-            if (provider != null) {
-                provider.destroy();
+            if (env != null) {
+                env.destroy();
             }
         }
     }
@@ -291,12 +291,12 @@ public class SzCoreProviderTest extends AbstractTest {
     @ParameterizedTest
     @ValueSource(strings = {"Foo", "Bar", "Phoo", "Phoox"})
     void testExecuteFail(String expected) {
-        SzCoreProvider provider = null;
+        SzCoreEnvironment env  = null;
         try {
-            provider = SzCoreProvider.newBuilder().build();
+            env  = SzCoreEnvironment.newBuilder().build();
 
             try {
-               provider.execute(() -> {
+               env.execute(() -> {
                     throw new SzException(expected);
                });
 
@@ -310,8 +310,8 @@ public class SzCoreProviderTest extends AbstractTest {
             }
 
         } finally {
-            if (provider != null) {
-                provider.destroy();
+            if (env != null) {
+                env.destroy();
             }
         }
     }
@@ -325,16 +325,16 @@ public class SzCoreProviderTest extends AbstractTest {
         for (int index = 0; index < executeCount; index++) {
             monitors[index] = new Object();
         }
-        SzCoreProvider provider = null;
+        SzCoreEnvironment env  = null;
         try {
-            provider = SzCoreProvider.newBuilder().instanceName(expected).build();
+            env  = SzCoreEnvironment.newBuilder().instanceName(expected).build();
 
             final Thread[]      threads     = new Thread[executeCount];
             final String[]      results     = new String[executeCount];
             final Exception[]   failures    = new Exception[executeCount];
 
             for (int index = 0; index < executeCount; index++) {
-                final SzCoreProvider prov = provider;
+                final SzCoreEnvironment prov = env;
                 final int threadIndex = index;
                 threads[index] = new Thread() { 
                     public void run() {
@@ -370,7 +370,7 @@ public class SzCoreProviderTest extends AbstractTest {
                         // do nothing
                     }
                 }
-                int executingCount = provider.getExecutingCount();
+                int executingCount = env.getExecutingCount();
                 assertTrue(executingCount > 0, "Executing count is zero");
                 assertTrue(executingCount > prevExecutingCount, 
                         "Executing count (" + executingCount + ") decremented from previous ("
@@ -388,7 +388,7 @@ public class SzCoreProviderTest extends AbstractTest {
                 } catch (InterruptedException e) {
                     fail("Interrupted while joining threads");
                 }
-                int executingCount = provider.getExecutingCount();
+                int executingCount = env.getExecutingCount();
                 assertTrue(executingCount >= 0, "Executing count is negative");
                 assertTrue(executingCount < prevExecutingCount, 
                         "Executing count (" + executingCount + ") incremented from previous ("
@@ -411,8 +411,8 @@ public class SzCoreProviderTest extends AbstractTest {
                     monitor.notifyAll();
                 }
             }
-            if (provider != null) {
-                provider.destroy();
+            if (env != null) {
+                env.destroy();
             }
         }
     }
@@ -420,55 +420,55 @@ public class SzCoreProviderTest extends AbstractTest {
     @Test
     void testGetActiveInstance() {
         this.performTest(() -> {
-            SzCoreProvider provider1 = null;
-            SzCoreProvider provider2 = null;
+            SzCoreEnvironment env1 = null;
+            SzCoreEnvironment env2 = null;
             try {
-                // get the first Provider
-                provider1 = SzCoreProvider.newBuilder().instanceName("Instance 1").build();
+                // get the first environment
+                env1 = SzCoreEnvironment.newBuilder().instanceName("Instance 1").build();
     
-                SzCoreProvider active = SzCoreProvider.getActiveInstance();
+                SzCoreEnvironment active = SzCoreEnvironment.getActiveInstance();
 
                 assertNotNull(active, "No active instance found when it should have been: " 
-                              + provider1.getInstanceName());
-                assertSame(provider1, active,
+                              + env1.getInstanceName());
+                assertSame(env1, active,
                             "Active instance was not as expected: " 
                             + ((active == null) ? null : active.getInstanceName()));
     
-                // destroy the first Provider
-                provider1.destroy();
+                // destroy the first environment
+                env1.destroy();
     
-                active = SzCoreProvider.getActiveInstance();
+                active = SzCoreEnvironment.getActiveInstance();
                 assertNull(active,
                            "Active instance found when there should be none: " 
                            + ((active == null) ? "" : active.getInstanceName()));
                             
-                // create a second Provider instance
-                provider2 = SzCoreProvider.newBuilder()
+                // create a second Environment instance
+                env2 = SzCoreEnvironment.newBuilder()
                     .instanceName("Instance 2").settings(BOOTSTRAP_SETTINGS).build();
     
-                active = SzCoreProvider.getActiveInstance();
+                active = SzCoreEnvironment.getActiveInstance();
                 assertNotNull(active, "No active instance found when it should have been: " 
-                              + provider2.getInstanceName());
-                assertSame(provider2, active,
+                              + env2.getInstanceName());
+                assertSame(env2, active,
                            "Active instance was not as expected: " 
                            + ((active == null) ? null : active.getInstanceName()));
                     
-                // destroy the second Provider
-                provider2.destroy();
+                // destroy the second environment
+                env2.destroy();
     
-                active = SzCoreProvider.getActiveInstance();
+                active = SzCoreEnvironment.getActiveInstance();
                 assertNull(active,
                     "Active instance found when there should be none: " 
                     + ((active == null) ? null : active.getInstanceName()));
                 
-                provider2 = null;
+                env2 = null;
     
             } finally {
-                if (provider1 != null) {
-                    provider1.destroy();
+                if (env1 != null) {
+                    env1.destroy();
                 }
-                if (provider2 != null) {
-                    provider2.destroy();
+                if (env2 != null) {
+                    env2.destroy();
                 }
             }    
         });
@@ -480,30 +480,28 @@ public class SzCoreProviderTest extends AbstractTest {
         this.performTest(() -> {
             String settings = this.getRepoSettings();
             
-            SzCoreProvider provider = null;
+            SzCoreEnvironment env  = null;
             
             try {
-                provider = SzCoreProvider.newBuilder()
+                env  = SzCoreEnvironment.newBuilder()
                                          .instanceName("GetConfig Instance")
                                          .settings(settings)
                                          .verboseLogging(false)
                                          .build();
 
-                SzConfig config1 = provider.getConfig();
-                SzConfig config2 = provider.getConfig();
+                SzConfig config1 = env.getConfig();
+                SzConfig config2 = env.getConfig();
 
                 assertNotNull(config1, "SzConfig was null");
                 assertSame(config1, config2, "SzConfig not returning the same object");
-                assertSame(provider, config1.getProvider(),
-                           "Provider for SzConfig is not the provider that produced it");
                 assertInstanceOf(SzCoreConfig.class, config1,
                                 "SzConfig instance is not an instance of SzCoreConfig: "
                                 + config1.getClass().getName());
                 assertFalse(((SzCoreConfig) config1).isDestroyed(),
                             "SzConfig instance reporting that it is destroyed");
 
-                provider.destroy();
-                provider = null;
+                env.destroy();
+                env  = null;
 
                 assertTrue(((SzCoreConfig) config1).isDestroyed(),
                             "SzConfig instance reporting that it is NOT destroyed");
@@ -512,7 +510,7 @@ public class SzCoreProviderTest extends AbstractTest {
                 fail("Got SzException during test", e);
 
             } finally {
-                if (provider != null) provider.destroy();
+                if (env != null) env.destroy();
             }    
         });
 
@@ -523,30 +521,28 @@ public class SzCoreProviderTest extends AbstractTest {
         this.performTest(() -> {
             String settings = this.getRepoSettings();
             
-            SzCoreProvider provider = null;
+            SzCoreEnvironment env  = null;
             
             try {
-                provider = SzCoreProvider.newBuilder()
+                env  = SzCoreEnvironment.newBuilder()
                                          .instanceName("GetConfigManager Instance")
                                          .settings(settings)
                                          .verboseLogging(false)
                                          .build();
 
-                SzConfigManager configMgr1 = provider.getConfigManager();
-                SzConfigManager configMgr2 = provider.getConfigManager();
+                SzConfigManager configMgr1 = env.getConfigManager();
+                SzConfigManager configMgr2 = env.getConfigManager();
 
                 assertNotNull(configMgr1, "SzConfigManager was null");
                 assertSame(configMgr1, configMgr2, "SzConfigManager not returning the same object");
-                assertSame(provider, configMgr1.getProvider(),
-                           "Provider for SzConfigManager is not the provider that produced it");
                 assertInstanceOf(SzCoreConfigManager.class, configMgr1,
                                 "SzConfigManager instance is not an instance of SzCoreConfigManager: "
                                 + configMgr1.getClass().getName());
                 assertFalse(((SzCoreConfigManager) configMgr1).isDestroyed(),
                             "SzConfigManager instance reporting that it is destroyed");
 
-                provider.destroy();
-                provider = null;
+                env.destroy();
+                env  = null;
 
                 assertTrue(((SzCoreConfigManager) configMgr1).isDestroyed(),
                             "SzConfigManager instance reporting that it is NOT destroyed");
@@ -555,7 +551,7 @@ public class SzCoreProviderTest extends AbstractTest {
                 fail("Got SzException during test", e);
 
             } finally {
-                if (provider != null) provider.destroy();
+                if (env != null) env.destroy();
             }    
         });
     }
@@ -565,30 +561,28 @@ public class SzCoreProviderTest extends AbstractTest {
         this.performTest(() -> {
             String settings = this.getRepoSettings();
             
-            SzCoreProvider provider = null;
+            SzCoreEnvironment env  = null;
             
             try {
-                provider = SzCoreProvider.newBuilder()
+                env  = SzCoreEnvironment.newBuilder()
                                          .instanceName("GetDiagnostic Instance")
                                          .settings(settings)
                                          .verboseLogging(false)
                                          .build();
 
-                SzDiagnostic diagnostic1 = provider.getDiagnostic();
-                SzDiagnostic diagnostic2 = provider.getDiagnostic();
+                SzDiagnostic diagnostic1 = env.getDiagnostic();
+                SzDiagnostic diagnostic2 = env.getDiagnostic();
 
                 assertNotNull(diagnostic1, "SzDiagnostic was null");
                 assertSame(diagnostic1, diagnostic2, "SzDiagnostic not returning the same object");
-                assertSame(provider, diagnostic1.getProvider(),
-                           "Provider for SzDiagnostic is not the provider that produced it");
                 assertInstanceOf(SzCoreDiagnostic.class, diagnostic1,
                                 "SzDiagnostic instance is not an instance of SzCoreDiagnostic: "
                                 + diagnostic1.getClass().getName());
                 assertFalse(((SzCoreDiagnostic) diagnostic1).isDestroyed(),
                             "SzDiagnostic instance reporting that it is destroyed");
 
-                provider.destroy();
-                provider = null;
+                env.destroy();
+                env  = null;
 
                 assertTrue(((SzCoreDiagnostic) diagnostic1).isDestroyed(),
                             "SzDiagnostic instance reporting that it is NOT destroyed");
@@ -597,7 +591,7 @@ public class SzCoreProviderTest extends AbstractTest {
                 fail("Got SzException during test", e);
 
             } finally {
-                if (provider != null) provider.destroy();
+                if (env != null) env.destroy();
             }    
         });
     }
@@ -607,30 +601,28 @@ public class SzCoreProviderTest extends AbstractTest {
         this.performTest(() -> {
             String settings = this.getRepoSettings();
             
-            SzCoreProvider provider = null;
+            SzCoreEnvironment env  = null;
             
             try {
-                provider = SzCoreProvider.newBuilder()
+                env  = SzCoreEnvironment.newBuilder()
                                          .instanceName("GetEngine Instance")
                                          .settings(settings)
                                          .verboseLogging(false)
                                          .build();
 
-                SzEngine engine1 = provider.getEngine();
-                SzEngine engine2 = provider.getEngine();
+                SzEngine engine1 = env.getEngine();
+                SzEngine engine2 = env.getEngine();
 
                 assertNotNull(engine1, "SzEngine was null");
                 assertSame(engine1, engine2, "SzEngine not returning the same object");
-                assertSame(provider, engine1.getProvider(),
-                           "Provider for SzEngine is not the provider that produced it");
                 assertInstanceOf(SzCoreEngine.class, engine1,
                                 "SzEngine instance is not an instance of SzCoreEngine: "
                                 + engine1.getClass().getName());
                 assertFalse(((SzCoreEngine) engine1).isDestroyed(),
                             "SzEngine instance reporting that it is destroyed");
 
-                provider.destroy();
-                provider = null;
+                env.destroy();
+                env  = null;
 
                 assertTrue(((SzCoreEngine) engine1).isDestroyed(),
                             "SzEngine instance reporting that it is NOT destroyed");
@@ -639,7 +631,7 @@ public class SzCoreProviderTest extends AbstractTest {
                 fail("Got SzException during test", e);
 
             } finally {
-                if (provider != null) provider.destroy();
+                if (env != null) env.destroy();
             }    
         });
     }
@@ -649,30 +641,28 @@ public class SzCoreProviderTest extends AbstractTest {
         this.performTest(() -> {
             String settings = this.getRepoSettings();
             
-            SzCoreProvider provider = null;
+            SzCoreEnvironment env  = null;
             
             try {
-                provider = SzCoreProvider.newBuilder()
+                env  = SzCoreEnvironment.newBuilder()
                                          .instanceName("GetProduct Instance")
                                          .settings(settings)
                                          .verboseLogging(false)
                                          .build();
 
-                SzProduct product1 = provider.getProduct();
-                SzProduct product2 = provider.getProduct();
+                SzProduct product1 = env.getProduct();
+                SzProduct product2 = env.getProduct();
 
                 assertNotNull(product1, "SzProduct was null");
                 assertSame(product1, product2, "SzProduct not returning the same object");
-                assertSame(provider, product1.getProvider(),
-                           "Provider for SzProduct is not the provider that produced it");
                 assertInstanceOf(SzCoreProduct.class, product1,
                                 "SzProduct instance is not an instance of SzCoreProduct: "
                                 + product1.getClass().getName());
                 assertFalse(((SzCoreProduct) product1).isDestroyed(),
                             "SzProduct instance reporting that it is destroyed");
 
-                provider.destroy();
-                provider = null;
+                env.destroy();
+                env  = null;
 
                 assertTrue(((SzCoreProduct) product1).isDestroyed(),
                             "SzProduct instance reporting that it is NOT destroyed");
@@ -681,7 +671,7 @@ public class SzCoreProviderTest extends AbstractTest {
                 fail("Got SzException during test", e);
 
             } finally {
-                if (provider != null) provider.destroy();
+                if (env != null) env.destroy();
             }    
         });
     }
@@ -689,48 +679,48 @@ public class SzCoreProviderTest extends AbstractTest {
     @ParameterizedTest
     @ValueSource(strings = { "Foo", "Bar", "Phoo" })
     void testGetInstanceName(String instanceName) {
-        SzCoreProvider provider = null;
+        SzCoreEnvironment env  = null;
             
         try {
-            provider = SzCoreProvider.newBuilder().instanceName(instanceName).build();
+            env  = SzCoreEnvironment.newBuilder().instanceName(instanceName).build();
 
-            assertEquals(instanceName, provider.getInstanceName(),
+            assertEquals(instanceName, env.getInstanceName(),
                          "Instance names are not equal after building.");
         
         } finally {
-            if (provider != null) provider.destroy();
+            if (env != null) env.destroy();
         }
     }
 
     @ParameterizedTest
     @ValueSource(longs = { 10L, 12L, 0L })
     void testGetConfigId(Long configId) {
-        SzCoreProvider provider = null;
+        SzCoreEnvironment env  = null;
         if (configId == 0L) configId = null;
 
         try {
-            provider = SzCoreProvider.newBuilder().configId(configId).build();
+            env  = SzCoreEnvironment.newBuilder().configId(configId).build();
 
-            assertEquals(configId, provider.getConfigId(),
+            assertEquals(configId, env.getConfigId(),
                          "Config ID's are not equal after building.");
         
         } finally {
-            if (provider != null) provider.destroy();
+            if (env != null) env.destroy();
         }
     }
 
     @Test
     void testGetSettings() {
-        SzCoreProvider provider = null;
+        SzCoreEnvironment env  = null;
             
         try {
-            provider = SzCoreProvider.newBuilder().instanceName(BOOTSTRAP_SETTINGS).build();
+            env  = SzCoreEnvironment.newBuilder().instanceName(BOOTSTRAP_SETTINGS).build();
 
-            assertEquals(BOOTSTRAP_SETTINGS, provider.getSettings(),
+            assertEquals(BOOTSTRAP_SETTINGS, env.getSettings(),
                          "Settings are not equal after building.");
         
         } finally {
-            if (provider != null) provider.destroy();
+            if (env != null) env.destroy();
         }
 
     }
@@ -738,29 +728,29 @@ public class SzCoreProviderTest extends AbstractTest {
     @ParameterizedTest
     @ValueSource(booleans = { true, false})
     void testIsVerboseLogging(boolean verbose) {
-        SzCoreProvider provider = null;
+        SzCoreEnvironment env  = null;
             
         try {
-            provider = SzCoreProvider.newBuilder().verboseLogging(verbose).build();
+            env  = SzCoreEnvironment.newBuilder().verboseLogging(verbose).build();
 
-            assertEquals(verbose, provider.isVerboseLogging(),
+            assertEquals(verbose, env.isVerboseLogging(),
                          "Verbose logging settings are not equal after building.");
         
         } finally {
-            if (provider != null) provider.destroy();
+            if (env != null) env.destroy();
         }
     }
 
     @ParameterizedTest
     @CsvSource({"1,10,Foo", "0,20,Bar", "2,30,Phoo"})
     void testHandleReturnCode(int returnCode, int errorCode, String errorMessage) {
-        SzCoreProvider provider = null;
+        SzCoreEnvironment env  = null;
             
         try {
-            provider = SzCoreProvider.newBuilder().instanceName(BOOTSTRAP_SETTINGS).build();
+            env  = SzCoreEnvironment.newBuilder().instanceName(BOOTSTRAP_SETTINGS).build();
 
             try {
-                provider.handleReturnCode(returnCode, new NativeApi() {
+                env.handleReturnCode(returnCode, new NativeApi() {
                     public int getLastExceptionCode() { return errorCode; }
                     public String getLastException() { return errorMessage; }
                     public void clearLastException() { }
@@ -780,7 +770,7 @@ public class SzCoreProviderTest extends AbstractTest {
                 }
             }
         } finally {
-            if (provider != null) provider.destroy();
+            if (env != null) env.destroy();
         }
     }
 

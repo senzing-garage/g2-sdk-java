@@ -2,13 +2,13 @@ package com.senzing.g2.engine;
 
 /**
  * The package-protected implementation of {@link SzConfigManager} that works
- * with the {@link SzCoreProvider} class.
+ * with the {@link SzCoreEnvironment} class.
  */
 public class SzCoreConfigManager implements SzConfigManager {
     /**
-     * The {@link SzCoreProvider} that constructed this instance.
+     * The {@link SzCoreEnvironment} that constructed this instance.
      */
-    private SzCoreProvider provider = null;
+    private SzCoreEnvironment env = null;
 
     /**
      * The underlying {@link G2ConfigMgrJNI} instance.
@@ -16,24 +16,27 @@ public class SzCoreConfigManager implements SzConfigManager {
     private G2ConfigMgrJNI nativeApi = null;
 
     /**
-     * Default constructor.
+     * Constructs with the specified {@link SzCoreEnvironment}.
      * 
-     * @throws IllegalStateException If the underlying {@link SzCoreProvider} instance 
+     * @param environment The {@link SzCoreEnvironment} with which to 
+     *                    construct.
+     * 
+     * @throws IllegalStateException If the underlying {@link SzCoreEnvironment} instance 
      *                               has already been destroyed.
      * @throws SzException If a Senzing failure occurs during initialization.
      */
-    SzCoreConfigManager(SzCoreProvider provider) 
+    SzCoreConfigManager(SzCoreEnvironment environment) 
         throws IllegalStateException, SzException 
     {
-        this.provider = provider;
-        this.provider.execute(() -> {
+        this.env = environment;
+        this.env.execute(() -> {
             this.nativeApi = new G2ConfigMgrJNI();
 
-            int returnCode = this.nativeApi.init(this.provider.getInstanceName(),
-                                                 this.provider.getSettings(),
-                                                 this.provider.isVerboseLogging());
+            int returnCode = this.nativeApi.init(this.env.getInstanceName(),
+                                                 this.env.getSettings(),
+                                                 this.env.isVerboseLogging());
 
-            this.provider.handleReturnCode(returnCode, this.nativeApi);
+            this.env.handleReturnCode(returnCode, this.nativeApi);
 
             return null;
         });
@@ -52,7 +55,7 @@ public class SzCoreConfigManager implements SzConfigManager {
 
     /**
      * Checks if this instance has been destroyed by the associated
-     * {@link SzProvider}.
+     * {@link SzEnvironment}.
      * 
      * @return <code>true</code> if this instance has been destroyed,
      *         otherwise <code>false</code>.
@@ -63,16 +66,11 @@ public class SzCoreConfigManager implements SzConfigManager {
         }
     }
     
-    @Override
-    public SzProvider getProvider() {
-        return this.provider;
-    }
-
   	@Override
 	public long addConfig(String configDefinition, String configComment)
         throws SzException 
     {
-        return this.provider.execute(() -> {
+        return this.env.execute(() -> {
             // create the result object
             Result<Long> result = new Result<>();
             
@@ -81,7 +79,7 @@ public class SzCoreConfigManager implements SzConfigManager {
                 configDefinition, configComment, result);
 
             // handle any error code if there is one
-            this.provider.handleReturnCode(returnCode, this.nativeApi);
+            this.env.handleReturnCode(returnCode, this.nativeApi);
 
             // return the config handle
             return result.getValue();
@@ -91,7 +89,7 @@ public class SzCoreConfigManager implements SzConfigManager {
     @Override
 	public String getConfig(long configId) throws SzException 
     {
-        return this.provider.execute(() -> {
+        return this.env.execute(() -> {
             // create the result object
             StringBuffer sb = new StringBuffer();
 
@@ -99,7 +97,7 @@ public class SzCoreConfigManager implements SzConfigManager {
             int returnCode = this.nativeApi.getConfig(configId, sb);
 
             // handle any error code if there is one
-            this.provider.handleReturnCode(returnCode, this.nativeApi);
+            this.env.handleReturnCode(returnCode, this.nativeApi);
 
             // return the config handle
             return sb.toString();
@@ -108,7 +106,7 @@ public class SzCoreConfigManager implements SzConfigManager {
 
     @Override
 	public String getConfigList() throws SzException {
-        return this.provider.execute(() -> {
+        return this.env.execute(() -> {
             // create the result object
             StringBuffer sb = new StringBuffer();
 
@@ -116,7 +114,7 @@ public class SzCoreConfigManager implements SzConfigManager {
             int returnCode = this.nativeApi.getConfigList(sb);
 
             // handle any error code if there is one
-            this.provider.handleReturnCode(returnCode, this.nativeApi);
+            this.env.handleReturnCode(returnCode, this.nativeApi);
 
             // return the config handle
             return sb.toString();
@@ -125,7 +123,7 @@ public class SzCoreConfigManager implements SzConfigManager {
 
     @Override
 	public long getDefaultConfigId() throws SzException {
-        return this.provider.execute(() -> {
+        return this.env.execute(() -> {
             // create the result object
             Result<Long> result = new Result<>();
             
@@ -133,7 +131,7 @@ public class SzCoreConfigManager implements SzConfigManager {
             int returnCode = this.nativeApi.getDefaultConfigID(result);
 
             // handle any error code if there is one
-            this.provider.handleReturnCode(returnCode, this.nativeApi);
+            this.env.handleReturnCode(returnCode, this.nativeApi);
 
             // return the config handle
             return result.getValue();
@@ -144,13 +142,13 @@ public class SzCoreConfigManager implements SzConfigManager {
 	public void replaceDefaultConfigId(long currentDefaultConfigId, long newDefaultConfigId)
         throws SzException 
     {
-        this.provider.execute(() -> {
+        this.env.execute(() -> {
             // call the underlying C function
             int returnCode = this.nativeApi.replaceDefaultConfigID(
                 currentDefaultConfigId, newDefaultConfigId);
 
             // handle any error code if there is one
-            this.provider.handleReturnCode(returnCode, this.nativeApi);
+            this.env.handleReturnCode(returnCode, this.nativeApi);
 
             // return null
             return null;
@@ -159,12 +157,12 @@ public class SzCoreConfigManager implements SzConfigManager {
 
     @Override
 	public void setDefaultConfigId(long configId) throws SzException {
-        this.provider.execute(() -> {
+        this.env.execute(() -> {
             // call the underlying C function
             int returnCode = this.nativeApi.setDefaultConfigID(configId);
 
             // handle any error code if there is one
-            this.provider.handleReturnCode(returnCode, this.nativeApi);
+            this.env.handleReturnCode(returnCode, this.nativeApi);
 
             // return null
             return null;

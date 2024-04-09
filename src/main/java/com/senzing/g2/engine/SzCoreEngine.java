@@ -2,13 +2,13 @@ package com.senzing.g2.engine;
 
 /**
  * The package-protected implementation of {@link SzEngine} that works
- * with the {@link SzCoreProvider} class.
+ * with the {@link SzCoreEnvironment} class.
  */
 public class SzCoreEngine implements SzEngine {
     /**
-     * The {@link SzCoreProvider} that constructed this instance.
+     * The {@link SzCoreEnvironment} that constructed this instance.
      */
-    private SzCoreProvider provider = null;
+    private SzCoreEnvironment env = null;
 
     /**
      * The underlying {@link G2G2JNI} instance.
@@ -16,40 +16,43 @@ public class SzCoreEngine implements SzEngine {
     private G2JNI nativeApi = null;
 
     /**
-     * Default constructor.
+     * Constructs with the specified {@link SzCoreEnvironment}.
      * 
-     * @throws IllegalStateException If the underlying {@link SzCoreProvider} instance 
+     * @param environment The {@link SzCoreEnvironment} with which to 
+     *                    construct.
+     * 
+     * @throws IllegalStateException If the underlying {@link SzCoreEnvironment} instance 
      *                               has already been destroyed.
      * @throws SzException If a Senzing failure occurs during initialization.
      */
-    SzCoreEngine(SzCoreProvider provider) 
+    SzCoreEngine(SzCoreEnvironment environment) 
         throws IllegalStateException, SzException 
     {
-        this.provider = provider;
-        this.provider.execute(() -> {
+        this.env = environment;
+        this.env.execute(() -> {
             this.nativeApi = new G2JNI();
 
             // check if we are initializing with a config ID
-            if (this.provider.getConfigId() == null) {
+            if (this.env.getConfigId() == null) {
                 // if not then call the basic init
                 int returnCode = this.nativeApi.init(
-                    this.provider.getInstanceName(),
-                    this.provider.getSettings(),
-                    this.provider.isVerboseLogging());
+                    this.env.getInstanceName(),
+                    this.env.getSettings(),
+                    this.env.isVerboseLogging());
  
                 // handle any failure
-                this.provider.handleReturnCode(returnCode, this.nativeApi);
+                this.env.handleReturnCode(returnCode, this.nativeApi);
 
             } else {
                 // if so then call init with config ID
                 int returnCode = this.nativeApi.initWithConfigID(
-                    this.provider.getInstanceName(),
-                    this.provider.getSettings(),
-                    this.provider.getConfigId(),
-                    this.provider.isVerboseLogging());
+                    this.env.getInstanceName(),
+                    this.env.getSettings(),
+                    this.env.getConfigId(),
+                    this.env.isVerboseLogging());
 
                 // handle any failure
-                this.provider.handleReturnCode(returnCode, this.nativeApi);
+                this.env.handleReturnCode(returnCode, this.nativeApi);
             }
 
             return null;
@@ -69,7 +72,7 @@ public class SzCoreEngine implements SzEngine {
 
     /**
      * Checks if this instance has been destroyed by the associated
-     * {@link SzProvider}.
+     * {@link SzEnvironment}.
      * 
      * @return <code>true</code> if this instance has been destroyed,
      *         otherwise <code>false</code>.
@@ -79,10 +82,4 @@ public class SzCoreEngine implements SzEngine {
             return (this.nativeApi == null);
         }
     }
-    
-    @Override
-    public SzProvider getProvider() {
-        return this.provider;
-    }
-
 }

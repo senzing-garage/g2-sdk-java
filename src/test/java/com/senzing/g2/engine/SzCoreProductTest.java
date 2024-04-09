@@ -16,7 +16,7 @@ import static com.senzing.util.JsonUtilities.normalizeJsonText;
 @TestInstance(Lifecycle.PER_CLASS)
 @Execution(ExecutionMode.SAME_THREAD)
 public class SzCoreProductTest extends AbstractTest {
-    private SzCoreProvider provider = null;
+    private SzCoreEnvironment session = null;
 
     @BeforeAll
     public void initializeEnvironment() {
@@ -25,7 +25,7 @@ public class SzCoreProductTest extends AbstractTest {
         
         String instanceName = this.getClass().getSimpleName();
 
-        this.provider = SzCoreProvider.newBuilder()
+        this.session = SzCoreEnvironment.newBuilder()
                                       .instanceName(instanceName)
                                       .settings(settings)
                                       .verboseLogging(false)
@@ -34,28 +34,18 @@ public class SzCoreProductTest extends AbstractTest {
 
     @AfterAll
     public void teardownEnvironment() {
-        if (this.provider != null) {
-            this.provider.destroy();
-            this.provider = null;
+        if (this.session != null) {
+            this.session.destroy();
+            this.session = null;
         }
         this.teardownTestEnvironment();
-    }
-
-    @Test
-    void testGetProvider() {
-        try {
-            SzProvider provider = this.provider.getProduct().getProvider();
-            assertSame(this.provider, provider, "Unexpected provider from getProvider() function");
-        } catch (Exception e) {
-            fail("Failed testGetProvider test with exception", e);
-        }
     }
 
     @Test
     void testGetLicense() {
         this.performTest(() -> {
             try {
-            SzProduct product = this.provider.getProduct();
+            SzProduct product = this.session.getProduct();
 
                 String license = product.getLicense();
 
@@ -76,7 +66,7 @@ public class SzCoreProductTest extends AbstractTest {
     void testGetVersion() {
         this.performTest(() -> {
             try {
-            SzProduct product = this.provider.getProduct();
+            SzProduct product = this.session.getProduct();
 
                 String version = product.getVersion();
 

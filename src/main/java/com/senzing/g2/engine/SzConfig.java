@@ -3,7 +3,7 @@ package com.senzing.g2.engine;
 /**
  * Defines the Java interface to the Senzing configuration functions.
  */
-public interface SzConfig extends SzProvided {
+public interface SzConfig {
   /**
    * Creates a new in-memory configuration using the default configuraiton
    * template and returns the configuration handle for working with it.

@@ -5,7 +5,7 @@ package com.senzing.g2.engine;
  * product functions provide information regarding the Senzing product
  * installation and user license.
  */
-public interface SzProduct extends SzProvided {
+public interface SzProduct {
     /**
      * Returns the currently configured license details.
      *

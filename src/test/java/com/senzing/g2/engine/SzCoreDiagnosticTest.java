@@ -57,7 +57,7 @@ import static org.junit.jupiter.params.provider.Arguments.*;
         | G2_ENTITY_OPTION_INCLUDE_MATCH_KEY_DETAILS
         | G2_INCLUDE_FEATURE_SCORES;
 
-    private SzCoreProvider provider = null;
+    private SzCoreEnvironment session = null;
 
     private Map<Long, String> featureMaps = new LinkedHashMap<>();
 
@@ -114,7 +114,7 @@ import static org.junit.jupiter.params.provider.Arguments.*;
             nativeEngine.destroy();
         }
 
-        this.provider = SzCoreProvider.newBuilder()
+        this.session = SzCoreEnvironment.newBuilder()
                                       .instanceName(instanceName)
                                       .settings(settings)
                                       .verboseLogging(false)
@@ -123,22 +123,11 @@ import static org.junit.jupiter.params.provider.Arguments.*;
     
     @AfterAll
     public void teardownEnvironment() {
-        if (this.provider != null) {
-            this.provider.destroy();
-            this.provider = null;
+        if (this.session != null) {
+            this.session.destroy();
+            this.session = null;
         }
         this.teardownTestEnvironment();
-    }
-
-    @Test
-    @Order(10)
-    void testGetProvider() {
-        try {
-            SzProvider provider = this.provider.getConfigManager().getProvider();
-            assertSame(this.provider, provider, "Unexpected provider from getProvider() function");
-        } catch (Exception e) {
-            fail("Failed testGetProvider test with exception", e);
-        }
     }
 
     @Test
@@ -146,7 +135,7 @@ import static org.junit.jupiter.params.provider.Arguments.*;
     void testCheckDatabasePerformance() {
         this.performTest(() -> {
             try {
-                SzDiagnostic diagnostic = this.provider.getDiagnostic();
+                SzDiagnostic diagnostic = this.session.getDiagnostic();
 
                 String result = diagnostic.checkDatabasePerformance(5);
                 
@@ -173,7 +162,7 @@ import static org.junit.jupiter.params.provider.Arguments.*;
     void testGetFeature(long featureId, String expected) {
         this.performTest(() -> {
             try {
-                SzDiagnostic diagnostic = this.provider.getDiagnostic();
+                SzDiagnostic diagnostic = this.session.getDiagnostic();
 
                 String actual = diagnostic.getFeature(featureId);
 
@@ -195,7 +184,7 @@ import static org.junit.jupiter.params.provider.Arguments.*;
     void testPurgeRepository() {
         this.performTest(() -> {
             try {
-                SzDiagnostic diagnostic = this.provider.getDiagnostic();
+                SzDiagnostic diagnostic = this.session.getDiagnostic();
 
                 diagnostic.purgeRepository();
 
