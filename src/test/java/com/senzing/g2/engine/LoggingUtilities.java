@@ -220,7 +220,7 @@ public class LoggingUtilities {
    *
    * @param lines The lines of text to log, which may be objects that will be
    *              converted to text via {@link Object#toString()}.
-   * @deprecated Use {@link #logDebug(Object...)} instead.
+   * @Deprecated Use {@link #logDebug(Object...)} instead.
    * @see #logDebug(Object...)
    */
   public static void debugLog(String... lines)

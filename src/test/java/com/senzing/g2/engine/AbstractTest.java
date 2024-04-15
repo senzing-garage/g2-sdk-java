@@ -518,6 +518,7 @@ public abstract class AbstractTest {
       fail("Raw data is not a JSON object: " + jsonData + suffix);
     }
 
+    @SuppressWarnings("unchecked")
     Map<String, Object> map = (Map<String, Object>) jsonData;
     Set<String> expectedKeySet = new HashSet<>();
     Set<String> actualKeySet = map.keySet();

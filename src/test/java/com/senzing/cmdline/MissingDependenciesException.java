@@ -25,6 +25,7 @@ public class MissingDependenciesException extends SpecifiedOptionException {
    * @param specifiedOptions The {@link Set} of {@link CommandLineOption}
    *                         instances that were specified.
    */
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public MissingDependenciesException(CommandLineSource       source,
                                       CommandLineOption       option,
                                       String                  specifier,
