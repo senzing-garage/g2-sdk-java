@@ -27,7 +27,6 @@ import javax.json.JsonArray;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static com.senzing.util.JsonUtilities.*;
 import static com.senzing.g2.engine.NativeEngine.*;
 import static org.junit.jupiter.params.provider.Arguments.*;
@@ -63,6 +62,7 @@ import static org.junit.jupiter.params.provider.Arguments.*;
 
     @BeforeAll
     public void initializeEnvironment() {
+        this.beginTests();
         this.initializeTestEnvironment();
         String settings = this.getRepoSettings();
         
@@ -123,11 +123,15 @@ import static org.junit.jupiter.params.provider.Arguments.*;
     
     @AfterAll
     public void teardownEnvironment() {
-        if (this.session != null) {
-            this.session.destroy();
-            this.session = null;
+        try {
+            if (this.session != null) {
+                this.session.destroy();
+                this.session = null;
+            }
+            this.teardownTestEnvironment();
+        } finally {
+            this.endTests();
         }
-        this.teardownTestEnvironment();
     }
 
     @Test

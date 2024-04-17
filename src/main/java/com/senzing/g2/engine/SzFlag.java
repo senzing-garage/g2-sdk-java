@@ -146,12 +146,11 @@ public enum SzFlag {
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK} 
      *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
     SZ_ENTITY_INCLUDE_POSSIBLY_SAME_RELATIONS(
-        SzFlags.SZ_ENTITY_INCLUDE_POSSIBLY_SAME_RELATIONS, SZ_ENTITY_SET),
+        SzFlags.SZ_ENTITY_INCLUDE_POSSIBLY_SAME_RELATIONS, SZ_RELATION_SET),
 
     /**
      * The value for including possibly-related relations for entities
@@ -164,12 +163,11 @@ public enum SzFlag {
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK} 
      *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
     SZ_ENTITY_INCLUDE_POSSIBLY_RELATED_RELATIONS(
-        SzFlags.SZ_ENTITY_INCLUDE_POSSIBLY_RELATED_RELATIONS, SZ_ENTITY_SET),
+        SzFlags.SZ_ENTITY_INCLUDE_POSSIBLY_RELATED_RELATIONS, SZ_RELATION_SET),
 
     /**
      * The value for including name-only relations for entities
@@ -182,12 +180,11 @@ public enum SzFlag {
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK} 
      *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
     SZ_ENTITY_INCLUDE_NAME_ONLY_RELATIONS(
-        SzFlags.SZ_ENTITY_INCLUDE_NAME_ONLY_RELATIONS, SZ_ENTITY_SET),
+        SzFlags.SZ_ENTITY_INCLUDE_NAME_ONLY_RELATIONS, SZ_RELATION_SET),
 
     /**
      * The value for including disclosed relations for entities
@@ -200,12 +197,11 @@ public enum SzFlag {
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK} 
      *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
     SZ_ENTITY_INCLUDE_DISCLOSED_RELATIONS(
-        SzFlags.SZ_ENTITY_INCLUDE_DISCLOSED_RELATIONS, SZ_ENTITY_SET),
+        SzFlags.SZ_ENTITY_INCLUDE_DISCLOSED_RELATIONS, SZ_RELATION_SET),
 
     /**
      * The value for including all features for entities
@@ -218,7 +214,7 @@ public enum SzFlag {
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK} 
      *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
+     *    <li>{@link SzFlagUsageGroup#SZ_VIRTUAL_ENTITY}
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
@@ -236,7 +232,7 @@ public enum SzFlag {
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK} 
      *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
+     *    <li>{@link SzFlagUsageGroup#SZ_VIRTUAL_ENTITY}
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
@@ -254,7 +250,7 @@ public enum SzFlag {
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK} 
      *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
+     *    <li>{@link SzFlagUsageGroup#SZ_VIRTUAL_ENTITY}
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
@@ -272,7 +268,7 @@ public enum SzFlag {
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK} 
      *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
+     *    <li>{@link SzFlagUsageGroup#SZ_VIRTUAL_ENTITY}
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
@@ -291,7 +287,7 @@ public enum SzFlag {
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK} 
      *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
+     *    <li>{@link SzFlagUsageGroup#SZ_VIRTUAL_ENTITY}
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
@@ -309,7 +305,7 @@ public enum SzFlag {
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK} 
      *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
+     *    <li>{@link SzFlagUsageGroup#SZ_VIRTUAL_ENTITY}
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
@@ -328,7 +324,7 @@ public enum SzFlag {
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK} 
      *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
+     *    <li>{@link SzFlagUsageGroup#SZ_VIRTUAL_ENTITY}
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
@@ -347,7 +343,7 @@ public enum SzFlag {
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK} 
      *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
+     *    <li>{@link SzFlagUsageGroup#SZ_VIRTUAL_ENTITY}
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
@@ -366,7 +362,7 @@ public enum SzFlag {
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK} 
      *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
+     *    <li>{@link SzFlagUsageGroup#SZ_VIRTUAL_ENTITY}
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
@@ -384,7 +380,7 @@ public enum SzFlag {
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK} 
      *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
+     *    <li>{@link SzFlagUsageGroup#SZ_VIRTUAL_ENTITY}
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
@@ -402,12 +398,11 @@ public enum SzFlag {
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK} 
      *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
     SZ_ENTITY_INCLUDE_RELATED_ENTITY_NAME(
-        SzFlags.SZ_ENTITY_INCLUDE_RELATED_ENTITY_NAME, SZ_ENTITY_SET),
+        SzFlags.SZ_ENTITY_INCLUDE_RELATED_ENTITY_NAME, SZ_RELATION_SET),
 
     /**
      * The value for including the record matching info of the related
@@ -421,12 +416,11 @@ public enum SzFlag {
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK} 
      *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
     SZ_ENTITY_INCLUDE_RELATED_MATCHING_INFO(
-        SzFlags.SZ_ENTITY_INCLUDE_RELATED_MATCHING_INFO, SZ_ENTITY_SET),
+        SzFlags.SZ_ENTITY_INCLUDE_RELATED_MATCHING_INFO, SZ_RELATION_SET),
 
     /**
      * The value for including the record summary of the related entities
@@ -439,12 +433,11 @@ public enum SzFlag {
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK} 
      *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
     SZ_ENTITY_INCLUDE_RELATED_RECORD_SUMMARY(
-        SzFlags.SZ_ENTITY_INCLUDE_RELATED_RECORD_SUMMARY, SZ_ENTITY_SET),
+        SzFlags.SZ_ENTITY_INCLUDE_RELATED_RECORD_SUMMARY, SZ_RELATION_SET),
 
     /**
      * The value for including the record types of the related entities.
@@ -457,12 +450,11 @@ public enum SzFlag {
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK} 
      *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
     SZ_ENTITY_INCLUDE_RELATED_RECORD_TYPES(
-        SzFlags.SZ_ENTITY_INCLUDE_RELATED_RECORD_TYPES, SZ_ENTITY_SET),
+        SzFlags.SZ_ENTITY_INCLUDE_RELATED_RECORD_TYPES, SZ_RELATION_SET),
 
     /**
      * The value for including the basic record data of the related
@@ -476,12 +468,11 @@ public enum SzFlag {
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK} 
      *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
     SZ_ENTITY_INCLUDE_RELATED_RECORD_DATA(
-        SzFlags.SZ_ENTITY_INCLUDE_RELATED_RECORD_DATA, SZ_ENTITY_SET),
+        SzFlags.SZ_ENTITY_INCLUDE_RELATED_RECORD_DATA, SZ_RELATION_SET),
 
     /**
      * The value for including internal features in entity output.
@@ -494,7 +485,7 @@ public enum SzFlag {
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK} 
      *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
+     *    <li>{@link SzFlagUsageGroup#SZ_VIRTUAL_ENTITY}
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
@@ -512,7 +503,7 @@ public enum SzFlag {
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK} 
      *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
+     *    <li>{@link SzFlagUsageGroup#SZ_VIRTUAL_ENTITY}
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
@@ -530,7 +521,7 @@ public enum SzFlag {
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK} 
      *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
+     *    <li>{@link SzFlagUsageGroup#SZ_VIRTUAL_ENTITY}
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
@@ -553,7 +544,7 @@ public enum SzFlag {
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
     SZ_ENTITY_OPTION_INCLUDE_MATCH_KEY_DETAILS(
-        SzFlags.SZ_ENTITY_OPTION_INCLUDE_MATCH_KEY_DETAILS, SZ_ENTITY_SET),
+        SzFlags.SZ_ENTITY_OPTION_INCLUDE_MATCH_KEY_DETAILS, SZ_ENTITY_HOW_SET),
 
     /**
      * The value for find-path functionality to indicate that

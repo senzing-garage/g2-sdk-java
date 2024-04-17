@@ -13,7 +13,7 @@ public class SzCoreConfigManager implements SzConfigManager {
     /**
      * The underlying {@link G2ConfigMgrJNI} instance.
      */
-    private G2ConfigMgrJNI nativeApi = null;
+    G2ConfigMgrJNI nativeApi = null;
 
     /**
      * Constructs with the specified {@link SzCoreEnvironment}.

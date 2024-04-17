@@ -28,7 +28,7 @@ import static com.senzing.util.JsonUtilities.*;
 public class SzCoreConfigManagerTest extends AbstractTest {
     private static final String CUSTOMERS_DATA_SOURCE = "CUSTOMERS";
 
-    private SzCoreEnvironment session = null;
+    private SzCoreEnvironment env = null;
 
     private String defaultConfig = null;
 
@@ -44,6 +44,7 @@ public class SzCoreConfigManagerTest extends AbstractTest {
 
     @BeforeAll
     public void initializeEnvironment() {
+        this.beginTests();
         this.initializeTestEnvironment(true);
         String settings = this.getRepoSettings();
         
@@ -109,20 +110,24 @@ public class SzCoreConfigManagerTest extends AbstractTest {
             nativeConfig.destroy();
         }
 
-        this.session = SzCoreEnvironment.newBuilder()
-                                        .instanceName(instanceName)
-                                        .settings(settings)
-                                        .verboseLogging(false)
-                                        .build();
+        this.env = SzCoreEnvironment.newBuilder()
+                                    .instanceName(instanceName)
+                                    .settings(settings)
+                                    .verboseLogging(false)
+                                    .build();
     }
 
     @AfterAll
     public void teardownEnvironment() {
-        if (this.session != null) {
-            this.session.destroy();
-            this.session = null;
+        try {
+            if (this.env != null) {
+                this.env.destroy();
+                this.env = null;
+            }
+            this.teardownTestEnvironment();
+        } finally {
+            this.endTests();
         }
-        this.teardownTestEnvironment();
     }
 
     @Test
@@ -130,7 +135,7 @@ public class SzCoreConfigManagerTest extends AbstractTest {
     void testAddConfigDefault() {
         this.performTest(() -> {
             try {
-                SzConfigManager configMgr = this.session.getConfigManager();
+                SzConfigManager configMgr = this.env.getConfigManager();
 
                 this.defaultConfigId = configMgr.addConfig(this.defaultConfig, DEFAULT_COMMENT);
                 
@@ -147,7 +152,7 @@ public class SzCoreConfigManagerTest extends AbstractTest {
     void testAddConfigModified() {
         this.performTest(() -> {
             try {
-                SzConfigManager configMgr = this.session.getConfigManager();
+                SzConfigManager configMgr = this.env.getConfigManager();
 
                 this.modifiedConfigId = configMgr.addConfig(this.modifiedConfig, MODIFIED_COMMENT);
                 
@@ -164,7 +169,7 @@ public class SzCoreConfigManagerTest extends AbstractTest {
     void testGetConfigDefault() {
         this.performTest(() -> {
             try {
-                SzConfigManager configMgr = this.session.getConfigManager();
+                SzConfigManager configMgr = this.env.getConfigManager();
                     
                 String configDefinition = configMgr.getConfig(this.defaultConfigId);
 
@@ -182,7 +187,7 @@ public class SzCoreConfigManagerTest extends AbstractTest {
     void testGetConfigModified() {
         this.performTest(() -> {
             try {
-                SzConfigManager configMgr = this.session.getConfigManager();
+                SzConfigManager configMgr = this.env.getConfigManager();
                     
                 String configDefinition = configMgr.getConfig(this.modifiedConfigId);
 
@@ -200,7 +205,7 @@ public class SzCoreConfigManagerTest extends AbstractTest {
     void testGetConfigList() {
         this.performTest(() -> {
             try {
-                SzConfigManager configMgr = this.session.getConfigManager();
+                SzConfigManager configMgr = this.env.getConfigManager();
                     
                 String result = configMgr.getConfigList();
                 
@@ -250,7 +255,7 @@ public class SzCoreConfigManagerTest extends AbstractTest {
     void testGetDefaultConfigIdInitial() {
         this.performTest(() -> {
             try {
-                SzConfigManager configMgr = this.session.getConfigManager();
+                SzConfigManager configMgr = this.env.getConfigManager();
 
                 long configId = configMgr.getDefaultConfigId();
                 
@@ -268,7 +273,7 @@ public class SzCoreConfigManagerTest extends AbstractTest {
     void testSetDefaultConfigId() {
         this.performTest(() -> {
             try {
-                SzConfigManager configMgr = this.session.getConfigManager();
+                SzConfigManager configMgr = this.env.getConfigManager();
 
                 configMgr.setDefaultConfigId(this.defaultConfigId);
                 
@@ -288,7 +293,7 @@ public class SzCoreConfigManagerTest extends AbstractTest {
     void testReplaceDefaultConfigId() {
         this.performTest(() -> {
             try {
-                SzConfigManager configMgr = this.session.getConfigManager();
+                SzConfigManager configMgr = this.env.getConfigManager();
 
                 configMgr.replaceDefaultConfigId(this.defaultConfigId, this.modifiedConfigId);
                 
@@ -309,7 +314,7 @@ public class SzCoreConfigManagerTest extends AbstractTest {
     void testNotReplaceDefaultConfigId() {
         this.performTest(() -> {
             try {
-                SzConfigManager configMgr = this.session.getConfigManager();
+                SzConfigManager configMgr = this.env.getConfigManager();
 
                 configMgr.replaceDefaultConfigId(this.defaultConfigId, this.modifiedConfigId);
                 

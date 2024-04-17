@@ -31,58 +31,73 @@ class SzFlagHelpers {
         = Collections.unmodifiableSet(new TreeSet<>());
         
     /**
-     * The package-private <b>unmodifiable</b> {@link Set} of {@link SzFlagUsageGroup}
-     * instances to apply to {@link SzFlag} instances that retrieve entity data since
-     * they are used by most operations.
+     * The package-private <b>unmodifiable</b> empty {@link Set} of {@link 
+     * SzFlagUsageGroup} that proxies for {@link SzFlagUsageGroup#SZ_ENTITY_SET}
+     * to help with circular dependencies during initialization.
      */
     static final Set<SzFlagUsageGroup> SZ_ENTITY_SET
         = Collections.unmodifiableSet(new TreeSet<>());
-        
+
+   /**
+    * The package-private <b>unmodifiable</b> empty {@link Set} of {@link 
+    * SzFlagUsageGroup} that proxies for {@link SzFlagUsageGroup#SZ_ENTITY_HOW_SET}
+    * to help with circular dependencies during initialization.
+    */
+   static final Set<SzFlagUsageGroup> SZ_ENTITY_HOW_SET
+       = Collections.unmodifiableSet(new TreeSet<>());
+
+   /**
+     * The package-private <b>unmodifiable</b> empty {@link Set} of {@link 
+     * SzFlagUsageGroup} that proxies for {@link SzFlagUsageGroup#SZ_RELATION_SET}
+     * to help with circular dependencies during initialization.
+    */
+    static final Set<SzFlagUsageGroup> SZ_RELATION_SET
+        = Collections.unmodifiableSet(new TreeSet<>());
+
     /**
-     * The package-private <b>unmodifiable</b> {@link Set} of {@link SzFlagUsageGroup}
-     * instances to apply to {@link SzFlag} instances that retrieve record data since
-     * they are used by most other groups and can be specifically used for retrieving
-     * a single record.
+     * The package-private <b>unmodifiable</b> empty {@link Set} of {@link 
+     * SzFlagUsageGroup} that proxies for {@link SzFlagUsageGroup#SZ_ENTITY_RECORD_SET}
+     * to help with circular dependencies during initialization.
      */
     static final Set<SzFlagUsageGroup> SZ_ENTITY_RECORD_SET
         = Collections.unmodifiableSet(new TreeSet<>());
         
     /**
-     * The package-private <b>unmodifiable</b> {@link Set} of {@link SzFlagUsageGroup}
-     * instances to use for {@link SzFlag} instances that can be used only for
-     * "how analysis" and "why analysis" operations.
+     * The package-private <b>unmodifiable</b> empty {@link Set} of {@link 
+     * SzFlagUsageGroup} that proxies for {@link SzFlagUsageGroup#SZ_HOW_WHY_SET}
+     * to help with circular dependencies during initialization.
      */
     static final Set<SzFlagUsageGroup> SZ_HOW_WHY_SET 
         = Collections.unmodifiableSet(new TreeSet<>());
         
     /**
-     * The package-private <b>unmodifiable</b> {@link Set} of {@link SzFlagUsageGroup}
-     * instances to use for {@link SzFlag} instances that can only be used for "search"
-     * operations.
+     * The package-private <b>unmodifiable</b> empty {@link Set} of {@link 
+     * SzFlagUsageGroup} that proxies for {@link SzFlagUsageGroup#SZ_SEARCH_SET}
+     * to help with circular dependencies during initialization.
      */
     static final Set<SzFlagUsageGroup> SZ_SEARCH_SET 
         = Collections.unmodifiableSet(new TreeSet<>());
         
     /**
-     * The package-private <b>unmodifiable</b> {@link Set} of {@link SzFlagUsageGroup}
-     * instances to use for {@link SzFlag} instances that can only be used for 
-     * "export" operations.
+     * The package-private <b>unmodifiable</b> empty {@link Set} of {@link 
+     * SzFlagUsageGroup} that proxies for {@link SzFlagUsageGroup#SZ_EXPORT_SET}
+     * to help with circular dependencies during initialization.
      */
     static final Set<SzFlagUsageGroup> SZ_EXPORT_SET 
         = Collections.unmodifiableSet(new TreeSet<>());
         
     /**
-     * The package-private <b>unmodifiable</b> {@link Set} of {@link SzFlagUsageGroup}
-     * instances to use for {@link SzFlag} instances that can only be used for 
-     * "find path" operations.
+     * The package-private <b>unmodifiable</b> empty {@link Set} of {@link 
+     * SzFlagUsageGroup} that proxies for {@link SzFlagUsageGroup#SZ_FIND_PATH_SET}
+     * to help with circular dependencies during initialization.
      */
     static final Set<SzFlagUsageGroup> SZ_FIND_PATH_SET
         = Collections.unmodifiableSet(new TreeSet<>());
         
     /**
-     * The package-private <b>unmodifiable</b> {@link Set} of {@link SzFlagUsageGroup}
-     * instances to use for {@link SzFlag} instances that can only be used for 
-     * "find network" operations.
+     * The package-private <b>unmodifiable</b> empty {@link Set} of {@link 
+     * SzFlagUsageGroup} that proxies for {@link SzFlagUsageGroup#SZ_FIND_NETWORK_SET}
+     * to help with circular dependencies during initialization.
      */
     static final Set<SzFlagUsageGroup> SZ_FIND_NETWORK_SET
         = Collections.unmodifiableSet(new TreeSet<>());

@@ -13,7 +13,7 @@ public class SzCoreProduct implements SzProduct {
     /**
      * The underlying {@link G2ProductJNI} instance.
      */
-    private G2ProductJNI nativeApi = null;
+    G2ProductJNI nativeApi = null;
 
     /**
      * Default constructor.

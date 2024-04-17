@@ -47,8 +47,9 @@ public enum SzFlagUsageGroup {
     SZ_RECORD,
 
     /**
-     * Flags in this usage group can be used for operations that retrieve record 
-     * data in order to control the level of detail of the returned entity.
+     * Flags in this usage group can be used for operations that retrieve
+     * entity data in order to control the level of detail of the returned
+     * entity.
      * <p>
      * The {@link SzFlag} instances included in this usage group are:
      * <ul>
@@ -80,10 +81,15 @@ public enum SzFlagUsageGroup {
      * <p>
      * The pre-defined {@link SzFlag} {@link Set} instances for this group are:
      * <ul>
-     *      <li>{@link SzFlag#SZ_RECORD_DEFAULT_FLAGS}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_ALL_RELATIONS}
      *      <li>{@link SzFlag#SZ_ENTITY_DEFAULT_FLAGS}
      *      <li>{@link SzFlag#SZ_ENTITY_BRIEF_DEFAULT_FLAGS}
+     * </ul>
+     * <p>
+     * The pre-defined {@link SzFlag} {@link Set} instances that also 
+     * support this group for definining entity or record detail levels are:
+     * <ul>
+     *      <li>{@link SzFlag#SZ_RECORD_DEFAULT_FLAGS}
      *      <li>{@link SzFlag#SZ_VIRTUAL_ENTITY_DEFAULT_FLAGS}
      * </ul>
      */
@@ -387,28 +393,6 @@ public enum SzFlagUsageGroup {
      * The {@link SzFlag} instances included in this usage group are:
      * <ul>
      *      <li>{@link SzFlag#SZ_NO_FLAGS}
-     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_POSSIBLY_SAME_RELATIONS}
-     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_POSSIBLY_RELATED_RELATIONS}
-     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_NAME_ONLY_RELATIONS}
-     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_DISCLOSED_RELATIONS}
-     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_ALL_FEATURES}
-     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_REPRESENTATIVE_FEATURES}
-     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_ENTITY_NAME}
-     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RECORD_SUMMARY}
-     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RECORD_TYPES}
-     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RECORD_DATA}
-     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RECORD_MATCHING_INFO}
-     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RECORD_JSON_DATA}
-     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RECORD_UNMAPPED_DATA}
-     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RECORD_FEATURE_IDS}
-     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RELATED_ENTITY_NAME}
-     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RELATED_MATCHING_INFO}
-     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RELATED_RECORD_SUMMARY}
-     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RELATED_RECORD_TYPES}
-     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RELATED_RECORD_DATA}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_FEATURE_STATS}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_FEATURE_ELEMENTS}
      *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_MATCH_KEY_DETAILS}
      *      <li>{@link SzFlag#SZ_INCLUDE_FEATURE_SCORES}
      * </ul>
@@ -429,7 +413,39 @@ public enum SzFlagUsageGroup {
      *      <li>{@link SzFlag#SZ_VIRTUAL_ENTITY_DEFAULT_FLAGS}
      * </ul>
      */
-    SZ_HOW;
+    SZ_HOW,
+
+
+    /**
+     * Flags in this usage group can be used for operations that retrieve
+     * virtual entities in order to control the level of detail of the
+     * returned virtual entity.
+     * <p>
+     * The {@link SzFlag} instances included in this usage group are:
+     * <ul>
+     *      <li>{@link SzFlag#SZ_NO_FLAGS}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_ALL_FEATURES}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_REPRESENTATIVE_FEATURES}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_ENTITY_NAME}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RECORD_SUMMARY}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RECORD_TYPES}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RECORD_DATA}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RECORD_MATCHING_INFO}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RECORD_JSON_DATA}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RECORD_UNMAPPED_DATA}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RECORD_FEATURE_IDS}
+     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES}
+     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_FEATURE_STATS}
+     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_FEATURE_ELEMENTS}
+     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_MATCH_KEY_DETAILS}
+     * </ul>
+     * <p>
+     * The pre-defined {@link SzFlag} {@link Set} instances for this group are:
+     * <ul>
+     *      <li>{@link SzFlag#SZ_VIRTUAL_ENTITY_DEFAULT_FLAGS}
+     * </ul>
+     */
+    SZ_VIRTUAL_ENTITY;
 
     /**
      * The unmodifiabe {@link Set} of {@link SzFlag} instances that 
@@ -527,11 +543,47 @@ public enum SzFlagUsageGroup {
     /**
      * The package-private <b>unmodifiable</b> {@link Set} of {@link SzFlagUsageGroup}
      * instances to apply to {@link SzFlag} instances that retrieve entity data since
-     * they are used by most operations.
+     * they are used by most operations.  Flags that use this {@link Set} should not
+     * affect inclusion of or details of related entities.
      */
     static final Set<SzFlagUsageGroup> SZ_ENTITY_SET
-        = Collections.unmodifiableSet(EnumSet.of(
-            SZ_ENTITY, SZ_SEARCH, SZ_EXPORT, SZ_FIND_PATH, SZ_FIND_NETWORK));
+        = Collections.unmodifiableSet(EnumSet.of(SZ_ENTITY,
+                                                 SZ_SEARCH,
+                                                 SZ_EXPORT,
+                                                 SZ_FIND_PATH,
+                                                 SZ_FIND_NETWORK,
+                                                 SZ_WHY,
+                                                 SZ_VIRTUAL_ENTITY));
+
+    /**
+     * The package-private <b>unmodifiable</b> {@link Set} of {@link SzFlagUsageGroup}
+     * instances to apply to {@link SzFlag} instances that retrieve entity data 
+     * pertaining to inclusion of related entities and the details of related 
+     * entities.
+     */
+    static final Set<SzFlagUsageGroup> SZ_RELATION_SET
+        = Collections.unmodifiableSet(EnumSet.of(SZ_ENTITY,
+                                                 SZ_SEARCH,
+                                                 SZ_EXPORT,
+                                                 SZ_FIND_PATH,
+                                                 SZ_FIND_NETWORK,
+                                                 SZ_WHY));
+
+    /**
+     * The package-private <b>unmodifiable</b> {@link Set} of {@link SzFlagUsageGroup}
+     * instances to apply to {@link SzFlag} instances that retrieve entity data
+     * <b>and</b> also apply to {@link SZ_HOW} operations.  Flags that use this
+     * {@link Set} should not affect inclusion of or details of related entities.
+     */
+    static final Set<SzFlagUsageGroup> SZ_ENTITY_HOW_SET
+        = Collections.unmodifiableSet(EnumSet.of(SZ_ENTITY,
+                                                 SZ_SEARCH,
+                                                 SZ_EXPORT,
+                                                 SZ_FIND_PATH,
+                                                 SZ_FIND_NETWORK,
+                                                 SZ_HOW,
+                                                 SZ_WHY,
+                                                 SZ_VIRTUAL_ENTITY));
 
     /**
      * The package-private <b>unmodifiable</b> {@link Set} of {@link SzFlagUsageGroup}
@@ -546,8 +598,7 @@ public enum SzFlagUsageGroup {
                                                  SZ_EXPORT,
                                                  SZ_FIND_PATH,
                                                  SZ_FIND_NETWORK,
-                                                 SZ_WHY,
-                                                 SZ_HOW));
+                                                 SZ_WHY));
 
     /**
      * The package-private <b>unmodifiable</b> {@link Set} of {@link SzFlagUsageGroup}
@@ -601,7 +652,9 @@ public enum SzFlagUsageGroup {
         map.put(SzFlagHelpers.SZ_ALL_GROUPS_SET, SzFlagUsageGroup.SZ_ALL_GROUPS_SET);
         map.put(SzFlagHelpers.SZ_MODIFY_SET, SzFlagUsageGroup.SZ_MODIFY_SET);
         map.put(SzFlagHelpers.SZ_ENTITY_SET, SzFlagUsageGroup.SZ_ENTITY_SET);
+        map.put(SzFlagHelpers.SZ_RELATION_SET, SzFlagUsageGroup.SZ_RELATION_SET);
         map.put(SzFlagHelpers.SZ_ENTITY_RECORD_SET, SzFlagUsageGroup.SZ_ENTITY_RECORD_SET);
+        map.put(SzFlagHelpers.SZ_ENTITY_HOW_SET, SzFlagUsageGroup.SZ_ENTITY_HOW_SET);
         map.put(SzFlagHelpers.SZ_HOW_WHY_SET, SzFlagUsageGroup.SZ_HOW_WHY_SET);
         map.put(SzFlagHelpers.SZ_SEARCH_SET, SzFlagUsageGroup.SZ_SEARCH_SET);
         map.put(SzFlagHelpers.SZ_EXPORT_SET, SzFlagUsageGroup.SZ_EXPORT_SET);

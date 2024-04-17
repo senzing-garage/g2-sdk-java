@@ -17,7 +17,7 @@ class SzCoreConfig implements SzConfig {
     /**
      * The underlying {@link G2ConfigJNI} instance.
      */
-    private G2ConfigJNI nativeApi = null;
+    G2ConfigJNI nativeApi = null;
 
     /**
      * Constructs with the specified {@link SzCoreEnvironment}.

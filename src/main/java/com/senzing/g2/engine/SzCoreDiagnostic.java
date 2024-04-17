@@ -13,7 +13,7 @@ public class SzCoreDiagnostic implements SzDiagnostic {
     /**
      * The underlying {@link G2DiagnosticJNI} instance.
      */
-    private G2DiagnosticJNI nativeApi = null;
+    G2DiagnosticJNI nativeApi = null;
 
     /**
      * Constructs with the specified {@link SzCoreEnvironment}.

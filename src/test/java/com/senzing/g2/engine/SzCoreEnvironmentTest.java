@@ -1,10 +1,11 @@
 package com.senzing.g2.engine;
 
-import java.io.File;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Random;
 
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.Future;
@@ -18,14 +19,15 @@ import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.Arguments;
 
 import static org.junit.jupiter.api.TestInstance.Lifecycle;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -38,10 +40,46 @@ import static com.senzing.g2.engine.SzCoreEnvironment.*;
 @TestInstance(Lifecycle.PER_CLASS)
 @Execution(ExecutionMode.SAME_THREAD)
 public class SzCoreEnvironmentTest extends AbstractTest {
- 
+    private static final String EMPLOYEES_DATA_SOURCE = "EMPLOYEES";
+    
+    private static final String CUSTOMERS_DATA_SOURCE = "CUSTOMERS";
+
+    private long configId1 = 0L;
+
+    private long configId2 = 0L;
+
+    private long configId3 = 0L;
+
+    private long defaultConfigId = 0L;
+
     @BeforeAll public void initializeEnvironment() {
         this.beginTests();
         this.initializeTestEnvironment();
+        String settings     = this.getRepoSettings();
+        String instanceName = this.getInstanceName();
+        
+        NativeConfig    nativeConfig    = new G2ConfigJNI();
+        NativeConfigMgr nativeConfigMgr = new G2ConfigMgrJNI();
+        try {
+            // initialize the native config
+            init(nativeConfig, instanceName, settings);
+            init(nativeConfigMgr, instanceName, settings);
+
+            String config1 = this.createConfig(nativeConfig, CUSTOMERS_DATA_SOURCE);
+            String config2 = this.createConfig(nativeConfig, EMPLOYEES_DATA_SOURCE);
+            String config3 = this.createConfig(
+                nativeConfig, CUSTOMERS_DATA_SOURCE, EMPLOYEES_DATA_SOURCE);
+
+            this.configId1 = this.addConfig(nativeConfigMgr, config1, "Config 1");
+            this.configId2 = this.addConfig(nativeConfigMgr, config2, "Config 2");
+            this.configId3 = this.addConfig(nativeConfigMgr, config3, "Config 3");
+
+            this.defaultConfigId = this.getDefaultConfigId(nativeConfigMgr);
+
+        } finally {
+            nativeConfig    = destroy(nativeConfig);
+            nativeConfigMgr = destroy(nativeConfigMgr);
+        }   
     }
 
     @AfterAll public void teardownEnvironment() {
@@ -245,172 +283,178 @@ public class SzCoreEnvironmentTest extends AbstractTest {
     @ParameterizedTest
     @CsvSource({"1, Foo", "2, Bar", "3, Phoo", "4, Phoox"})
     void testExecute(int threadCount, String expected) {
-        SzCoreEnvironment env  = null;
+        this.performTest(() -> {
+            SzCoreEnvironment env  = null;
 
-        ThreadPoolExecutor threadPool = new ThreadPoolExecutor(
-            threadCount, threadCount, 10L, SECONDS, new LinkedBlockingQueue<>());
-
-        List<Future<String>> futures = new ArrayList<>(threadCount);
-        try {
-            env  = SzCoreEnvironment.newBuilder().build();
-
-            final SzCoreEnvironment prov = env;
-
-            // loop through the threads
-            for (int index = 0; index < threadCount; index++) {
-                Future<String> future = threadPool.submit(() -> {
-                    return prov.execute(() -> {
-                        return expected;
+            ThreadPoolExecutor threadPool = new ThreadPoolExecutor(
+                threadCount, threadCount, 10L, SECONDS, new LinkedBlockingQueue<>());
+    
+            List<Future<String>> futures = new ArrayList<>(threadCount);
+            try {
+                env  = SzCoreEnvironment.newBuilder().build();
+    
+                final SzCoreEnvironment prov = env;
+    
+                // loop through the threads
+                for (int index = 0; index < threadCount; index++) {
+                    Future<String> future = threadPool.submit(() -> {
+                        return prov.execute(() -> {
+                            return expected;
+                        });
                     });
-                });
-                futures.add(future);
-            }
-
-            // loop through the futures
-            for (Future<String> future : futures) {
-                try {
-                    String actual = future.get();
-                    assertEquals(expected, actual, "Unexpected result from execute()");
-                } catch (Exception e) {
-                    fail("Failed execute with exception", e);
+                    futures.add(future);
                 }
-            }
-
-
-        } finally {
-            if (env != null) {
-                env.destroy();
-            }
-        }
+    
+                // loop through the futures
+                for (Future<String> future : futures) {
+                    try {
+                        String actual = future.get();
+                        assertEquals(expected, actual, "Unexpected result from execute()");
+                    } catch (Exception e) {
+                        fail("Failed execute with exception", e);
+                    }
+                }
+    
+    
+            } finally {
+                if (env != null) {
+                    env.destroy();
+                }
+            }    
+        });
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"Foo", "Bar", "Phoo", "Phoox"})
     void testExecuteFail(String expected) {
-        SzCoreEnvironment env  = null;
-        try {
-            env  = SzCoreEnvironment.newBuilder().build();
-
+        this.performTest(() -> {
+            SzCoreEnvironment env  = null;
             try {
-               env.execute(() -> {
-                    throw new SzException(expected);
-               });
-
-               fail("Expected SzException was not thrown");
-
-            } catch (SzException e) {
-                assertEquals(expected, e.getMessage(), "Unexpected exception messasge");
-
-            } catch (Exception e) {
-                fail("Failed execute with exception", e);
-            }
-
-        } finally {
-            if (env != null) {
-                env.destroy();
-            }
-        }
+                env  = SzCoreEnvironment.newBuilder().build();
+    
+                try {
+                   env.execute(() -> {
+                        throw new SzException(expected);
+                   });
+    
+                   fail("Expected SzException was not thrown");
+    
+                } catch (SzException e) {
+                    assertEquals(expected, e.getMessage(), "Unexpected exception messasge");
+    
+                } catch (Exception e) {
+                    fail("Failed execute with exception", e);
+                }
+    
+            } finally {
+                if (env != null) {
+                    env.destroy();
+                }
+            }    
+        });
     }
 
     @ParameterizedTest
     @CsvSource({"1, Foo", "2, Bar", "3, Phoo", "4, Phoox"})
     void testGetExecutingCount(int threadCount, String expected) {
-        int executeCount = threadCount * 3;
+        this.performTest(() -> {
+            int executeCount = threadCount * 3;
 
-        final Object[] monitors = new Object[executeCount];
-        for (int index = 0; index < executeCount; index++) {
-            monitors[index] = new Object();
-        }
-        SzCoreEnvironment env  = null;
-        try {
-            env  = SzCoreEnvironment.newBuilder().instanceName(expected).build();
-
-            final Thread[]      threads     = new Thread[executeCount];
-            final String[]      results     = new String[executeCount];
-            final Exception[]   failures    = new Exception[executeCount];
-
+            final Object[] monitors = new Object[executeCount];
             for (int index = 0; index < executeCount; index++) {
-                final SzCoreEnvironment prov = env;
-                final int threadIndex = index;
-                threads[index] = new Thread() { 
-                    public void run() {
-                        try {
-                            String actual = prov.execute(() -> {
-                                Object monitor = monitors[threadIndex];
-                                synchronized (monitor) {
-                                    monitor.notifyAll();
-                                    monitor.wait();
-                                }
-                                return expected + "-" + threadIndex;
-                            });
-                            results[threadIndex]    = actual;
-                            failures[threadIndex]   = null;
-             
-                         } catch (Exception e) {
-                            results[threadIndex]    = null;
-                            failures[threadIndex]   = e;
-                         }
-                    }
-                };
+                monitors[index] = new Object();
             }
-            int prevExecutingCount = 0;
-            for (int index = 0; index < executeCount; index++) {
-                Object monitor = monitors[index];
-
-                synchronized (monitor) {
-
-                    threads[index].start();
-                    try {
-                        monitor.wait();
-                    } catch (InterruptedException ignore) {
-                        // do nothing
-                    }
+            SzCoreEnvironment env  = null;
+            try {
+                env  = SzCoreEnvironment.newBuilder().instanceName(expected).build();
+    
+                final Thread[]      threads     = new Thread[executeCount];
+                final String[]      results     = new String[executeCount];
+                final Exception[]   failures    = new Exception[executeCount];
+    
+                for (int index = 0; index < executeCount; index++) {
+                    final SzCoreEnvironment prov = env;
+                    final int threadIndex = index;
+                    threads[index] = new Thread() { 
+                        public void run() {
+                            try {
+                                String actual = prov.execute(() -> {
+                                    Object monitor = monitors[threadIndex];
+                                    synchronized (monitor) {
+                                        monitor.notifyAll();
+                                        monitor.wait();
+                                    }
+                                    return expected + "-" + threadIndex;
+                                });
+                                results[threadIndex]    = actual;
+                                failures[threadIndex]   = null;
+                 
+                             } catch (Exception e) {
+                                results[threadIndex]    = null;
+                                failures[threadIndex]   = e;
+                             }
+                        }
+                    };
                 }
-                int executingCount = env.getExecutingCount();
-                assertTrue(executingCount > 0, "Executing count is zero");
-                assertTrue(executingCount > prevExecutingCount, 
-                        "Executing count (" + executingCount + ") decremented from previous ("
-                        + prevExecutingCount + ")");
-                prevExecutingCount = executingCount;
-            }
-
-            for (int index = 0; index < executeCount; index++) {
-                try {
+                int prevExecutingCount = 0;
+                for (int index = 0; index < executeCount; index++) {
+                    Object monitor = monitors[index];
+    
+                    synchronized (monitor) {
+    
+                        threads[index].start();
+                        try {
+                            monitor.wait();
+                        } catch (InterruptedException ignore) {
+                            // do nothing
+                        }
+                    }
+                    int executingCount = env.getExecutingCount();
+                    assertTrue(executingCount > 0, "Executing count is zero");
+                    assertTrue(executingCount > prevExecutingCount, 
+                            "Executing count (" + executingCount + ") decremented from previous ("
+                            + prevExecutingCount + ")");
+                    prevExecutingCount = executingCount;
+                }
+    
+                for (int index = 0; index < executeCount; index++) {
+                    try {
+                        Object monitor = monitors[index];
+                        synchronized (monitor) {
+                            monitor.notifyAll();
+                        }
+                        threads[index].join();
+                    } catch (InterruptedException e) {
+                        fail("Interrupted while joining threads");
+                    }
+                    int executingCount = env.getExecutingCount();
+                    assertTrue(executingCount >= 0, "Executing count is negative");
+                    assertTrue(executingCount < prevExecutingCount, 
+                            "Executing count (" + executingCount + ") incremented from previous ("
+                            + prevExecutingCount + ")");
+                    prevExecutingCount = executingCount;
+                }
+                
+                // check the basics
+                for (int index = 0; index < executeCount; index++) {
+                    assertEquals(expected + "-" + index, results[index],
+                                "At least one thread returned an unexpected result");
+                    assertNull(failures[index], 
+                                        "At least one thread threw an exception");
+                }
+                
+            } finally {
+                for (int index = 0; index < executeCount; index++) {
                     Object monitor = monitors[index];
                     synchronized (monitor) {
                         monitor.notifyAll();
                     }
-                    threads[index].join();
-                } catch (InterruptedException e) {
-                    fail("Interrupted while joining threads");
                 }
-                int executingCount = env.getExecutingCount();
-                assertTrue(executingCount >= 0, "Executing count is negative");
-                assertTrue(executingCount < prevExecutingCount, 
-                        "Executing count (" + executingCount + ") incremented from previous ("
-                        + prevExecutingCount + ")");
-                prevExecutingCount = executingCount;
-            }
-            
-            // check the basics
-            for (int index = 0; index < executeCount; index++) {
-                assertEquals(expected + "-" + index, results[index],
-                            "At least one thread returned an unexpected result");
-                assertNull(failures[index], 
-                                    "At least one thread threw an exception");
-            }
-            
-        } finally {
-            for (int index = 0; index < executeCount; index++) {
-                Object monitor = monitors[index];
-                synchronized (monitor) {
-                    monitor.notifyAll();
+                if (env != null) {
+                    env.destroy();
                 }
-            }
-            if (env != null) {
-                env.destroy();
-            }
-        }
+            }    
+        });
     }
 
     @Test
@@ -635,37 +679,57 @@ public class SzCoreEnvironmentTest extends AbstractTest {
     @Test
     void testGetProduct() {
         this.performTest(() -> {
-            String settings = this.getRepoSettings();
+            this.performTest(() -> {
+                String settings = this.getRepoSettings();
             
+                SzCoreEnvironment env  = null;
+                
+                try {
+                    env  = SzCoreEnvironment.newBuilder()
+                                             .instanceName("GetProduct Instance")
+                                             .settings(settings)
+                                             .verboseLogging(false)
+                                             .build();
+    
+                    SzProduct product1 = env.getProduct();
+                    SzProduct product2 = env.getProduct();
+    
+                    assertNotNull(product1, "SzProduct was null");
+                    assertSame(product1, product2, "SzProduct not returning the same object");
+                    assertInstanceOf(SzCoreProduct.class, product1,
+                                    "SzProduct instance is not an instance of SzCoreProduct: "
+                                    + product1.getClass().getName());
+                    assertFalse(((SzCoreProduct) product1).isDestroyed(),
+                                "SzProduct instance reporting that it is destroyed");
+    
+                    env.destroy();
+                    env  = null;
+    
+                    assertTrue(((SzCoreProduct) product1).isDestroyed(),
+                                "SzProduct instance reporting that it is NOT destroyed");
+    
+                } catch (SzException e) {
+                    fail("Got SzException during test", e);
+    
+                } finally {
+                    if (env != null) env.destroy();
+                }        
+            });
+        });
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "Foo", "Bar", "Phoo" })
+    void testGetInstanceName(String instanceName) {
+        this.performTest(() -> {
             SzCoreEnvironment env  = null;
             
             try {
-                env  = SzCoreEnvironment.newBuilder()
-                                         .instanceName("GetProduct Instance")
-                                         .settings(settings)
-                                         .verboseLogging(false)
-                                         .build();
-
-                SzProduct product1 = env.getProduct();
-                SzProduct product2 = env.getProduct();
-
-                assertNotNull(product1, "SzProduct was null");
-                assertSame(product1, product2, "SzProduct not returning the same object");
-                assertInstanceOf(SzCoreProduct.class, product1,
-                                "SzProduct instance is not an instance of SzCoreProduct: "
-                                + product1.getClass().getName());
-                assertFalse(((SzCoreProduct) product1).isDestroyed(),
-                            "SzProduct instance reporting that it is destroyed");
-
-                env.destroy();
-                env  = null;
-
-                assertTrue(((SzCoreProduct) product1).isDestroyed(),
-                            "SzProduct instance reporting that it is NOT destroyed");
-
-            } catch (SzException e) {
-                fail("Got SzException during test", e);
-
+                env  = SzCoreEnvironment.newBuilder().instanceName(instanceName).build();
+    
+                assertEquals(instanceName, env.getInstanceName(),
+                             "Instance names are not equal after building.");
+            
             } finally {
                 if (env != null) env.destroy();
             }    
@@ -673,101 +737,340 @@ public class SzCoreEnvironmentTest extends AbstractTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "Foo", "Bar", "Phoo" })
-    void testGetInstanceName(String instanceName) {
-        SzCoreEnvironment env  = null;
-            
-        try {
-            env  = SzCoreEnvironment.newBuilder().instanceName(instanceName).build();
+    @ValueSource(longs = { 10L, 12L, 0L })
+    void testGetConfigId(Long configId) {
+        final Long initConfigId = (configId == 0L) ? null : configId;
 
-            assertEquals(instanceName, env.getInstanceName(),
-                         "Instance names are not equal after building.");
-        
-        } finally {
-            if (env != null) env.destroy();
-        }
+        this.performTest(() -> {
+            SzCoreEnvironment env  = null;    
+            try {
+                env  = SzCoreEnvironment.newBuilder().configId(initConfigId).build();
+    
+                assertEquals(initConfigId, env.getConfigId(),
+                             "Config ID's are not equal after building.");
+            
+            } finally {
+                if (env != null) env.destroy();
+            }    
+        });
+    }
+
+    private List<String> getSettingsList() {
+        return List.of(BOOTSTRAP_SETTINGS, this.getRepoSettings());
     }
 
     @ParameterizedTest
-    @ValueSource(longs = { 10L, 12L, 0L })
-    void testGetConfigId(Long configId) {
-        SzCoreEnvironment env  = null;
-        if (configId == 0L) configId = null;
-
-        try {
-            env  = SzCoreEnvironment.newBuilder().configId(configId).build();
-
-            assertEquals(configId, env.getConfigId(),
-                         "Config ID's are not equal after building.");
-        
-        } finally {
-            if (env != null) env.destroy();
-        }
-    }
-
-    @Test
-    void testGetSettings() {
-        SzCoreEnvironment env  = null;
+    @MethodSource("getSettingsList")
+    void testGetSettings(String settings) {
+        this.performTest(() -> {
+            SzCoreEnvironment env  = null;
             
-        try {
-            env  = SzCoreEnvironment.newBuilder().instanceName(BOOTSTRAP_SETTINGS).build();
-
-            assertEquals(BOOTSTRAP_SETTINGS, env.getSettings(),
-                         "Settings are not equal after building.");
-        
-        } finally {
-            if (env != null) env.destroy();
-        }
-
+            try {
+                env  = SzCoreEnvironment.newBuilder().settings(settings).build();
+    
+                assertEquals(settings, env.getSettings(),
+                             "Settings are not equal after building.");
+            
+            } finally {
+                if (env != null) env.destroy();
+            }    
+        });
     }
 
     @ParameterizedTest
     @ValueSource(booleans = { true, false})
     void testIsVerboseLogging(boolean verbose) {
-        SzCoreEnvironment env  = null;
+        this.performTest(() -> {
+            SzCoreEnvironment env  = null;
             
-        try {
-            env  = SzCoreEnvironment.newBuilder().verboseLogging(verbose).build();
-
-            assertEquals(verbose, env.isVerboseLogging(),
-                         "Verbose logging settings are not equal after building.");
-        
-        } finally {
-            if (env != null) env.destroy();
-        }
+            try {
+                env  = SzCoreEnvironment.newBuilder().verboseLogging(verbose).build();
+    
+                assertEquals(verbose, env.isVerboseLogging(),
+                             "Verbose logging settings are not equal after building.");
+            
+            } finally {
+                if (env != null) env.destroy();
+            }    
+        });
     }
 
     @ParameterizedTest
     @CsvSource({"1,10,Foo", "0,20,Bar", "2,30,Phoo"})
     void testHandleReturnCode(int returnCode, int errorCode, String errorMessage) {
-        SzCoreEnvironment env  = null;
+        this.performTest(() -> {
+            SzCoreEnvironment env  = null;
             
-        try {
-            env  = SzCoreEnvironment.newBuilder().instanceName(BOOTSTRAP_SETTINGS).build();
-
             try {
-                env.handleReturnCode(returnCode, new NativeApi() {
-                    public int getLastExceptionCode() { return errorCode; }
-                    public String getLastException() { return errorMessage; }
-                    public void clearLastException() { }
-                });
-                if (returnCode != 0) {
-                    fail("The handleReturnCode() function did not throw an exception with return code: " + returnCode);
+                env  = SzCoreEnvironment.newBuilder().settings(BOOTSTRAP_SETTINGS).build();
+    
+                try {
+                    env.handleReturnCode(returnCode, new NativeApi() {
+                        public int getLastExceptionCode() { return errorCode; }
+                        public String getLastException() { return errorMessage; }
+                        public void clearLastException() { }
+                    });
+                    if (returnCode != 0) {
+                        fail("The handleReturnCode() function did not throw an exception with return code: " + returnCode);
+                    }
+    
+                } catch (Exception e) {
+                    if (returnCode == 0) {
+                        fail("Unexpected exception from handleReturnCode() with return code: " + returnCode, e);
+                    } else {
+                        assertInstanceOf(SzException.class, e, "Type of exception is not as expected");
+                        SzException sze = (SzException) e;
+                        assertEquals(errorCode, sze.getErrorCode(), "Error code of exception is not as expected");
+                        assertEquals(errorMessage, e.getMessage(), "Error message of exception is not as expected");
+                    }
                 }
-
-            } catch (Exception e) {
-                if (returnCode == 0) {
-                    fail("Unexpected exception from handleReturnCode() with return code: " + returnCode, e);
-                } else {
-                    assertInstanceOf(SzException.class, e, "Type of exception is not as expected");
-                    SzException sze = (SzException) e;
-                    assertEquals(errorCode, sze.getErrorCode(), "Error code of exception is not as expected");
-                    assertEquals(errorMessage, e.getMessage(), "Error message of exception is not as expected");
-                }
-            }
-        } finally {
-            if (env != null) env.destroy();
-        }
+            } finally {
+                if (env != null) env.destroy();
+            }    
+        });
     }
 
+    private List<Arguments> getActiveConfigIdParams() {
+        List<Arguments> result = new LinkedList<>();
+        long[] configIds = { this.configId1, this.configId2, this.configId3 };
+
+        boolean initEngine = false;
+        for (long config : configIds) {
+            initEngine = !initEngine;
+            result.add(Arguments.of(config, initEngine));
+        }
+
+        return result;
+    }
+
+    @ParameterizedTest
+    @MethodSource("getActiveConfigIdParams")
+    public void testGetActiveConfigId(long configId, boolean initEngine) {
+        this.performTest(() -> {
+            SzCoreEnvironment env  = null;
+
+            String info = "configId=[ " + configId + " ], initEngine=[ " 
+                    + initEngine + " ]";
+                
+            try {
+                String settings = this.getRepoSettings();
+                String instanceName = this.getInstanceName(
+                    "ActiveConfig-" + configId);
+    
+                env  = SzCoreEnvironment.newBuilder().settings(settings)
+                                                     .instanceName(instanceName)
+                                                     .configId(configId)
+                                                     .build();
+    
+                // check the init config ID
+                assertEquals(configId, env.getConfigId(),
+                     "The initialization config ID is not as expected" + info);
+            
+                // get the active config
+                long activeConfigId = env.getActiveConfigId();
+    
+                assertEquals(configId, activeConfigId,
+                    "The active config ID is not as expected: " + info);
+                        
+            } catch (Exception e) {
+                fail("Got exception in testGetActiveConfigId: " + info, e);
+    
+            } finally {
+                if (env != null) env.destroy();
+            }    
+        });
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false})
+    public void testGetActiveConfigIdDefault(boolean initEngine) {
+        this.performTest(() -> {
+            SzCoreEnvironment env  = null;
+        
+            String info = "initEngine=[ " + initEngine + " ]";
+    
+            try {
+                String settings = this.getRepoSettings();
+                String instanceName = this.getInstanceName(
+                    "ActiveConfigDefault");
+                    
+                env  = SzCoreEnvironment.newBuilder().settings(settings)
+                                                     .instanceName(instanceName)
+                                                     .build();
+    
+                assertNull(env.getConfigId(),
+                    "The initialziation starting config ID is not null: " + info);
+    
+                // get the active config
+                long activeConfigId = env.getActiveConfigId();
+    
+                assertEquals(this.defaultConfigId, activeConfigId,
+                    "The active config ID is not as expected: " + info);
+                        
+            } catch (Exception e) {
+                fail("Got exception in testGetActiveConfigIdDefault: " + info, e);
+                
+            } finally {
+                if (env != null) env.destroy();
+            }    
+        });
+    }
+
+    private List<Arguments> getReinitializeParams() {
+        List<Arguments> result = new LinkedList<>();
+        List<List<Boolean>> booleanCombos = getBooleanVariants(2, false);
+
+        Random prng = new Random(System.currentTimeMillis());
+
+        List<Long> configIds = List.of(this.configId1, this.configId2, this.configId3);
+        List<List<?>> configIdCombos = generateCombinations(configIds, configIds);
+        Collections.shuffle(configIdCombos, prng);
+        Collections.shuffle(booleanCombos, prng);
+
+        Iterator<List<?>> configIdIter = circularIterator(configIdCombos);
+
+        for (List<Boolean> bools : booleanCombos) {
+            List<?> configs = configIdIter.next();
+            result.add(Arguments.of(configs.get(0), 
+                                    configs.get(1),
+                                    bools.get(0), 
+                                    bools.get(1)));
+        }
+
+        return result;
+    }
+
+    @ParameterizedTest
+    @MethodSource("getReinitializeParams")
+    public void testReinitialize(long       startConfig, 
+                                 long       endConfig,
+                                 boolean    initEngine, 
+                                 boolean    initDiagnostic) 
+    {
+        this.performTest(() -> {
+            SzCoreEnvironment env  = null;
+            
+            String info = "startConfig=[ " + startConfig + " ], endConfig=[ " 
+                 + endConfig + " ], initEngine=[ " + initEngine
+                 + " ], initDiagnostic=[ " + initDiagnostic + " ]";
+    
+            try {
+                String settings = this.getRepoSettings();
+                String instanceName = this.getInstanceName("Reinitialize");
+    
+                env  = SzCoreEnvironment.newBuilder().settings(settings)
+                                                     .instanceName(instanceName)
+                                                     .configId(startConfig)
+                                                     .build();
+    
+                // check the init config ID
+                assertEquals(startConfig, env.getConfigId(),
+                    "The initialization stating config ID is not as expected" + info);
+    
+                // check if we should initialize the engine first
+                if (initEngine) env.getEngine();
+    
+                // check if we should initialize diagnostics first
+                if (initDiagnostic) env.getDiagnostic();
+    
+                // get the active config
+                long activeConfigId = env.getActiveConfigId();
+    
+                assertEquals(startConfig, activeConfigId,
+                    "The starting active config ID is not as expected: " + info);
+    
+                // reinitialize
+                env.reinitialize(endConfig);
+            
+                // check the initialize config ID
+                assertEquals(endConfig, env.getConfigId(),
+                    "The initialization ending config ID is not as expected: " + info);
+    
+                activeConfigId = env.getActiveConfigId();
+    
+                assertEquals(endConfig, activeConfigId,
+                    "The ending active config ID is not as expected: " + info);
+    
+            } catch (Exception e) {
+                fail("Got exception in testReinitialize: " + info, e);
+    
+            } finally {
+                if (env != null) env.destroy();
+            }    
+        });
+    }
+
+    private List<Arguments> getReinitializeDefaultParams() {
+        List<Arguments> result = new LinkedList<>();
+        List<List<Boolean>> booleanCombos = getBooleanVariants(2, false);
+
+        long[] configIds = { this.configId1, this.configId2 };
+        int count = 0;
+        Collections.shuffle(booleanCombos);
+        for (List<Boolean> bools : booleanCombos) {
+            int index = (count++) % configIds.length;
+            result.add(Arguments.of(
+                configIds[index], bools.get(0), bools.get(1)));
+        }
+        return result;
+    }
+
+    @ParameterizedTest
+    @MethodSource("getReinitializeDefaultParams")
+    public void testReinitializeDefault(long    configId,
+                                        boolean initEngine,
+                                        boolean initDiagnostic) 
+    {
+        this.performTest(() -> {
+            SzCoreEnvironment env  = null;
+            
+            String info = "config=[ " + configId + " ], initEngine=[ " + initEngine
+                 + " ], initDiagnostic=[ " + initDiagnostic + " ]";
+    
+            try {
+                String settings = this.getRepoSettings();
+                String instanceName = this.getInstanceName("ReinitializeDefault");
+    
+                env  = SzCoreEnvironment.newBuilder().settings(settings)
+                                                     .instanceName(instanceName)
+                                                     .build();
+    
+                assertNull(env.getConfigId(),
+                    "The initialziation starting config ID is not null: " + info);
+                
+                // check if we should initialize the engine first
+                if (initEngine) env.getEngine();
+    
+                // check if we should initialize diagnostics first
+                if (initDiagnostic) env.getDiagnostic();
+    
+                // get the active config ID
+                long activeConfigId = env.getActiveConfigId();
+    
+                assertEquals(this.defaultConfigId, activeConfigId,
+                    "The starting config ID is not the default: " + info);
+    
+                // reinitialize
+                env.reinitialize(configId);
+    
+                // check the initialziation config ID again
+                assertEquals(configId, env.getConfigId(),
+                    "The initialization config ID is not the "
+                    + "reinitialized one: " + info);
+    
+                // get the active config ID again
+                activeConfigId = env.getActiveConfigId();
+    
+                assertEquals(configId, activeConfigId,
+                    "The reinitialized active config ID is not "
+                        + "as expected: " + info);
+    
+            } catch (Exception e) {
+                fail("Got exception in testReinitializeDefault: " + info, e);
+    
+            } finally {
+                if (env != null) env.destroy();
+            }    
+        });
+    }
 }

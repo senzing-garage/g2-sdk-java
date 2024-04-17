@@ -2,6 +2,9 @@ package com.senzing.g2.engine;
 
 import java.util.Objects;
 import java.util.concurrent.Callable;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Provides the core implementation of {@link SzEnvironment} that directly
@@ -148,29 +151,6 @@ public class SzCoreEnvironment implements SzEnvironment {
     }
 
     /**
-     * Waits until the specified {@link SzCoreEnvironment} instance has been destroyed.
-     * Use this when obtaining an instance of {@link SzCoreEnvironment} in the {@link 
-     * State#DESTROYING} and you want to wait until it is fully destroyed.
-     * 
-     * @param environment The non-null {@link SzCoreEnvironment} instance to wait on.
-     * 
-     * @throws NullPointerException If the specified parameter is <code>null</code>.
-     */
-    private static void waitUntilDestroyed(SzCoreEnvironment environment) 
-    {
-        Objects.requireNonNull(environment, "The specified instance cannot be null");
-        synchronized (environment) {
-            while (environment.state != State.DESTROYED) {
-                try {
-                    environment.wait(5000L);
-                } catch (InterruptedException ignore) {
-                    // ignore the exception
-                }
-            }
-        }
-    }
-
-    /**
      * The instance name to initialize the API's with.
      */
     private String instanceName = null;
@@ -227,6 +207,11 @@ public class SzCoreEnvironment implements SzEnvironment {
     private int executingCount = 0;
 
     /**
+     * The {@link ReadWriteLock} for this instance.
+     */
+    private final ReadWriteLock readWriteLock;
+
+    /**
      * Private constructor used by the builder to construct the instance.
      *  
      * @param instanceName The Senzing instance name.
@@ -242,6 +227,7 @@ public class SzCoreEnvironment implements SzEnvironment {
                               Long      configId) 
     {
         // set the fields
+        this.readWriteLock  = new ReentrantReadWriteLock(true);
         this.instanceName   = instanceName;
         this.settings       = settings;
         this.verboseLogging = verboseLogging;
@@ -261,6 +247,29 @@ public class SzCoreEnvironment implements SzEnvironment {
 
             // set the current instance
             current_instance = this;
+        }
+    }
+
+    /**
+     * Waits until the specified {@link SzCoreEnvironment} instance has been destroyed.
+     * Use this when obtaining an instance of {@link SzCoreEnvironment} in the {@link 
+     * State#DESTROYING} and you want to wait until it is fully destroyed.
+     * 
+     * @param environment The non-null {@link SzCoreEnvironment} instance to wait on.
+     * 
+     * @throws NullPointerException If the specified parameter is <code>null</code>.
+     */
+    private static void waitUntilDestroyed(SzCoreEnvironment environment) 
+    {
+        Objects.requireNonNull(environment, "The specified instance cannot be null");
+        synchronized (environment) {
+            while (environment.state != State.DESTROYED) {
+                try {
+                    environment.wait(5000L);
+                } catch (InterruptedException ignore) {
+                    // ignore the exception
+                }
+            }
         }
     }
 
@@ -322,17 +331,20 @@ public class SzCoreEnvironment implements SzEnvironment {
     <T> T execute(Callable<T> task)
         throws SzException, IllegalStateException
     {
-        synchronized (this) {
-            if (this.state != State.ACTIVE) {
-                throw new IllegalStateException(
-                    "SenzingSdk has been destroyed");
-            }
-
-            // increment the executing count
-            this.executingCount++;
-        }
-        
+        Lock lock = null;
         try {
+            // acquire a wrie lock while checking if acive
+            lock = this.acquireReadLock();
+            synchronized (this) {
+                if (this.state != State.ACTIVE) {
+                    throw new IllegalStateException(
+                        "SzEnvironment has been destroyed");
+                }
+
+                // increment the executing count
+                this.executingCount++;
+            }
+        
             return task.call();
 
         } catch (SzException|RuntimeException e) {
@@ -346,6 +358,7 @@ public class SzCoreEnvironment implements SzEnvironment {
                 this.executingCount--;
                 this.notifyAll();
             }
+            lock = releaseLock(lock);
         }
     }
 
@@ -404,10 +417,11 @@ public class SzCoreEnvironment implements SzEnvironment {
             if (this.coreConfig == null) {
                 this.coreConfig = new SzCoreConfig(this);
             }
+
+            // return the configured instance
+            return this.coreConfig;
         }
 
-        // return the configured instance
-        return this.coreConfig;
     }
 
     @Override
@@ -419,10 +433,10 @@ public class SzCoreEnvironment implements SzEnvironment {
             if (this.coreConfigMgr == null) {
                 this.coreConfigMgr = new SzCoreConfigManager(this);
             }
-        }
 
-        // return the configured instance
-        return this.coreConfigMgr;
+            // return the configured instance
+            return this.coreConfigMgr;
+        }
     }
 
     @Override
@@ -434,10 +448,9 @@ public class SzCoreEnvironment implements SzEnvironment {
             if (this.coreDiagnostic == null) {
                 this.coreDiagnostic = new SzCoreDiagnostic(this);
             }
+            // return the configured instance
+            return this.coreDiagnostic;
         }
-
-        // return the configured instance
-        return this.coreDiagnostic;
     }
 
     @Override
@@ -449,10 +462,9 @@ public class SzCoreEnvironment implements SzEnvironment {
             if (this.coreEngine == null) {
                 this.coreEngine = new SzCoreEngine(this);
             }
+            // return the configured instance
+            return this.coreEngine;
         }
-
-        // return the configured instance
-        return this.coreEngine;
     }
 
     @Override
@@ -464,69 +476,154 @@ public class SzCoreEnvironment implements SzEnvironment {
             if (this.coreProduct == null) {
                 this.coreProduct = new SzCoreProduct(this);
             }
+            // return the configured instance
+            return this.coreProduct;
         }
-
-        // return the configured instance
-        return this.coreProduct;
     }
 
     @Override
     public void destroy() {
-        synchronized (this) {
-            // check if this has already been called
-            if (this.state != State.ACTIVE) return;
-            
-            // set the flag for destroying
-            this.state = State.DESTROYING;
-            this.notifyAll();
-        }
+        Lock lock = null;
+        try {
+            // acquire an exclusive lock for destroying
+            lock = this.acquireWriteLock();
 
-        // await completion of in-flight executions
-        while (this.getExecutingCount() > 0) {
             synchronized (this) {
-                try {
-                    // this should be notified every time the count decrements
-                    this.wait(5000L);
-                } catch (InterruptedException e) {
-                    // ignore
+                // check if this has already been called
+                if (this.state != State.ACTIVE) return;
+                
+                // set the flag for destroying
+                this.state = State.DESTROYING;
+                this.notifyAll();
+            }
+
+            // await completion of in-flight executions
+            while (this.getExecutingCount() > 0) {
+                synchronized (this) {
+                    try {
+                        // this should be notified every time the count decrements
+                        this.wait(5000L);
+                    } catch (InterruptedException e) {
+                        // ignore
+                    }
                 }
             }
-        }
 
-        // once we get here we can really shut things down
-        if (this.coreEngine != null) {
-            this.coreEngine.destroy();
-            this.coreEngine = null;
-        }
-        if (this.coreDiagnostic != null) {
-            this.coreDiagnostic.destroy();
-            this.coreDiagnostic = null;
-        }
-        if (this.coreConfigMgr != null) {
-            this.coreConfigMgr.destroy();
-            this.coreConfigMgr = null;
-        }
-        if (this.coreConfig != null) {
-            this.coreConfig.destroy();
-            this.coreConfig = null;
-        }
-        if (this.coreProduct != null) {
-            this.coreProduct.destroy();
-            this.coreProduct = null;
-        }
+            // once we get here we can really shut things down
+            if (this.coreEngine != null) {
+                this.coreEngine.destroy();
+                this.coreEngine = null;
+            }
+            if (this.coreDiagnostic != null) {
+                this.coreDiagnostic.destroy();
+                this.coreDiagnostic = null;
+            }
+            if (this.coreConfigMgr != null) {
+                this.coreConfigMgr.destroy();
+                this.coreConfigMgr = null;
+            }
+            if (this.coreConfig != null) {
+                this.coreConfig.destroy();
+                this.coreConfig = null;
+            }
+            if (this.coreProduct != null) {
+                this.coreProduct.destroy();
+                this.coreProduct = null;
+            }
 
-        // set the state
-        synchronized (this) {
-            this.state = State.DESTROYED;
-            this.notifyAll();
+            // set the state
+            synchronized (this) {
+                this.state = State.DESTROYED;
+                this.notifyAll();
+            }
+        } finally {
+            if (lock != null) lock.unlock();
         }
-
     }
 
     @Override
     public boolean isDestroyed() {
         synchronized (this) {
             return this.state != State.ACTIVE;
+        }
+    }
+
+    @Override
+    public long getActiveConfigId()
+        throws IllegalStateException, SzException
+    {
+        Lock lock = null;
+        try {
+            // get a read lock to ensure we remain active while
+            // executing the operation
+            lock = this.acquireReadLock();
+            
+            // ensure we have initialized the engine or diagnostic
+            synchronized (this) {
+                this.ensureActive();
+
+                // check if the core engine has been initialized
+                if (this.coreEngine == null) {
+                    // initialize the engine if not yet initialized
+                    this.getEngine();
+                }
+            }
+
+            // get the active config ID from the native engine
+            long configId = this.execute(() -> {
+                Result<Long> result = new Result<>();
+                NativeEngine nativeEngine = this.coreEngine.nativeApi; 
+                int returnCode = nativeEngine.getActiveConfigID(result);
+                this.handleReturnCode(returnCode, nativeEngine);
+                return result.getValue();
+            });
+
+            // return the config ID
+            return configId;
+
+        } finally {
+            lock = this.releaseLock(lock);
+        }
+    }
+
+    @Override
+    public void reinitialize(long configId)
+        throws IllegalStateException, SzException
+    {
+        Lock lock = null;
+        try {
+            // get an exclusive write lock
+            lock = this.acquireWriteLock();
+            
+            synchronized (this) {
+                // set the config ID for future native initializations
+                this.configId = configId;
+
+                // check if we have already initialized the engine or diagnostic
+                if (this.coreEngine != null) {
+                    // engine already initialized so we need to reinitalize
+                    this.execute(() -> {
+                        int returnCode = this.coreEngine.nativeApi.reinit(configId);
+                        this.handleReturnCode(returnCode, this.coreEngine.nativeApi);
+                        return null;
+                    });
+
+                } else if (this.coreDiagnostic != null) {
+                    // diagnostic already initialized so we need to reinitalize
+                    // NOTE: we do not need to do this if we reinitialized the
+                    // engine since the configuration ID is globally set
+                    this.execute(() -> {
+                        int returnCode = this.coreDiagnostic.nativeApi.reinit(configId);
+                        this.handleReturnCode(returnCode, this.coreDiagnostic.nativeApi); 
+                        return null;
+                    });
+                } else {
+                    // force initialization to ensure the configuration ID is valid
+                    this.getEngine();
+                }
+            }
+        } finally {
+            lock = this.releaseLock(lock);
         }
     }
 
@@ -687,5 +784,39 @@ public class SzCoreEnvironment implements SzEnvironment {
                                          this.configId);
         }
 
+    }
+
+    /**
+     * Acquires an exclusive write lock from this instance's
+     * {@link ReentrantReadWriteLock}.
+     * 
+     * @return The {@link Lock} that was acquired.
+     */
+    private Lock acquireWriteLock() {
+        Lock lock = this.readWriteLock.writeLock();
+        lock.lock();
+        return lock;
+    }
+
+    /**
+     * Acquires a shared read lock from this instance's 
+     * {@link ReentrantReadWriteLock}.
+     * 
+     * @return The {@link Lock} that was acquired.
+     */
+    private Lock acquireReadLock() {
+        Lock lock = this.readWriteLock.readLock();
+        lock.lock();
+        return lock;
+    }
+
+    /**
+     * Releases the specified {@link Lock} if not <code>null</code>.
+     * 
+     * @return Always returns <code>null</code>.
+     */
+    private Lock releaseLock(Lock lock) {
+        if (lock != null) lock.unlock();
+        return null;
     }
 }

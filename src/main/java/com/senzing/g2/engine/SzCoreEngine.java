@@ -13,7 +13,7 @@ public class SzCoreEngine implements SzEngine {
     /**
      * The underlying {@link G2G2JNI} instance.
      */
-    private G2JNI nativeApi = null;
+    G2JNI nativeApi = null;
 
     /**
      * Constructs with the specified {@link SzCoreEnvironment}.

@@ -20,6 +20,7 @@ public class SzCoreProductTest extends AbstractTest {
 
     @BeforeAll
     public void initializeEnvironment() {
+        this.beginTests();
         this.initializeTestEnvironment();
         String settings = this.getRepoSettings();
         
@@ -34,11 +35,15 @@ public class SzCoreProductTest extends AbstractTest {
 
     @AfterAll
     public void teardownEnvironment() {
-        if (this.session != null) {
-            this.session.destroy();
-            this.session = null;
+        try {
+            if (this.session != null) {
+                this.session.destroy();
+                this.session = null;
+            }
+            this.teardownTestEnvironment();
+        } finally {
+            this.endTests();
         }
-        this.teardownTestEnvironment();
     }
 
     @Test

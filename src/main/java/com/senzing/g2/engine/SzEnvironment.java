@@ -81,18 +81,47 @@ public interface SzEnvironment {
      */
     SzDiagnostic getDiagnostic() throws IllegalStateException, SzException;
 
-   /**
+    /** 
+     * Gets the currently active configuration ID for the {@link
+     * SzEnvironment}.
+     * 
+     * @return The currently active configuration ID.
+     * 
+     * @throws IllegalStateException If this {@link SzEnvironment} instance has
+     *                               been {@linkplain #destroy() destroyed}.
+     * 
+     * @throws SzException If there was a failure in obtaining or initializing
+     *                     the {@link SzDiagnostic} instance. 
+     */
+    long getActiveConfigId() throws IllegalStateException, SzException;
+
+    /**
+     * Reinitializes the {@link SzEnvironment} with the specified
+     * configuration ID.
+     * 
+     * @param configId The configuraiton ID with which to initialize.
+     * 
+     * @throws IllegalStateException If this {@link SzEnvironment} instance has
+     *                               been {@linkplain #destroy() destroyed}.
+     * 
+     * @throws SzException If there was a failure in obtaining or initializing
+     *                     the {@link SzDiagnostic} instance. 
+     */
+    void reinitialize(long configId)
+        throws IllegalStateException, SzException;
+
+    /**
     * Destroys this {@link SzEnvironment} and invalidates any SDK singleton
     * references that has previously provided.  If this instance has already
     * been destroyed then this method has no effect.
     */
-   void destroy();
+    void destroy();
 
-   /**
+    /**
     * Checks if this instance has had its {@link #destroy()} method called.
     *
-    * @return <code>true</code> if this instance has had its {@link #destroy()}
-              method called, otherwise <code>false</code>.
+    * @return <code>true</code> if this instance has had its {@link 
+    *         #destroy()} method called, otherwise <code>false</code>.
     */
-   boolean isDestroyed();
+    boolean isDestroyed();
 }
