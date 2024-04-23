@@ -298,6 +298,14 @@ public interface SzFlags {
         = NativeEngine.G2_SEARCH_INCLUDE_NAME_ONLY;
 
     /**
+     * The bitwise flag to use when a repository-modifying operation 
+     * is being invoked and the desired repsonse should contain an
+     * "INFO" message describing how the repository was affected as
+     * a result of the operation. 
+     */
+    long SZ_WITH_INFO_FLAGS = SZ_WITH_INFO;
+
+    /**
      * The bitwise flag for search functionality to indicate that
      * we should include all match level results
      *

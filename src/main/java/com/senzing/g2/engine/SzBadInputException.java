@@ -1,16 +1,15 @@
 package com.senzing.g2.engine;
 
 /**
- * Describes an exceptional condition when an attempt is made to replace
- * a Senzing value with a new value providing it has not not already been
- * changed, however, the current value is no longer the expected value and
- * has therefore already been changed.
+ * Defines an exceptional condition when an invalid input value is
+ * provided to a Senzing operation preventing the successful
+ * completion of that operation.
  */
-public class SzReplaceConflictException extends SzException {
+public class SzBadInputException extends SzException {
     /**
      * Default constructor.
      */
-    public SzReplaceConflictException() {
+    public SzBadInputException() {
         super();
     }
 
@@ -19,7 +18,7 @@ public class SzReplaceConflictException extends SzException {
      * 
      * @param message The message explaining the reason for the exception.
      */
-    public SzReplaceConflictException(String message) {
+    public SzBadInputException(String message) {
         super(message);
     }
 
@@ -30,7 +29,7 @@ public class SzReplaceConflictException extends SzException {
      * 
      * @param message The message explaining the reason for the exception.
      */
-    public SzReplaceConflictException(int errorCode, String message) {
+    public SzBadInputException(int errorCode, String message) {
         super(errorCode, message);
     }
 
@@ -40,7 +39,7 @@ public class SzReplaceConflictException extends SzException {
      * 
      * @param cause The message The message explaining the reason for the exception.
      */
-    public SzReplaceConflictException(Throwable cause) {
+    public SzBadInputException(Throwable cause) {
         super(cause);
     }
 
@@ -53,7 +52,7 @@ public class SzReplaceConflictException extends SzException {
      *
      * @param cause The message The message explaining the reason for the exception.
      */
-    public SzReplaceConflictException(String message, Throwable cause) {
+    public SzBadInputException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -68,7 +67,7 @@ public class SzReplaceConflictException extends SzException {
      *
      * @param cause The message The message explaining the reason for the exception.
      */
-    public SzReplaceConflictException(int errorCode, String message, Throwable cause) {
+    public SzBadInputException(int errorCode, String message, Throwable cause) {
         super(errorCode, message, cause);
     }
 }

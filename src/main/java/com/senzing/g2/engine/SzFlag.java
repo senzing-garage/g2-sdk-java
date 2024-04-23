@@ -1,9 +1,7 @@
 package com.senzing.g2.engine;
 
 import java.util.EnumSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.IdentityHashMap;
 
 import java.util.Collections;
 
@@ -686,8 +684,27 @@ public enum SzFlag {
         SzFlags.SZ_SEARCH_INCLUDE_NAME_ONLY, SZ_SEARCH_SET);
 
     /**
-     * The {@link Set} of {@link SzFlag} instances indicating that 
-     * an export should include all entities in the export.
+     * The <b>unmodifiable</b> {@link Set} of {@link SzFlag} instances containing
+     * the {@link SzFlag} instances to use when a repository-modifying operation 
+     * is being invoked and the desired repsonse should contain an "INFO" message
+     * describing how the repository was affected as a result of the operation.
+     * <p>
+     * The contained {@link SzFlag} instances are:
+     * <ul>
+     *     <li>{@link #SZ_WITH_INFO}
+     * </ul>
+     * <p>
+     * All the flags in this {@link Set} belong to the following usage groups:
+     * <ul>
+     *     <li>{@link SzFlagUsageGroup#SZ_MODIFY}
+     * </ul> 
+     */
+    public static final Set<SzFlag> SZ_WITH_INFO_FLAGS
+        = Collections.unmodifiableSet(EnumSet.of(SZ_WITH_INFO));
+
+    /**
+     * The <b>unmodifiable</b> {@link Set} of {@link SzFlag} instances indicating
+     * that an export should include all entities in the export.
      * <p>
      * The contained {@link SzFlag} instances are:
      * <ul>

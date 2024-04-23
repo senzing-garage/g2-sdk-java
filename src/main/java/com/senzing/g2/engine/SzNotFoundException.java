@@ -1,16 +1,16 @@
 package com.senzing.g2.engine;
 
 /**
- * Describes an exceptional condition when an attempt is made to replace
- * a Senzing value with a new value providing it has not not already been
- * changed, however, the current value is no longer the expected value and
- * has therefore already been changed.
+ * Extends {@link SzBadInputException} to define an exceptional condition
+ * where the provided bad input to a Senzing operation is an identifier
+ * that could not be used to successfully locate required data for that
+ * operation.
  */
-public class SzReplaceConflictException extends SzException {
+public class SzNotFoundException extends SzBadInputException {
     /**
      * Default constructor.
      */
-    public SzReplaceConflictException() {
+    public SzNotFoundException() {
         super();
     }
 
@@ -19,7 +19,7 @@ public class SzReplaceConflictException extends SzException {
      * 
      * @param message The message explaining the reason for the exception.
      */
-    public SzReplaceConflictException(String message) {
+    public SzNotFoundException(String message) {
         super(message);
     }
 
@@ -30,7 +30,7 @@ public class SzReplaceConflictException extends SzException {
      * 
      * @param message The message explaining the reason for the exception.
      */
-    public SzReplaceConflictException(int errorCode, String message) {
+    public SzNotFoundException(int errorCode, String message) {
         super(errorCode, message);
     }
 
@@ -40,7 +40,7 @@ public class SzReplaceConflictException extends SzException {
      * 
      * @param cause The message The message explaining the reason for the exception.
      */
-    public SzReplaceConflictException(Throwable cause) {
+    public SzNotFoundException(Throwable cause) {
         super(cause);
     }
 
@@ -53,7 +53,7 @@ public class SzReplaceConflictException extends SzException {
      *
      * @param cause The message The message explaining the reason for the exception.
      */
-    public SzReplaceConflictException(String message, Throwable cause) {
+    public SzNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -68,7 +68,7 @@ public class SzReplaceConflictException extends SzException {
      *
      * @param cause The message The message explaining the reason for the exception.
      */
-    public SzReplaceConflictException(int errorCode, String message, Throwable cause) {
+    public SzNotFoundException(int errorCode, String message, Throwable cause) {
         super(errorCode, message, cause);
     }
 }
