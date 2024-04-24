@@ -1,8 +1,6 @@
 package com.senzing.g2.engine;
 
-import javax.json.Json;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonObject;
+import static com.senzing.g2.engine.Utilities.*;
 
 /**
  * The package-protected implementation of {@link SzConfig} that works
@@ -156,10 +154,7 @@ class SzCoreConfig implements SzConfig {
     {
         this.env.execute(() -> {
             // format the JSON for the JNI call
-            JsonObjectBuilder job = Json.createObjectBuilder();
-            job.add("DSRC_CODE", dataSourceCode);
-            JsonObject obj = job.build();
-            String inputJson = obj.toString();
+            String inputJson = "{\"DSRC_CODE\":" + jsonEscape(dataSourceCode) + "}";
 
             // create a StringBuffer for calling the JNI call
             StringBuffer sb = new StringBuffer();
@@ -182,10 +177,7 @@ class SzCoreConfig implements SzConfig {
     {
         this.env.execute(() -> {
             // format the JSON for the JNI call
-            JsonObjectBuilder job = Json.createObjectBuilder();
-            job.add("DSRC_CODE", dataSourceCode);
-            JsonObject obj = job.build();
-            String inputJson = obj.toString();
+            String inputJson = "{\"DSRC_CODE\":" + jsonEscape(dataSourceCode) + "}";
 
             // call the underlying C function
             int returnCode = this.nativeApi.deleteDataSource(

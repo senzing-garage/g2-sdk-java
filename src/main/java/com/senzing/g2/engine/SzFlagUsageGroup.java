@@ -415,7 +415,6 @@ public enum SzFlagUsageGroup {
      */
     SZ_HOW,
 
-
     /**
      * Flags in this usage group can be used for operations that retrieve
      * virtual entities in order to control the level of detail of the

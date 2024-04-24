@@ -41,6 +41,13 @@ public class SzFlagTest {
      */
     private Map<String, Long> enumsMap = new LinkedHashMap<>();
 
+    /**
+     * The {@link Map} of {@link String} field names for declared 
+     * constants of {@link Set}'s of {@link SzFlag} instance to the
+     * actual {@link Set} of {@link SzFlag} instances.
+     */
+    private Map<String, Set<SzFlag>> setsMap = new LinkedHashMap<>();
+
     @BeforeAll
     public void reflectFlags() {
         Field[] fields = SzFlags.class.getDeclaredFields();
@@ -77,6 +84,7 @@ public class SzFlagTest {
                 Set<SzFlag> flags = (Set<SzFlag>) field.get(null);
                 long value = SzFlag.toLong(flags);
                 this.enumsMap.put(field.getName(), value);
+                this.setsMap.put(field.getName(), flags);
 
             } catch (IllegalAccessException e) {
                 fail("Got exception in reflection.", e);
@@ -120,15 +128,40 @@ public class SzFlagTest {
     @ParameterizedTest
     @MethodSource("getEnumMappings")
     public void testEnumFlag(String name, long value) {
-        assertTrue(this.flagsMap.containsKey(name),
-            "Primitive long flag constant not found for "
-            + "enum flag constant: " + name);
-        Long flagsValue = this.flagsMap.get(name);
-        assertEquals(value, flagsValue, 
-            "Flag constant (" + name +") has a different primitive "
-            + "long value (" + hexFormat(flagsValue) 
-            + ") than enum flag constant (" + name + "): "
-            + hexFormat(value));
+        if (name.endsWith("_ALL_FLAGS")) {
+            int length = name.length();
+            String prefix = name.substring(0, length - "_ALL_FLAGS".length());
+            SzFlagUsageGroup group = null;
+            try {
+                group = SzFlagUsageGroup.valueOf(prefix);
+
+            } catch (Exception e) {
+                fail("Failed to get SzFlagUsageGroup for ALL_FLAGS set: "
+                    + "set=[ " + name + "], group=[ " + prefix + "]");
+            }
+            long groupValue = SzFlag.toLong(group.getFlags());
+            assertEquals(value, groupValue, 
+                         "Value for group (" + group + ") has a different "
+                        + "primitive long value (" + hexFormat(groupValue)
+                        + ") than expected (" + hexFormat(value) + "): " + name);
+            Set<SzFlag> set = this.setsMap.get(name);
+            assertNotNull(set, "Failed to get Set of SzFlag for field: " + name);
+            assertEquals(group.getFlags(), set, 
+                "The set of all flags for the group (" + group + ") is not "
+                + "equal to the set defined for the declared constant (" 
+                + name + ").  expected=[ " + SzFlag.toString(group.getFlags())
+                + " ], actual=[ " + SzFlag.toString(set) + " ]");
+        } else {
+            assertTrue(this.flagsMap.containsKey(name),
+                "Primitive long flag constant not found for "
+                + "enum flag constant: " + name);
+            Long flagsValue = this.flagsMap.get(name);
+            assertEquals(value, flagsValue, 
+                "Flag constant (" + name +") has a different primitive "
+                + "long value (" + hexFormat(flagsValue) 
+                + ") than enum flag constant (" + name + "): "
+                + hexFormat(value));
+        }
     }
 
     @ParameterizedTest

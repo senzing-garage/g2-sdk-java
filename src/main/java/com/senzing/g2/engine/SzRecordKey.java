@@ -9,11 +9,24 @@ import java.lang.Comparable;
  * 
  * @param dataSourceCode The non-null {@link String} data source code 
  *                       identifying the data source of the record.
+ * 
  * @param recordId The non-null {@link String} record ID identifying 
  *                 the record within the data source.
  */
 public record SzRecordKey(String dataSourceCode, String recordId) implements Comparable<SzRecordKey>
 {
+    /**
+     * Constructs with the specified data source code and record ID.  This
+     * will throw a {@link NullPointerException} if either parameter is
+     * <code>null</code> and throw {@link IllegalArgumentException} if 
+     * either parameter is empty-string or only contains whitespace.
+     * 
+     * @param dataSourceCode The non-null {@link String} data source code 
+     *                       identifying the data source of the record.
+     * 
+     * @param recordId The non-null {@link String} record ID identifying 
+     *                 the record within the data source.
+     */
     public SzRecordKey(String dataSourceCode, String recordId) 
     {
         Objects.requireNonNull(dataSourceCode, "The data source code cannot be null");
@@ -25,6 +38,31 @@ public record SzRecordKey(String dataSourceCode, String recordId) implements Com
         }
         this.dataSourceCode = dataSourceCode.trim();
         this.recordId = recordId.trim();
+    }
+
+    /**
+     * Shorthand static for constructing a new instance of {@link SzRecordKey}
+     * with the specified data source code and record ID.  The specified 
+     * data source code and record ID must not be <code>null</code> and must
+     * each contain at least one character that is not whitespace or else an
+     * exception is thrown.
+     * 
+     * @param dataSourceCode The non-null {@link String} data source code 
+     *                       identifying the data source of the record.
+     * 
+     * @param recordId The non-null {@link String} record ID identifying 
+     *                 the record within the data source.
+     * 
+     * @return The constructed {@link SzRecordKey}.
+     * 
+     * @throws NullPointerException If either parameter is <code>null</code>.
+     * @throws IllegalArgumentException If either parameter is empty-string or
+     *                                  only contains whitespace.
+     */
+    public static SzRecordKey of(String dataSourceCode, String recordId) 
+        throws NullPointerException, IllegalArgumentException
+    {
+        return new SzRecordKey(dataSourceCode, recordId);
     }
 
     /**

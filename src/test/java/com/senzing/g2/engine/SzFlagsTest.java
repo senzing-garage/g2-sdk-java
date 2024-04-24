@@ -106,7 +106,8 @@ public class SzFlagsTest extends AbstractTest {
         String nativeFlagName = "G2" + flagName.substring(2);
 
         if (nativeFlagName.equals("G2_WITH_INFO") 
-            || nativeFlagName.equals("G2_NO_FLAGS")) 
+            || nativeFlagName.equals("G2_NO_FLAGS")
+            || nativeFlagName.equals("G2_WITH_INFO_FLAGS"))
         {
             assertFalse(this.nativeFlagMap.containsKey(nativeFlagName),
                 "Native flags unexpectedly includes " + nativeFlagName);
