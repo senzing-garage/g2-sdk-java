@@ -74,7 +74,18 @@ public interface G2Diagnostic extends G2Fallible
    *
    * @return Zero (0) on success and non-zero on failure.
    */
-  int checkDBPerf(int secondsToRun, StringBuffer response);
+  int checkDatastorePerformance(int secondsToRun, StringBuffer response);
+
+  /**
+   * Gathers database information and writes detail of the result
+   * as JSON in the specified {@link StringBuffer}.
+   *
+   * @param response The {@link StringBuffer} in which to write the JSON text
+   *                 that details the databse information.
+   *
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int getDatastoreInfo(StringBuffer response);
 
   /**
    * Purges all data in the configured repository
