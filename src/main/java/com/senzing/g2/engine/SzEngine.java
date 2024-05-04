@@ -25,18 +25,6 @@ public interface SzEngine {
     String getStats() throws SzException;
 
     /**
-     * Returns a long integer representing number of seconds since
-     * January 1, 1970 12:00am GMT (epoch time). This indicates the last
-     * time the data repository was modified.
-     *
-     * @return A <code>long</code> integer representing the last modified
-     *         epoch time. 
-     * 
-     * @throws SzException If a failure occurs.
-     */
-    long getRepositoryLastModifiedTime() throws SzException;
-
-    /**
      * Loads the record described by the specified {@link String} record
      * definition having the specified data source code and record ID using
      * the specified {@link Set} of {@link SzFlag} values.  If a record already

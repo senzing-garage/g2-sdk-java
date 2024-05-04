@@ -23,8 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import static com.senzing.g2.engine.SzFlagHelpers.*;
 import static com.senzing.g2.engine.SzFlag.*;
+import static com.senzing.g2.engine.Utilities.*;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @Execution(ExecutionMode.SAME_THREAD)

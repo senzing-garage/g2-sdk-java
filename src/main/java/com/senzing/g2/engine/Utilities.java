@@ -2,6 +2,35 @@ package com.senzing.g2.engine;
 
 class Utilities {
     /**
+     * Formats a <code>long</code> integer value as hexadecimal with 
+     * spaces between each group of for hex digits.
+     * 
+     * @param value The value to format.
+     * 
+     * @return The value formatted as a {@link String}.
+     */
+    public static String hexFormat(long value) {
+        StringBuilder   sb      = new StringBuilder(20);
+        long            mask    = 0xFFFF << 48;
+        String          prefix  = "";
+
+        for (int index = 0; index < 4; index++) {
+            long masked = value & mask;
+            mask = mask >>> 16;
+            masked = masked >>> ((3 - index) * 16);
+            sb.append(prefix);
+            String hex = Long.toUnsignedString(masked, 16);
+            for (int zero = hex.length(); zero < 4; zero++) {
+                sb.append("0");
+            }
+            sb.append(hex);
+            prefix = " ";
+        }
+
+        return sb.toString();
+    }
+
+    /**
      * Escapes the specified {@link String} into a JSON string with the
      * the surrounding double quotes.  If the specified {@link String} is
      * <code>null</code> then <code>"null"</code> is returned.

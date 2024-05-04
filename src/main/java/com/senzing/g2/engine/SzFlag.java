@@ -7,6 +7,7 @@ import java.util.Collections;
 
 import static com.senzing.g2.engine.SzFlagHelpers.*;
 import static com.senzing.g2.engine.SzFlagUsageGroup.SZ_GROUP_SET_LOOKUP;
+import static com.senzing.g2.engine.Utilities.*;
 
 /**
  * Enumerates the Senzing flag values from {@link SzFlags} so they can be

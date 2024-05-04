@@ -1,6 +1,7 @@
 package com.senzing.g2.engine;
 
 import static com.senzing.g2.engine.Utilities.*;
+import static com.senzing.g2.engine.SzException.*;
 
 /**
  * The package-protected implementation of {@link SzConfig} that works
@@ -36,7 +37,14 @@ class SzCoreConfig implements SzConfig {
                                                  this.env.getSettings(),
                                                  this.env.isVerboseLogging());
 
-            this.env.handleReturnCode(returnCode, this.nativeApi);
+            if (returnCode != 0) {
+                this.env.handleReturnCode(
+                    returnCode, this.nativeApi, 
+                    "SzCoreConfig()",
+                    paramsOf("instanceName", this.env.getInstanceName(),
+                             "settings", redact(this.env.getSettings()),
+                             "verboseLogging", this.env.isVerboseLogging()));
+            }
 
             return null;
         });
@@ -76,7 +84,12 @@ class SzCoreConfig implements SzConfig {
             int returnCode = this.nativeApi.create(result);
 
             // handle any error code if there is one
-            this.env.handleReturnCode(returnCode, this.nativeApi);
+            if (returnCode != 0) {
+                this.env.handleReturnCode(
+                    returnCode, 
+                    this.nativeApi,
+                    "SzCoreConfig.createConfig()");
+            }
 
             // return the config handle
             return result.getValue();
@@ -93,7 +106,13 @@ class SzCoreConfig implements SzConfig {
             int returnCode = this.nativeApi.load(configDefinition, result);
 
             // handle any error code if there is one
-            this.env.handleReturnCode(returnCode, this.nativeApi);
+            if (returnCode != 0) {
+                this.env.handleReturnCode(
+                    returnCode,
+                    this.nativeApi,
+                    "SzCoreConfig.importConfig(String)",
+                    paramsOf("configDefintion", configDefinition));
+            }
 
             // return the config handle
             return result.getValue();
@@ -110,7 +129,13 @@ class SzCoreConfig implements SzConfig {
             int returnCode = this.nativeApi.save(configHandle, sb);
 
             // handle any error code if there is one
-            this.env.handleReturnCode(returnCode, this.nativeApi);
+            if (returnCode != 0) {
+                this.env.handleReturnCode(
+                    returnCode, 
+                    this.nativeApi,
+                    "SzCoreConfig.exportConfig(long)",
+                    paramsOf("configHandle", hexFormat(configHandle)));
+            }
 
             // return the contents of the buffer
             return sb.toString();
@@ -124,7 +149,13 @@ class SzCoreConfig implements SzConfig {
             int returnCode = this.nativeApi.close(configHandle);
 
             // handle any error code if there is one
-            this.env.handleReturnCode(returnCode, this.nativeApi);
+            if (returnCode != 0) {
+                this.env.handleReturnCode(
+                    returnCode, 
+                    this.nativeApi,
+                    "SzCoreConfig.closeConfig(long)",
+                    paramsOf("configHandle", hexFormat(configHandle)));
+            }
             
             // return null
             return null;
@@ -141,7 +172,14 @@ class SzCoreConfig implements SzConfig {
             int returnCode = this.nativeApi.listDataSources(configHandle, sb);
 
             // handle any error code if there is one
-            this.env.handleReturnCode(returnCode, this.nativeApi);
+            if (returnCode != 0) {
+                this.env.handleReturnCode(
+                    returnCode, 
+                    this.nativeApi,
+                    "SzCoreConfig.getDataSources(long)",
+                    paramsOf("configHandle", hexFormat(configHandle)));
+
+            }
 
             // return the contents of the buffer
             return sb.toString();
@@ -164,7 +202,14 @@ class SzCoreConfig implements SzConfig {
                 configHandle, inputJson, sb);
 
             // handle any error code if there is one
-            this.env.handleReturnCode(returnCode, this.nativeApi);
+            if (returnCode != 0) {
+                this.env.handleReturnCode(
+                    returnCode, 
+                    this.nativeApi,
+                    "SzCoreConfig.addDataSource(long,String)",
+                    paramsOf("configHandle", hexFormat(configHandle),
+                             "dataSourceCOde", dataSourceCode));
+            } 
 
             // return null
             return null;
@@ -184,7 +229,14 @@ class SzCoreConfig implements SzConfig {
                 configHandle, inputJson);
             
             // handle any error code if there is one
-            this.env.handleReturnCode(returnCode, this.nativeApi);
+            if (returnCode != 0) {
+                this.env.handleReturnCode(
+                    returnCode, 
+                    this.nativeApi,
+                    "SzCoreConfig.deleteDataSource(long,String)",
+                    paramsOf("configHandle", hexFormat(configHandle),
+                             "dataSourceCode", dataSourceCode));
+            }
 
             // return null
             return null;

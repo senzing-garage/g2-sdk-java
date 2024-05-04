@@ -6,7 +6,7 @@ import java.util.EnumSet;
 import java.util.Set;
 import java.util.Collections;
 
-import static com.senzing.g2.engine.SzFlagHelpers.*;
+import static com.senzing.g2.engine.Utilities.*;
 
 /**
  * Enumerates the various classifications of usage groups for the

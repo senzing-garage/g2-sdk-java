@@ -1,10 +1,13 @@
 package com.senzing.g2.engine;
 
 import java.util.Objects;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.Lock;
+
+import static com.senzing.g2.engine.SzException.*;
 
 /**
  * Provides the core implementation of {@link SzEnvironment} that directly
@@ -14,6 +17,12 @@ import java.util.concurrent.locks.Lock;
  * {@link SzCoreEnvironment}.
  */
 public class SzCoreEnvironment implements SzEnvironment {
+    /**
+     * Gets the class prefix to use for {@link SzException} construction.
+     */
+    private static final String CLASS_PREFIX 
+        = SzCoreEnvironment.class.getSimpleName();
+
     /**
      * The environment variable for obtaining the initialization settings
      * from the system environment.  If a value is set in the system environment
@@ -303,7 +312,7 @@ public class SzCoreEnvironment implements SzEnvironment {
     }   
 
     /**
-     * Gets the explicit configuraiton ID with which to initialize the Senzing 
+     * Gets the explicit configuration ID with which to initialize the Senzing 
      * environment.  This returns <code>null</code> if the default
      * configuration ID configured in the repository should be used.
      * 
@@ -392,7 +401,26 @@ public class SzCoreEnvironment implements SzEnvironment {
      * @param nativeApi The {@link NativeApi} implementation that produced the
      *                  return code on this current thread.
      */
-    void handleReturnCode(int returnCode, NativeApi nativeApi) 
+    void handleReturnCode(int returnCode, NativeApi nativeApi, String operation)
+        throws SzException
+    {
+        this.handleReturnCode(returnCode, nativeApi, operation, null);
+    }
+
+    /**
+     * Handles the Senzing JNI return code and coverts it to the proper
+     * {@link SzException} if it is not zero (0).
+     * 
+     * @param returnCode The return code to handle.
+     * @param nativeApi The {@link NativeApi} implementation that produced the
+     *                  return code on this current thread.
+     * @param message The additional message to include with the exception
+     *                to provide context.
+     */
+    void handleReturnCode(int                   returnCode,
+                          NativeApi             nativeApi,
+                          String                operation,
+                          Map<String,Object>    parameters)
         throws SzException
     {
         if (returnCode == 0) return;
@@ -402,9 +430,11 @@ public class SzCoreEnvironment implements SzEnvironment {
         nativeApi.clearLastException();
         switch (errorCode) {
             case 7245:
-                throw new SzReplaceConflictException(errorCode, message);
+                throw new SzReplaceConflictException(
+                    errorCode, message, operation, parameters);
             default:
-                throw new SzException(errorCode, message);
+                throw new SzException(
+                    errorCode, message, operation, parameters);
         }
     }
 
@@ -574,7 +604,9 @@ public class SzCoreEnvironment implements SzEnvironment {
                 Result<Long> result = new Result<>();
                 NativeEngine nativeEngine = this.coreEngine.nativeApi; 
                 int returnCode = nativeEngine.getActiveConfigID(result);
-                this.handleReturnCode(returnCode, nativeEngine);
+                this.handleReturnCode(
+                    returnCode, nativeEngine,
+                    CLASS_PREFIX + ".getActiveConfigId()");
                 return result.getValue();
             });
 
@@ -604,7 +636,10 @@ public class SzCoreEnvironment implements SzEnvironment {
                     // engine already initialized so we need to reinitalize
                     this.execute(() -> {
                         int returnCode = this.coreEngine.nativeApi.reinit(configId);
-                        this.handleReturnCode(returnCode, this.coreEngine.nativeApi);
+                        this.handleReturnCode(
+                            returnCode, this.coreEngine.nativeApi,
+                            CLASS_PREFIX + ".reinitialize(long)",
+                            paramsOf("configId", configId));
                         return null;
                     });
 
@@ -614,7 +649,10 @@ public class SzCoreEnvironment implements SzEnvironment {
                     // engine since the configuration ID is globally set
                     this.execute(() -> {
                         int returnCode = this.coreDiagnostic.nativeApi.reinit(configId);
-                        this.handleReturnCode(returnCode, this.coreDiagnostic.nativeApi); 
+                        this.handleReturnCode(
+                            returnCode, this.coreDiagnostic.nativeApi,
+                            CLASS_PREFIX + ".reinitialize(long)",
+                            paramsOf("configId", configId));
                         return null;
                     });
                 } else {

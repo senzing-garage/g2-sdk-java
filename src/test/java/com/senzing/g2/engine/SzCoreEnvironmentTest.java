@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.Map;
 
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.Future;
@@ -36,6 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import org.junit.jupiter.api.Test;
 
 import static com.senzing.g2.engine.SzCoreEnvironment.*;
+import static com.senzing.g2.engine.SzException.*;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @Execution(ExecutionMode.SAME_THREAD)
@@ -798,6 +800,20 @@ public class SzCoreEnvironmentTest extends AbstractTest {
     @ParameterizedTest
     @CsvSource({"1,10,Foo", "0,20,Bar", "2,30,Phoo"})
     void testHandleReturnCode(int returnCode, int errorCode, String errorMessage) {
+        final String operation 
+            = "SzCoreEnvironmentTest.testHandleReturnCode(int:" + returnCode 
+                + ",int:" + errorCode + ",String:" + errorMessage + ")";
+
+        final Map<String,Object> params = paramsOf("returnCode", returnCode,
+                                                   "errorCode", errorCode,
+                                                   "errorMessage", errorMessage);
+
+        final NativeApi fakeNativeApi = new NativeApi() {
+            public int getLastExceptionCode() { return errorCode; }
+            public String getLastException() { return errorMessage; }
+            public void clearLastException() { }
+        };
+
         this.performTest(() -> {
             SzCoreEnvironment env  = null;
             
@@ -805,16 +821,13 @@ public class SzCoreEnvironmentTest extends AbstractTest {
                 env  = SzCoreEnvironment.newBuilder().settings(BOOTSTRAP_SETTINGS).build();
     
                 try {
-                    env.handleReturnCode(returnCode, new NativeApi() {
-                        public int getLastExceptionCode() { return errorCode; }
-                        public String getLastException() { return errorMessage; }
-                        public void clearLastException() { }
-                    });
+                    env.handleReturnCode(returnCode, fakeNativeApi, operation, params);
+
                     if (returnCode != 0) {
                         fail("The handleReturnCode() function did not throw an exception with return code: " + returnCode);
                     }
     
-                } catch (Exception e) {
+                } catch (SzException e) {
                     if (returnCode == 0) {
                         fail("Unexpected exception from handleReturnCode() with return code: " + returnCode, e);
                     } else {
@@ -822,6 +835,8 @@ public class SzCoreEnvironmentTest extends AbstractTest {
                         SzException sze = (SzException) e;
                         assertEquals(errorCode, sze.getErrorCode(), "Error code of exception is not as expected");
                         assertEquals(errorMessage, e.getMessage(), "Error message of exception is not as expected");
+                        assertEquals(operation, e.getMethodSignature(), "Method signature is not as expected");
+                        assertEquals(params, e.getMethodParameters(), "Method parameters are not as expected");
                     }
                 }
             } finally {

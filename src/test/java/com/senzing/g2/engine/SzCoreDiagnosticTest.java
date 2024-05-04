@@ -141,7 +141,7 @@ import static org.junit.jupiter.params.provider.Arguments.*;
             try {
                 SzDiagnostic diagnostic = this.session.getDiagnostic();
 
-                String result = diagnostic.checkDatabasePerformance(5);
+                String result = diagnostic.checkDatastorePerformance(5);
                 
                 // parse the result as JSON and check that it parses
                 parseJsonObject(result);

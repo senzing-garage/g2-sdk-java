@@ -1,10 +1,17 @@
 package com.senzing.g2.engine;
 
+import static com.senzing.g2.engine.SzException.*;
+
 /**
  * The package-protected implementation of {@link SzDiagnostic} that works
  * with the {@link SzCoreEnvironment} class.
  */
 public class SzCoreDiagnostic implements SzDiagnostic {
+    /**
+     * Gets the class prefix to use for {@link SzException} construction.
+     */
+    private static final String CLASS_PREFIX = SzCoreDiagnostic.class.getSimpleName();
+
     /**
      * The {@link SzCoreEnvironment} that constructed this instance.
      */
@@ -41,7 +48,14 @@ public class SzCoreDiagnostic implements SzDiagnostic {
                     this.env.isVerboseLogging());
  
                 // handle any failure
-                this.env.handleReturnCode(returnCode, this.nativeApi);
+                if (returnCode != 0) {
+                    this.env.handleReturnCode(
+                        returnCode, this.nativeApi,
+                        CLASS_PREFIX + "()",
+                        paramsOf("instanceName", this.env.getInstanceName(),
+                                "settings", redact(this.env.getSettings()),
+                                "verboseLogging", this.env.isVerboseLogging()));
+                }
 
             } else {
                 // if so then call init with config ID
@@ -52,7 +66,15 @@ public class SzCoreDiagnostic implements SzDiagnostic {
                     this.env.isVerboseLogging());
 
                 // handle any failure
-                this.env.handleReturnCode(returnCode, this.nativeApi);
+                if (returnCode != 0) {
+                    this.env.handleReturnCode(
+                        returnCode, this.nativeApi,
+                        CLASS_PREFIX + "()",
+                        paramsOf("instanceName", this.env.getInstanceName(),
+                                "settings", redact(this.env.getSettings()),
+                                "configId", this.env.getConfigId(),
+                                "verboseLogging", this.env.isVerboseLogging()));
+                }
             }
 
             return null;
@@ -84,7 +106,7 @@ public class SzCoreDiagnostic implements SzDiagnostic {
     }
     
     @Override
-    public String checkDatabasePerformance(int secondsToRun) throws SzException {
+    public String checkDatastorePerformance(int secondsToRun) throws SzException {
         return this.env.execute(() -> {
             // declare the buffer for the result
             StringBuffer sb = new StringBuffer();
@@ -93,7 +115,12 @@ public class SzCoreDiagnostic implements SzDiagnostic {
             int returnCode = this.nativeApi.checkDBPerf(secondsToRun, sb);
 
             // handle any error code if there is one
-            this.env.handleReturnCode(returnCode, this.nativeApi);
+            if (returnCode != 0) {
+                this.env.handleReturnCode(
+                    returnCode, this.nativeApi,
+                    CLASS_PREFIX + ".checkDatastorePerformance(int)",
+                    paramsOf("secondsToRun", secondsToRun));
+            }
 
             // return null
             return sb.toString();
@@ -110,7 +137,12 @@ public class SzCoreDiagnostic implements SzDiagnostic {
             int returnCode = this.nativeApi.getFeature(featureId, sb);
 
             // handle any error code if there is one
-            this.env.handleReturnCode(returnCode, this.nativeApi);
+            if (returnCode != 0) {
+                this.env.handleReturnCode(
+                    returnCode, this.nativeApi,
+                    CLASS_PREFIX + ".getFeature(long)",
+                    paramsOf("featureId", featureId));
+            }
 
             // return null
             return sb.toString();
@@ -124,7 +156,11 @@ public class SzCoreDiagnostic implements SzDiagnostic {
             int returnCode = this.nativeApi.purgeRepository();
             
             // handle any error code if there is one
-            this.env.handleReturnCode(returnCode, this.nativeApi);
+            if (returnCode != 0) {
+                this.env.handleReturnCode(
+                    returnCode, this.nativeApi,
+                    CLASS_PREFIX + ".purgeRepository()");
+            }
 
             // return null
             return null;

@@ -17,7 +17,7 @@ public interface SzDiagnostic {
      *
      * @throws SzException If a failure occurs.
      */
-    String checkDatabasePerformance(int secondsToRun) throws SzException;
+    String checkDatastorePerformance(int secondsToRun) throws SzException;
 
     /**
      * Purges all data in the configured repository.
