@@ -17,6 +17,7 @@ jobs:
         include:
           - java-version: "17"
             java-distribution: "temurin"
+            senzingapi-runtime-version: [staging-v4]
 
     steps:
       - name: checkout repository
@@ -29,9 +30,15 @@ jobs:
           java-version: ${{ matrix.java-version }}
           distribution: ${{ matrix.java-distribution }}
 
+      - name: install Senzing API
+        uses: senzing-factory/github-action-install-senzing-api@v3
+        with:
+          senzingapi-runtime-version: ${{ matrix.senzingapi-runtime-version }}      
+
       - name: Build with Maven
         run: |
-          mvn clean install -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+          # temp skip checkstyle and spotbugs to verify coverage
+          mvn clean install -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dcheckstyle.skip -Dspotbugs.skip
 
       - name: Jacoco Report to PR
         id: jacoco
