@@ -7,6 +7,16 @@ package com.senzing.g2.engine;
  */
 public interface SzDiagnostic {
     /**
+     * Gathers detailed information on the data store and returns it as a
+     * JSON {@link String}.
+     *
+     * @return A JSON {@link String} describing the datastore.
+     *
+     * @throws SzException If a failure occurs.
+     */
+    String getDatastoreInfo() throws SzException;
+
+    /**
      * Runs non-destruction DB performance tests and returns detail of the 
      * result as a JSON {@link String}.
      * 

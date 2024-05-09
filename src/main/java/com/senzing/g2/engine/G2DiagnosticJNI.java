@@ -56,7 +56,13 @@ public class G2DiagnosticJNI implements NativeDiagnostic {
    * {@inheritDoc}
    */
   @Override
-  public native int checkDBPerf(int secondsToRun, StringBuffer response);
+  public native int getDatastoreInfo(StringBuffer response);
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public native int checkDatastorePerformance(int secondsToRun, StringBuffer response);
 
   /**
    * {@inheritDoc}

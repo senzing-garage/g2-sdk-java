@@ -51,12 +51,12 @@ import static org.junit.jupiter.params.provider.Arguments.*;
         | G2_ENTITY_INCLUDE_RECORD_MATCHING_INFO
         | G2_ENTITY_INCLUDE_RECORD_UNMAPPED_DATA
         | G2_ENTITY_INCLUDE_RECORD_FEATURE_IDS
-        | G2_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES
-        | G2_ENTITY_OPTION_INCLUDE_FEATURE_ELEMENTS
-        | G2_ENTITY_OPTION_INCLUDE_MATCH_KEY_DETAILS
+        | G2_ENTITY_INCLUDE_INTERNAL_FEATURES
+        | G2_ENTITY_INCLUDE_FEATURE_ELEMENTS
+        | G2_INCLUDE_MATCH_KEY_DETAILS
         | G2_INCLUDE_FEATURE_SCORES;
 
-    private SzCoreEnvironment session = null;
+    private SzCoreEnvironment env = null;
 
     private Map<Long, String> featureMaps = new LinkedHashMap<>();
 
@@ -114,7 +114,7 @@ import static org.junit.jupiter.params.provider.Arguments.*;
             nativeEngine.destroy();
         }
 
-        this.session = SzCoreEnvironment.newBuilder()
+        this.env = SzCoreEnvironment.newBuilder()
                                       .instanceName(instanceName)
                                       .settings(settings)
                                       .verboseLogging(false)
@@ -124,9 +124,9 @@ import static org.junit.jupiter.params.provider.Arguments.*;
     @AfterAll
     public void teardownEnvironment() {
         try {
-            if (this.session != null) {
-                this.session.destroy();
-                this.session = null;
+            if (this.env != null) {
+                this.env.destroy();
+                this.env = null;
             }
             this.teardownTestEnvironment();
         } finally {
@@ -135,11 +135,29 @@ import static org.junit.jupiter.params.provider.Arguments.*;
     }
 
     @Test
-    @Order(20)
-    void testCheckDatabasePerformance() {
+    @Order(10)
+    void testGetDatastoreInfo() {
         this.performTest(() -> {
             try {
-                SzDiagnostic diagnostic = this.session.getDiagnostic();
+                SzDiagnostic diagnostic = this.env.getDiagnostic();
+
+                String result = diagnostic.getDatastoreInfo();
+                
+                // parse the result as JSON and check that it parses
+                parseJsonObject(result);
+
+            } catch (Exception e) {
+                fail("Failed testGetDatastoreInfo test with exception", e);
+            }
+        });        
+    }
+
+    @Test
+    @Order(20)
+    void testCheckDatastorePerformance() {
+        this.performTest(() -> {
+            try {
+                SzDiagnostic diagnostic = this.env.getDiagnostic();
 
                 String result = diagnostic.checkDatastorePerformance(5);
                 
@@ -147,7 +165,7 @@ import static org.junit.jupiter.params.provider.Arguments.*;
                 parseJsonObject(result);
 
             } catch (Exception e) {
-                fail("Failed testCheckDatabasePerformance test with exception", e);
+                fail("Failed testCheckDatastorePerformance test with exception", e);
             }
         });
     }
@@ -166,7 +184,7 @@ import static org.junit.jupiter.params.provider.Arguments.*;
     void testGetFeature(long featureId, String expected) {
         this.performTest(() -> {
             try {
-                SzDiagnostic diagnostic = this.session.getDiagnostic();
+                SzDiagnostic diagnostic = this.env.getDiagnostic();
 
                 String actual = diagnostic.getFeature(featureId);
 
@@ -188,7 +206,7 @@ import static org.junit.jupiter.params.provider.Arguments.*;
     void testPurgeRepository() {
         this.performTest(() -> {
             try {
-                SzDiagnostic diagnostic = this.session.getDiagnostic();
+                SzDiagnostic diagnostic = this.env.getDiagnostic();
 
                 diagnostic.purgeRepository();
 
@@ -198,4 +216,5 @@ import static org.junit.jupiter.params.provider.Arguments.*;
         });
 
     }
+
 }

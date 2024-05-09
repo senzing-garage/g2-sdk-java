@@ -200,26 +200,26 @@ public interface SzFlags {
     /**
      * The bitwise flag for including internal features in entity output
      */
-    long SZ_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES
-        = NativeEngine.G2_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES;
+    long SZ_ENTITY_INCLUDE_INTERNAL_FEATURES
+        = NativeEngine.G2_ENTITY_INCLUDE_INTERNAL_FEATURES;
 
     /**
      * The bitwise flag for including feature statistics in entity output.
      */
-    long SZ_ENTITY_OPTION_INCLUDE_FEATURE_STATS 
-        = NativeEngine.G2_ENTITY_OPTION_INCLUDE_FEATURE_STATS;
+    long SZ_ENTITY_INCLUDE_FEATURE_STATS 
+        = NativeEngine.G2_ENTITY_INCLUDE_FEATURE_STATS;
 
     /**
      * The bitwise flag for including feature elements.
      */
-    long SZ_ENTITY_OPTION_INCLUDE_FEATURE_ELEMENTS 
-        = NativeEngine.G2_ENTITY_OPTION_INCLUDE_FEATURE_ELEMENTS;
+    long SZ_ENTITY_INCLUDE_FEATURE_ELEMENTS 
+        = NativeEngine.G2_ENTITY_INCLUDE_FEATURE_ELEMENTS;
 
     /**
      * The bitwise flag for including internal features.
      */
-    long SZ_ENTITY_OPTION_INCLUDE_MATCH_KEY_DETAILS 
-        = NativeEngine.G2_ENTITY_OPTION_INCLUDE_MATCH_KEY_DETAILS;
+    long SZ_INCLUDE_MATCH_KEY_DETAILS 
+        = NativeEngine.G2_INCLUDE_MATCH_KEY_DETAILS;
 
     /**
      * The bitwise flag for find-path functionality to indicate that
@@ -232,15 +232,15 @@ public interface SzFlags {
      * The bitwise flag for find-path functionality to include
      * matching info on entity paths
      */
-    long SZ_FIND_PATH_MATCHING_INFO 
-        = NativeEngine.G2_FIND_PATH_MATCHING_INFO;
+    long SZ_FIND_PATH_INCLUDE_MATCHING_INFO 
+        = NativeEngine.G2_FIND_PATH_INCLUDE_MATCHING_INFO;
 
     /**
      * The bitwise flag for find-path functionality to include
      * matching info on entity paths
      */
-    long SZ_FIND_NETWORK_MATCHING_INFO 
-        = NativeEngine.G2_FIND_NETWORK_MATCHING_INFO;
+    long SZ_FIND_NETWORK_INCLUDE_MATCHING_INFO 
+        = NativeEngine.G2_FIND_NETWORK_INCLUDE_MATCHING_INFO;
 
     /**
      * The bitwise flag for including feature scores.
@@ -253,18 +253,6 @@ public interface SzFlags {
      */
     long SZ_SEARCH_INCLUDE_STATS 
         = NativeEngine.G2_SEARCH_INCLUDE_STATS;
-
-    /**
-     * The bitwise flag for including feature scores from search results.
-     */
-    long SZ_SEARCH_INCLUDE_FEATURE_SCORES 
-        = NativeEngine.G2_SEARCH_INCLUDE_FEATURE_SCORES;
-
-    /**
-     * The bitwise flag for including detailed match key in search results
-     */
-    long SZ_SEARCH_INCLUDE_MATCH_KEY_DETAILS 
-        = NativeEngine.G2_SEARCH_INCLUDE_MATCH_KEY_DETAILS;
 
     /**
      * The bitwise flag for search functionality to indicate that

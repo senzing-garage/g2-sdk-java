@@ -16,7 +16,7 @@ import static com.senzing.util.JsonUtilities.normalizeJsonText;
 @TestInstance(Lifecycle.PER_CLASS)
 @Execution(ExecutionMode.SAME_THREAD)
 public class SzCoreProductTest extends AbstractTest {
-    private SzCoreEnvironment session = null;
+    private SzCoreEnvironment env = null;
 
     @BeforeAll
     public void initializeEnvironment() {
@@ -26,7 +26,7 @@ public class SzCoreProductTest extends AbstractTest {
         
         String instanceName = this.getClass().getSimpleName();
 
-        this.session = SzCoreEnvironment.newBuilder()
+        this.env = SzCoreEnvironment.newBuilder()
                                       .instanceName(instanceName)
                                       .settings(settings)
                                       .verboseLogging(false)
@@ -36,9 +36,9 @@ public class SzCoreProductTest extends AbstractTest {
     @AfterAll
     public void teardownEnvironment() {
         try {
-            if (this.session != null) {
-                this.session.destroy();
-                this.session = null;
+            if (this.env != null) {
+                this.env.destroy();
+                this.env = null;
             }
             this.teardownTestEnvironment();
         } finally {
@@ -50,7 +50,7 @@ public class SzCoreProductTest extends AbstractTest {
     void testGetLicense() {
         this.performTest(() -> {
             try {
-            SzProduct product = this.session.getProduct();
+            SzProduct product = this.env.getProduct();
 
                 String license = product.getLicense();
 
@@ -71,7 +71,7 @@ public class SzCoreProductTest extends AbstractTest {
     void testGetVersion() {
         this.performTest(() -> {
             try {
-            SzProduct product = this.session.getProduct();
+            SzProduct product = this.env.getProduct();
 
                 String version = product.getVersion();
 

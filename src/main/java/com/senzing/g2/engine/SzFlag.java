@@ -488,8 +488,8 @@ public enum SzFlag {
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
-    SZ_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES(
-        SzFlags.SZ_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES, SZ_ENTITY_SET),
+    SZ_ENTITY_INCLUDE_INTERNAL_FEATURES(
+        SzFlags.SZ_ENTITY_INCLUDE_INTERNAL_FEATURES, SZ_ENTITY_SET),
 
     /**
      * The value for including feature statistics in entity output.
@@ -506,8 +506,8 @@ public enum SzFlag {
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
-    SZ_ENTITY_OPTION_INCLUDE_FEATURE_STATS(
-        SzFlags.SZ_ENTITY_OPTION_INCLUDE_FEATURE_STATS, SZ_ENTITY_SET),
+    SZ_ENTITY_INCLUDE_FEATURE_STATS(
+        SzFlags.SZ_ENTITY_INCLUDE_FEATURE_STATS, SZ_ENTITY_SET),
 
     /**
      * The value for including feature elements.
@@ -524,8 +524,8 @@ public enum SzFlag {
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
-    SZ_ENTITY_OPTION_INCLUDE_FEATURE_ELEMENTS(
-        SzFlags.SZ_ENTITY_OPTION_INCLUDE_FEATURE_ELEMENTS, SZ_ENTITY_SET),
+    SZ_ENTITY_INCLUDE_FEATURE_ELEMENTS(
+        SzFlags.SZ_ENTITY_INCLUDE_FEATURE_ELEMENTS, SZ_ENTITY_SET),
 
     /**
      * The value for including internal features.
@@ -542,8 +542,8 @@ public enum SzFlag {
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
-    SZ_ENTITY_OPTION_INCLUDE_MATCH_KEY_DETAILS(
-        SzFlags.SZ_ENTITY_OPTION_INCLUDE_MATCH_KEY_DETAILS, SZ_ENTITY_HOW_SET),
+    SZ_INCLUDE_MATCH_KEY_DETAILS(
+        SzFlags.SZ_INCLUDE_MATCH_KEY_DETAILS, SZ_ENTITY_HOW_SET),
 
     /**
      * The value for find-path functionality to indicate that
@@ -567,8 +567,8 @@ public enum SzFlag {
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
-    SZ_FIND_PATH_MATCHING_INFO(
-        SzFlags.SZ_FIND_PATH_MATCHING_INFO, SZ_FIND_PATH_SET),
+    SZ_FIND_PATH_INCLUDE_MATCHING_INFO(
+        SzFlags.SZ_FIND_PATH_INCLUDE_MATCHING_INFO, SZ_FIND_PATH_SET),
 
     /**
      * The value for find-network functionality to include matching info on the
@@ -580,8 +580,8 @@ public enum SzFlag {
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
-    SZ_FIND_NETWORK_MATCHING_INFO(
-        SzFlags.SZ_FIND_NETWORK_MATCHING_INFO, SZ_FIND_NETWORK_SET),
+    SZ_FIND_NETWORK_INCLUDE_MATCHING_INFO(
+        SzFlags.SZ_FIND_NETWORK_INCLUDE_MATCHING_INFO, SZ_FIND_NETWORK_SET),
 
     /**
      * The value for including feature scores.
@@ -607,30 +607,6 @@ public enum SzFlag {
      */
     SZ_SEARCH_INCLUDE_STATS(
         SzFlags.SZ_SEARCH_INCLUDE_STATS, SZ_SEARCH_SET),
-
-    /**
-     * The value for including feature scores from search results.
-     * <p>
-     * This flag belongs to the following usage groups:
-     * <ul>
-     *    <li>{@link SzFlagUsageGroup#SZ_SEARCH} 
-     * </ul>
-     * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
-     */
-    SZ_SEARCH_INCLUDE_FEATURE_SCORES(
-        SzFlags.SZ_SEARCH_INCLUDE_FEATURE_SCORES, SZ_SEARCH_SET),
-
-    /**
-     * The value for including detailed match key in search results.
-     * <p>
-     * This flag belongs to the following usage groups:
-     * <ul>
-     *    <li>{@link SzFlagUsageGroup#SZ_SEARCH} 
-     * </ul>
-     * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
-     */
-    SZ_SEARCH_INCLUDE_MATCH_KEY_DETAILS(
-        SzFlags.SZ_SEARCH_INCLUDE_MATCH_KEY_DETAILS, SZ_SEARCH_SET),
     
     /**
      * The value for search functionality to indicate that we should
@@ -1046,7 +1022,7 @@ public enum SzFlag {
      * <p>
      * The contained {@link SzFlag} instances are:
      * <ul>
-     *  <li>{@link #SZ_FIND_PATH_MATCHING_INFO}
+     *  <li>{@link #SZ_FIND_PATH_INCLUDE_MATCHING_INFO}
      *  <li>{@link #SZ_ENTITY_INCLUDE_ENTITY_NAME}
      *  <li>{@link #SZ_ENTITY_INCLUDE_RECORD_SUMMARY}
      * </ul>
@@ -1058,7 +1034,7 @@ public enum SzFlag {
      */
     public static final Set<SzFlag> SZ_FIND_PATH_DEFAULT_FLAGS
         = Collections.unmodifiableSet(
-            EnumSet.of(SZ_FIND_PATH_MATCHING_INFO,
+            EnumSet.of(SZ_FIND_PATH_INCLUDE_MATCHING_INFO,
                        SZ_ENTITY_INCLUDE_ENTITY_NAME,
                        SZ_ENTITY_INCLUDE_RECORD_SUMMARY));
 
@@ -1068,7 +1044,7 @@ public enum SzFlag {
      * <p>
      * The contained {@link SzFlag} instances are:
      * <ul>
-     *  <li>{@link #SZ_FIND_NETWORK_MATCHING_INFO}
+     *  <li>{@link #SZ_FIND_NETWORK_INCLUDE_MATCHING_INFO}
      *  <li>{@link #SZ_ENTITY_INCLUDE_ENTITY_NAME}
      *  <li>{@link #SZ_ENTITY_INCLUDE_RECORD_SUMMARY}
      * </ul>
@@ -1080,7 +1056,7 @@ public enum SzFlag {
      */
     public static final Set<SzFlag> SZ_FIND_NETWORK_DEFAULT_FLAGS
         = Collections.unmodifiableSet(
-            EnumSet.of(SZ_FIND_NETWORK_MATCHING_INFO,
+            EnumSet.of(SZ_FIND_NETWORK_INCLUDE_MATCHING_INFO,
                        SZ_ENTITY_INCLUDE_ENTITY_NAME,
                        SZ_ENTITY_INCLUDE_RECORD_SUMMARY));
 
@@ -1092,8 +1068,8 @@ public enum SzFlag {
      * The contained {@link SzFlag} instances are:
      * <ul>
      *   <li>All {@link SzFlag} instances from {@link #SZ_ENTITY_DEFAULT_FLAGS}
-     *   <li>{@link #SZ_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES}
-     *   <li>{@link #SZ_ENTITY_OPTION_INCLUDE_FEATURE_STATS}
+     *   <li>{@link #SZ_ENTITY_INCLUDE_INTERNAL_FEATURES}
+     *   <li>{@link #SZ_ENTITY_INCLUDE_FEATURE_STATS}
      *   <li>{@link #SZ_INCLUDE_FEATURE_SCORES}
      * </ul>
      * <p>
@@ -1106,8 +1082,8 @@ public enum SzFlag {
 
     static {
         EnumSet<SzFlag> set = EnumSet.copyOf(SZ_ENTITY_DEFAULT_FLAGS);
-        set.add(SZ_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES);
-        set.add(SZ_ENTITY_OPTION_INCLUDE_FEATURE_STATS);
+        set.add(SZ_ENTITY_INCLUDE_INTERNAL_FEATURES);
+        set.add(SZ_ENTITY_INCLUDE_FEATURE_STATS);
         set.add(SZ_INCLUDE_FEATURE_SCORES);
 
         SZ_WHY_ENTITIES_DEFAULT_FLAGS = Collections.unmodifiableSet(set);
@@ -1120,8 +1096,8 @@ public enum SzFlag {
      * The contained {@link SzFlag} instances are:
      * <ul>
      *   <li>All {@link SzFlag} instances from {@link #SZ_ENTITY_DEFAULT_FLAGS}
-     *   <li>{@link #SZ_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES}
-     *   <li>{@link #SZ_ENTITY_OPTION_INCLUDE_FEATURE_STATS}
+     *   <li>{@link #SZ_ENTITY_INCLUDE_INTERNAL_FEATURES}
+     *   <li>{@link #SZ_ENTITY_INCLUDE_FEATURE_STATS}
      *   <li>{@link #SZ_INCLUDE_FEATURE_SCORES}
      * </ul>
      * <p>
@@ -1134,8 +1110,8 @@ public enum SzFlag {
 
     static {
         EnumSet<SzFlag> set = EnumSet.copyOf(SZ_ENTITY_DEFAULT_FLAGS);
-        set.add(SZ_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES);
-        set.add(SZ_ENTITY_OPTION_INCLUDE_FEATURE_STATS);
+        set.add(SZ_ENTITY_INCLUDE_INTERNAL_FEATURES);
+        set.add(SZ_ENTITY_INCLUDE_FEATURE_STATS);
         set.add(SZ_INCLUDE_FEATURE_SCORES);
 
         SZ_WHY_RECORDS_DEFAULT_FLAGS = Collections.unmodifiableSet(set);
@@ -1148,8 +1124,8 @@ public enum SzFlag {
      * The contained {@link SzFlag} instances are:
      * <ul>
      *   <li>All {@link SzFlag} instances from {@link #SZ_ENTITY_DEFAULT_FLAGS}
-     *   <li>{@link #SZ_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES}
-     *   <li>{@link #SZ_ENTITY_OPTION_INCLUDE_FEATURE_STATS}
+     *   <li>{@link #SZ_ENTITY_INCLUDE_INTERNAL_FEATURES}
+     *   <li>{@link #SZ_ENTITY_INCLUDE_FEATURE_STATS}
      *   <li>{@link #SZ_INCLUDE_FEATURE_SCORES}
      * </ul>
      * <p>
@@ -1162,8 +1138,8 @@ public enum SzFlag {
 
     static {
         EnumSet<SzFlag> set = EnumSet.copyOf(SZ_ENTITY_DEFAULT_FLAGS);
-        set.add(SZ_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES);
-        set.add(SZ_ENTITY_OPTION_INCLUDE_FEATURE_STATS);
+        set.add(SZ_ENTITY_INCLUDE_INTERNAL_FEATURES);
+        set.add(SZ_ENTITY_INCLUDE_FEATURE_STATS);
         set.add(SZ_INCLUDE_FEATURE_SCORES);
 
         SZ_WHY_RECORD_IN_ENTITY_DEFAULT_FLAGS = Collections.unmodifiableSet(set);
@@ -1215,7 +1191,7 @@ public enum SzFlag {
      *   <li>{@link #SZ_ENTITY_INCLUDE_REPRESENTATIVE_FEATURES}
      *   <li>{@link #SZ_ENTITY_INCLUDE_ENTITY_NAME}
      *   <li>{@link #SZ_ENTITY_INCLUDE_RECORD_SUMMARY}
-     *   <li>{@link #SZ_SEARCH_INCLUDE_FEATURE_SCORES}
+     *   <li>{@link #SZ_INCLUDE_FEATURE_SCORES}
      * </ul>
      * <p>
      * All the flags in this {@link Set} are guaranteed to belong
@@ -1230,7 +1206,7 @@ public enum SzFlag {
         set.add(SZ_ENTITY_INCLUDE_REPRESENTATIVE_FEATURES);
         set.add(SZ_ENTITY_INCLUDE_ENTITY_NAME);
         set.add(SZ_ENTITY_INCLUDE_RECORD_SUMMARY);
-        set.add(SZ_SEARCH_INCLUDE_FEATURE_SCORES);
+        set.add(SZ_INCLUDE_FEATURE_SCORES);
         SZ_SEARCH_BY_ATTRIBUTES_ALL = Collections.unmodifiableSet(set);
     }
 
@@ -1245,7 +1221,7 @@ public enum SzFlag {
      *   <li>{@link #SZ_ENTITY_INCLUDE_REPRESENTATIVE_FEATURES}
      *   <li>{@link #SZ_ENTITY_INCLUDE_ENTITY_NAME}
      *   <li>{@link #SZ_ENTITY_INCLUDE_RECORD_SUMMARY}
-     *   <li>{@link #SZ_SEARCH_INCLUDE_FEATURE_SCORES}
+     *   <li>{@link #SZ_INCLUDE_FEATURE_SCORES}
      * </ul>
      * <p>
      * All the flags in this {@link Set} are guaranteed to belong
@@ -1259,7 +1235,7 @@ public enum SzFlag {
                                                  SZ_ENTITY_INCLUDE_REPRESENTATIVE_FEATURES,
                                                  SZ_ENTITY_INCLUDE_ENTITY_NAME,
                                                  SZ_ENTITY_INCLUDE_RECORD_SUMMARY,
-                                                 SZ_SEARCH_INCLUDE_FEATURE_SCORES));
+                                                 SZ_INCLUDE_FEATURE_SCORES));
 
     /**
      * The {@link Set} of {@link SzFlag} instances that are a good for searching

@@ -26,7 +26,7 @@ public class SzCoreConfigTest extends AbstractTest {
 
     private static final String EMPLOYEES_DATA_SOURCE = "EMPLOYEES";
 
-    private SzCoreEnvironment session = null;
+    private SzCoreEnvironment env = null;
 
     private String defaultConfig = null;
 
@@ -100,7 +100,7 @@ public class SzCoreConfigTest extends AbstractTest {
             nativeConfig.destroy();
         }
 
-        this.session = SzCoreEnvironment.newBuilder()
+        this.env = SzCoreEnvironment.newBuilder()
                                       .instanceName(instanceName)
                                       .settings(settings)
                                       .verboseLogging(false)
@@ -110,9 +110,9 @@ public class SzCoreConfigTest extends AbstractTest {
     @AfterAll
     public void teardownEnvironment() {
         try {
-            if (this.session != null) {
-                this.session.destroy();
-                this.session = null;
+            if (this.env != null) {
+                this.env.destroy();
+                this.env = null;
             }
             this.teardownTestEnvironment();
         } finally {
@@ -124,7 +124,7 @@ public class SzCoreConfigTest extends AbstractTest {
     void testCreateConfig() {
         this.performTest(() -> {
             try {
-                SzConfig config = this.session.getConfig();
+                SzConfig config = this.env.getConfig();
 
                 long configHandle = 0L;
                 
@@ -151,7 +151,7 @@ public class SzCoreConfigTest extends AbstractTest {
     void testImportConfig() {
         this.performTest(() -> {
             try {
-                SzConfig config = this.session.getConfig();
+                SzConfig config = this.env.getConfig();
 
                 long configHandle = 0L;
                 
@@ -178,7 +178,7 @@ public class SzCoreConfigTest extends AbstractTest {
     void testExportConfig() {
         this.performTest(() -> {
             try {
-                SzConfig config = this.session.getConfig();
+                SzConfig config = this.env.getConfig();
 
                 long configHandle = 0L;
                 
@@ -220,7 +220,7 @@ public class SzCoreConfigTest extends AbstractTest {
     @Test
     void testCloseConfig() {
         try {
-            SzConfig config = this.session.getConfig();
+            SzConfig config = this.env.getConfig();
 
             long configHandle = 0L;
             
@@ -256,7 +256,7 @@ public class SzCoreConfigTest extends AbstractTest {
     void testAddDataSource() {
         this.performTest(() -> {
             try {
-                SzConfig config = this.session.getConfig();
+                SzConfig config = this.env.getConfig();
 
                 long configHandle = 0L;
                 
@@ -300,7 +300,7 @@ public class SzCoreConfigTest extends AbstractTest {
     void testDeleteDataSource() {
         this.performTest(() -> {
             try {
-                SzConfig config = this.session.getConfig();
+                SzConfig config = this.env.getConfig();
 
                 long configHandle = 0L;
                 
@@ -350,7 +350,7 @@ public class SzCoreConfigTest extends AbstractTest {
     void testGetDataSources() {
         this.performTest(() -> {
             try {
-                SzConfig config = this.session.getConfig();
+                SzConfig config = this.env.getConfig();
 
                 long configHandle = 0L;
                 

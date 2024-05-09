@@ -26,7 +26,7 @@ public class SzCoreEngine implements SzEngine {
      * The empty response for operations where the info can optionally
      * generated but was not requested.
      */
-    private static final String NO_INFO = "{}";
+    static final String NO_INFO = "{}";
 
     /**
      * The {@link SzCoreEnvironment} that constructed this instance.

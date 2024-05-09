@@ -184,22 +184,22 @@ interface NativeEngine extends NativeApi
   /**
    * The bitwise flag for including internal features in entity output
    */
-  long G2_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES = ( 1L << 23 );
+  long G2_ENTITY_INCLUDE_INTERNAL_FEATURES = ( 1L << 23 );
 
   /**
    * The bitwise flag for including feature statistics in entity output.
    */
-  long G2_ENTITY_OPTION_INCLUDE_FEATURE_STATS = ( 1L << 24 );
+  long G2_ENTITY_INCLUDE_FEATURE_STATS = ( 1L << 24 );
 
   /**
    * The bitwise flag for including feature elements.
    */
-  long G2_ENTITY_OPTION_INCLUDE_FEATURE_ELEMENTS = ( 1L << 32 );
+  long G2_ENTITY_INCLUDE_FEATURE_ELEMENTS = ( 1L << 32 );
 
   /**
    * The bitwise flag for including internal features.
    */
-  long G2_ENTITY_OPTION_INCLUDE_MATCH_KEY_DETAILS = ( 1L << 34 );
+  long G2_INCLUDE_MATCH_KEY_DETAILS = ( 1L << 34 );
 
   /**
    * The bitwise flag for find-path functionality to indicate that
@@ -211,13 +211,13 @@ interface NativeEngine extends NativeApi
    * The bitwise flag for find-path functionality to include
    * matching info on entity paths
    */
-  long G2_FIND_PATH_MATCHING_INFO = ( 1L << 30 );
+  long G2_FIND_PATH_INCLUDE_MATCHING_INFO = ( 1L << 30 );
 
   /**
    * The bitwise flag for find-path functionality to include
    * matching info on entity paths
    */
-  long G2_FIND_NETWORK_MATCHING_INFO = ( 1L << 33 );
+  long G2_FIND_NETWORK_INCLUDE_MATCHING_INFO = ( 1L << 33 );
 
   /**
    * The bitwise flag for including feature scores.
@@ -228,16 +228,6 @@ interface NativeEngine extends NativeApi
    * The bitwise flag for including statistics from search results
    */
   long G2_SEARCH_INCLUDE_STATS = ( 1L << 27 );
-
-  /**
-   * The bitwise flag for including feature scores from search results.
-   */
-  long G2_SEARCH_INCLUDE_FEATURE_SCORES = G2_INCLUDE_FEATURE_SCORES;
-
-  /**
-   * The bitwise flag for including detailed match key in search results
-   */
-  long G2_SEARCH_INCLUDE_MATCH_KEY_DETAILS = G2_ENTITY_OPTION_INCLUDE_MATCH_KEY_DETAILS;
 
   /**
    * The bitwise flag for search functionality to indicate that
@@ -317,7 +307,7 @@ interface NativeEngine extends NativeApi
    * The default recommended bitwise flag values for finding entity paths
    */
   long G2_FIND_PATH_DEFAULT_FLAGS
-      = (G2_FIND_PATH_MATCHING_INFO
+      = (G2_FIND_PATH_INCLUDE_MATCHING_INFO
          | G2_ENTITY_INCLUDE_ENTITY_NAME
          | G2_ENTITY_INCLUDE_RECORD_SUMMARY);
 
@@ -325,7 +315,7 @@ interface NativeEngine extends NativeApi
    * The default recommended bitwise flag values for finding entity networks
    */
   long G2_FIND_NETWORK_DEFAULT_FLAGS
-      = (G2_FIND_NETWORK_MATCHING_INFO
+      = (G2_FIND_NETWORK_INCLUDE_MATCHING_INFO
          | G2_ENTITY_INCLUDE_ENTITY_NAME
          | G2_ENTITY_INCLUDE_RECORD_SUMMARY);
 
@@ -334,8 +324,8 @@ interface NativeEngine extends NativeApi
    */
   long G2_WHY_ENTITIES_DEFAULT_FLAGS
       = (G2_ENTITY_DEFAULT_FLAGS
-         | G2_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES
-         | G2_ENTITY_OPTION_INCLUDE_FEATURE_STATS
+         | G2_ENTITY_INCLUDE_INTERNAL_FEATURES
+         | G2_ENTITY_INCLUDE_FEATURE_STATS
          | G2_INCLUDE_FEATURE_SCORES);
 
   /**
@@ -343,8 +333,8 @@ interface NativeEngine extends NativeApi
    */
   long G2_WHY_RECORDS_DEFAULT_FLAGS
       = (G2_ENTITY_DEFAULT_FLAGS
-         | G2_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES
-         | G2_ENTITY_OPTION_INCLUDE_FEATURE_STATS
+         | G2_ENTITY_INCLUDE_INTERNAL_FEATURES
+         | G2_ENTITY_INCLUDE_FEATURE_STATS
          | G2_INCLUDE_FEATURE_SCORES);
 
   /**
@@ -352,8 +342,8 @@ interface NativeEngine extends NativeApi
    */
   long G2_WHY_RECORD_IN_ENTITY_DEFAULT_FLAGS
       = (G2_ENTITY_DEFAULT_FLAGS
-         | G2_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES
-         | G2_ENTITY_OPTION_INCLUDE_FEATURE_STATS
+         | G2_ENTITY_INCLUDE_INTERNAL_FEATURES
+         | G2_ENTITY_INCLUDE_FEATURE_STATS
          | G2_INCLUDE_FEATURE_SCORES);
 
   /**
@@ -377,7 +367,7 @@ interface NativeEngine extends NativeApi
          | G2_ENTITY_INCLUDE_REPRESENTATIVE_FEATURES
          | G2_ENTITY_INCLUDE_ENTITY_NAME
          | G2_ENTITY_INCLUDE_RECORD_SUMMARY
-         | G2_SEARCH_INCLUDE_FEATURE_SCORES);
+         | G2_INCLUDE_FEATURE_SCORES);
 
   /**
    * The default recommended bitwise flag values for searching by attributes,
@@ -389,7 +379,7 @@ interface NativeEngine extends NativeApi
          | G2_ENTITY_INCLUDE_REPRESENTATIVE_FEATURES
          | G2_ENTITY_INCLUDE_ENTITY_NAME
          | G2_ENTITY_INCLUDE_RECORD_SUMMARY
-         | G2_SEARCH_INCLUDE_FEATURE_SCORES);
+         | G2_INCLUDE_FEATURE_SCORES);
 
   /**
    * The default recommended bitwise flag values for searching by attributes,
@@ -484,17 +474,6 @@ interface NativeEngine extends NativeApi
   int getActiveConfigID(Result<Long> configID);
 
   /**
-   * Returns a long integer representing number of seconds since
-   * January 1, 1970 12:00am GMT (epoch time).  This indicates the last
-   * time the data repository was modified.
-   *
-   * @param lastModifiedTime The last modified time of the data repository
-   *
-   * @return Zero (0) on success and non-zero on failure.
-   */
-  int getRepositoryLastModifiedTime(Result<Long> lastModifiedTime);
-
-  /**
    * Loads the JSON record with the specified data source code and record ID.
    * The specified JSON data may contain the <code>DATA_SOURCE</code> and
    * <code>RECORD_ID</code> elements, but, if so, they must match the specified
@@ -510,41 +489,6 @@ interface NativeEngine extends NativeApi
   int addRecord(String  dataSourceCode,
                 String  recordID,
                 String  jsonData);
-
-  /**
-   * Replace the JSON record that has already been loaded
-   *
-   * @param dataSourceCode The data source for the observation.
-   * @param recordID The ID for the record
-   * @param jsonData A JSON document containing the attribute information
-   *        for the observation.
-   *
-   * @return Zero (0) on success and non-zero on failure.
-   */
-  int replaceRecord(String  dataSourceCode,
-                    String  recordID,
-                    String  jsonData);
-
-  /**
-   * Replace the JSON record that has already been loaded and returns
-   * a list of modified resolved entities
-   *
-   * @param dataSourceCode The data source for the observation.
-   * @param recordID The ID for the record
-   * @param jsonData A JSON document containing the attribute information
-   *        for the observation.
-   * @param flags The flags to control how the operation is performed and
-   *              specifically the content of the response JSON document.
-   * @param response A {@link StringBuffer} for returning the response document.
-   *                 If an error occurred, an error response is stored here.
-   *
-   * @return Zero (0) on success and non-zero on failure.
-   */
-  int replaceRecordWithInfo(String        dataSourceCode,
-                            String        recordID,
-                            String        jsonData,
-                            long          flags,
-                            StringBuffer  response);
 
   /**
    * This method is used to add entity data into the system.  This works

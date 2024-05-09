@@ -63,6 +63,16 @@ interface NativeDiagnostic extends NativeApi
    */
   int destroy();
 
+  /**
+   * Gathers database information and writes detail of the result
+   * as JSON in the specified {@link StringBuffer}.
+   *
+   * @param response The {@link StringBuffer} in which to write the JSON text
+   *                 that details the databse information.
+   *
+   * @return Zero (0) on success and non-zero on failure.
+   */
+  int getDatastoreInfo(StringBuffer response);
 
   /**
    * Runs non-destruction DB performance tests and writes detail of the result
@@ -74,7 +84,7 @@ interface NativeDiagnostic extends NativeApi
    *
    * @return Zero (0) on success and non-zero on failure.
    */
-  int checkDBPerf(int secondsToRun, StringBuffer response);
+  int checkDatastorePerformance(int secondsToRun, StringBuffer response);
 
   /**
    * Purges all data in the configured repository

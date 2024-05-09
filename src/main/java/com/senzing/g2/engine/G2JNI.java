@@ -81,30 +81,7 @@ public class G2JNI implements NativeEngine {
    * {@inheritDoc}
    */
   @Override
-  public native int getRepositoryLastModifiedTime(Result<Long> lastModifiedTime);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public native int addRecord(String dataSourceCode, String recordID, String jsonData);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int replaceRecord(String dataSourceCode, String recordID, String jsonData);
-  
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int replaceRecordWithInfo(String        dataSourceCode,
-                                          String        recordID,
-                                          String        jsonData,
-                                          long          flags,
-                                          StringBuffer  response);
-
 
   /**
    * {@inheritDoc}

@@ -15,7 +15,9 @@ public class SzException extends Exception {
      * Set this environment variable to the value <code>"true"</code> (case 
      * insensitive) to <b>override</b> the default behavior of the {@link 
      * #redact(Object)} function of <b>attempting</b> to redact sensitive data
-     * from the generated exception messages.
+     * from the generated exception messages.  Setting this environment variable
+     * will <b>not</b> disable redaction if redaction has been explicitly enabled
+     * programmatically via the {@link #enableRedaction()} function.
      * <p>
      * <b>WARNING:</b> The Senzing SDK will use the {@link #redact(Object)} function
      * to <b>attempt</b> to redact sensitive data from exception messages, but this is
@@ -23,14 +25,35 @@ public class SzException extends Exception {
      * is still responsible to scrub and redact sensitive data from messages to prevent
      * exposing sensitive data to unauthorized viewers (e.g.: in error dialogs of user
      * interfaces or in system logs).
+     * 
+     * @see #enableRedaction()
+     * @see #disableRedaction()
+     * @see #isRedacting()
+     * @see #redact(Object)
      */
     public static final String SZ_DO_NOT_REDACT_ENV_VARIABLE = "SZ_DO_NOT_REDACT";
 
     /**
-     * Constant indicating if we are redacting sensitive data.
+     * The text replacement to use for redaction.
+     * 
+     * @see #enableRedaction()
+     * @see #disableRedaction()
+     * @see #isRedacting()
+     * @see #redact(Object)
      */
-    private static final boolean REDACTING 
-        = Boolean.valueOf(System.getenv(SZ_DO_NOT_REDACT_ENV_VARIABLE));
+    public static final String REDACTION_REPLACEMENT = "*|REDACTED|*";
+
+    /**
+     * Static variable indicating if we are redacting sensitive data.
+     */
+    private static Boolean redacting = null;
+    
+    static {
+        String value = System.getenv(SZ_DO_NOT_REDACT_ENV_VARIABLE);
+        if (value != null) {
+            redacting = (!Boolean.valueOf(value.trim().toLowerCase()));
+        }
+    }
 
     /**
      * The underlying senzing error code.
@@ -145,8 +168,9 @@ public class SzException extends Exception {
                        Map<String,Object>   methodParameters) 
     {
         super(message);
-        this.methodSignature    = methodSignature;
-        this.methodParameters   = (methodParameters instanceof ParameterMap)
+        this.methodSignature = methodSignature;
+        this.methodParameters
+            = (methodParameters == null || methodParameters instanceof ParameterMap)
             ? methodParameters
             : new ParameterMap(new LinkedHashMap<>(methodParameters));
     }
@@ -310,6 +334,44 @@ public class SzException extends Exception {
     }
 
     /**
+     * Explicitly enables redaction via the {@link #redact(Object)} function.
+     * 
+     * @see #disableRedaction()
+     * @see #isRedacting()
+     * @see #redact(Object)
+     * @see #SZ_DO_NOT_REDACT_ENV_VARIABLE
+     */
+    public static synchronized void enableRedaction() {
+        redacting = true;
+    }
+
+    /**
+     * Explicitly disables redaction via the {@link#redact(Object)} function.
+     * 
+     * @see #enableRedaction()
+     * @see #isRedacting()
+     * @see #redact(Object)
+     * @see #SZ_DO_NOT_REDACT_ENV_VARIABLE
+     */
+    public static synchronized void disableRedaction() {
+        redacting = false;
+    }
+
+    /**
+     * Checks if redaction is enabled or disabled.
+     * 
+     * @return <code>true</code> if redacting, otherwise <code>false</code>.
+     * 
+     * @see #enableRedaction()
+     * @see #disableRedaction()
+     * @see #redact(Object)
+     * @see #SZ_DO_NOT_REDACT_ENV_VARIABLE
+     */
+    public static synchronized boolean isRedacting() {
+        return (redacting == null) ? true : redacting;
+    }
+
+    /**
      * Handles optionally redacting the specified data to attempt to prevent
      * inclusion of sensitive data in a message that might be exposed.
      * 
@@ -321,7 +383,7 @@ public class SzException extends Exception {
      */
     public static String redact(Object sensitiveData) {
         String text = String.valueOf(sensitiveData);
-        return (REDACTING) ? "*|REDACTED|*" : text;
+        return (SzException.isRedacting()) ? REDACTION_REPLACEMENT : text;
     }
 
     /**
@@ -344,6 +406,20 @@ public class SzException extends Exception {
         map.put(key + suffix, value);
     }
 
+   /**
+     * Creates an unmodifiable <b>empty</b> {@link LinkedHashMap} with no
+     * entries for constructing {@link SzException} instances with no
+     * parameters.
+     * 
+     * @return A new unmodifiable <b>empty</b> {@link Map} representing
+     *         no parameter name/value pairs.
+     */
+    public static Map<String, Object> paramsOf()
+    {
+        LinkedHashMap<String,Object> map = new LinkedHashMap<>();
+        return new ParameterMap(map);
+    }
+
     /**
      * Creates an unmodifiable <b>ordered</b> {@link LinkedHashMap} representing
      * the specified parameters for helping with construction of
@@ -362,7 +438,6 @@ public class SzException extends Exception {
      *         specified parameter name and parameter value.
      */
     public static Map<String, Object> paramsOf(String name, Object value)
-        throws NullPointerException
     {
         LinkedHashMap<String,Object> map = new LinkedHashMap<>();
         put(map, name, value);

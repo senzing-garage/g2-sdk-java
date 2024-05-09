@@ -73,10 +73,10 @@ public enum SzFlagUsageGroup {
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RELATED_RECORD_SUMMARY}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RELATED_RECORD_TYPES}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RELATED_RECORD_DATA}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_FEATURE_STATS}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_FEATURE_ELEMENTS}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_MATCH_KEY_DETAILS}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_INTERNAL_FEATURES}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_FEATURE_STATS}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_FEATURE_ELEMENTS}
+     *      <li>{@link SzFlag#SZ_INCLUDE_MATCH_KEY_DETAILS}
      * </ul>
      * <p>
      * The pre-defined {@link SzFlag} {@link Set} instances for this group are:
@@ -123,12 +123,12 @@ public enum SzFlagUsageGroup {
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RELATED_RECORD_SUMMARY}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RELATED_RECORD_TYPES}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RELATED_RECORD_DATA}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_FEATURE_STATS}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_FEATURE_ELEMENTS}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_MATCH_KEY_DETAILS}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_INTERNAL_FEATURES}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_FEATURE_STATS}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_FEATURE_ELEMENTS}
+     *      <li>{@link SzFlag#SZ_INCLUDE_MATCH_KEY_DETAILS}
      *      <li>{@link SzFlag#SZ_FIND_PATH_PREFER_EXCLUDE}
-     *      <li>{@link SzFlag#SZ_FIND_PATH_MATCHING_INFO}
+     *      <li>{@link SzFlag#SZ_FIND_PATH_INCLUDE_MATCHING_INFO}
      * </ul>
      * <p>
      * The pre-defined {@link SzFlag} {@link Set} instances that use this
@@ -177,11 +177,11 @@ public enum SzFlagUsageGroup {
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RELATED_RECORD_SUMMARY}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RELATED_RECORD_TYPES}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RELATED_RECORD_DATA}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_FEATURE_STATS}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_FEATURE_ELEMENTS}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_MATCH_KEY_DETAILS}
-     *      <li>{@link SzFlag#SZ_FIND_NETWORK_MATCHING_INFO}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_INTERNAL_FEATURES}
+     *      <li>{@link SzFlag#SZ_INCLUDE_MATCH_KEY_DETAILS}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_FEATURE_STATS}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_FEATURE_ELEMENTS}
+     *      <li>{@link SzFlag#SZ_FIND_NETWORK_INCLUDE_MATCHING_INFO}
      * </ul>
      * <p>
      * The pre-defined {@link SzFlag} {@link Set} instances that use this
@@ -230,13 +230,12 @@ public enum SzFlagUsageGroup {
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RELATED_RECORD_SUMMARY}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RELATED_RECORD_TYPES}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RELATED_RECORD_DATA}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_FEATURE_STATS}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_FEATURE_ELEMENTS}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_MATCH_KEY_DETAILS}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_INTERNAL_FEATURES}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_FEATURE_STATS}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_FEATURE_ELEMENTS}
+     *      <li>{@link SzFlag#SZ_INCLUDE_MATCH_KEY_DETAILS}
+     *      <li>{@link SzFlag#SZ_INCLUDE_FEATURE_SCORES}
      *      <li>{@link SzFlag#SZ_SEARCH_INCLUDE_STATS}
-     *      <li>{@link SzFlag#SZ_SEARCH_INCLUDE_FEATURE_SCORES}
-     *      <li>{@link SzFlag#SZ_SEARCH_INCLUDE_MATCH_KEY_DETAILS}
      *      <li>{@link SzFlag#SZ_SEARCH_INCLUDE_RESOLVED}
      *      <li>{@link SzFlag#SZ_SEARCH_INCLUDE_POSSIBLY_SAME}
      *      <li>{@link SzFlag#SZ_SEARCH_INCLUDE_POSSIBLY_RELATED}
@@ -294,10 +293,9 @@ public enum SzFlagUsageGroup {
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RELATED_RECORD_SUMMARY}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RELATED_RECORD_TYPES}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RELATED_RECORD_DATA}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_FEATURE_STATS}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_FEATURE_ELEMENTS}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_MATCH_KEY_DETAILS}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_INTERNAL_FEATURES}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_FEATURE_STATS}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_FEATURE_ELEMENTS}
      *      <li>{@link SzFlag#SZ_EXPORT_INCLUDE_MULTI_RECORD_ENTITIES}
      *      <li>{@link SzFlag#SZ_EXPORT_INCLUDE_POSSIBLY_SAME}
      *      <li>{@link SzFlag#SZ_EXPORT_INCLUDE_POSSIBLY_RELATED}
@@ -353,10 +351,10 @@ public enum SzFlagUsageGroup {
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RELATED_RECORD_SUMMARY}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RELATED_RECORD_TYPES}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RELATED_RECORD_DATA}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_FEATURE_STATS}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_FEATURE_ELEMENTS}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_MATCH_KEY_DETAILS}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_INTERNAL_FEATURES}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_FEATURE_STATS}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_FEATURE_ELEMENTS}
+     *      <li>{@link SzFlag#SZ_INCLUDE_MATCH_KEY_DETAILS}
      *      <li>{@link SzFlag#SZ_INCLUDE_FEATURE_SCORES}
      * </ul>
      * <p>
@@ -393,7 +391,7 @@ public enum SzFlagUsageGroup {
      * The {@link SzFlag} instances included in this usage group are:
      * <ul>
      *      <li>{@link SzFlag#SZ_NO_FLAGS}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_MATCH_KEY_DETAILS}
+     *      <li>{@link SzFlag#SZ_INCLUDE_MATCH_KEY_DETAILS}
      *      <li>{@link SzFlag#SZ_INCLUDE_FEATURE_SCORES}
      * </ul>
      * <p>
@@ -433,10 +431,9 @@ public enum SzFlagUsageGroup {
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RECORD_JSON_DATA}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RECORD_UNMAPPED_DATA}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RECORD_FEATURE_IDS}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_INTERNAL_FEATURES}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_FEATURE_STATS}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_FEATURE_ELEMENTS}
-     *      <li>{@link SzFlag#SZ_ENTITY_OPTION_INCLUDE_MATCH_KEY_DETAILS}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_INTERNAL_FEATURES}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_FEATURE_STATS}
+     *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_FEATURE_ELEMENTS}
      * </ul>
      * <p>
      * The pre-defined {@link SzFlag} {@link Set} instances for this group are:
@@ -581,8 +578,7 @@ public enum SzFlagUsageGroup {
                                                  SZ_FIND_PATH,
                                                  SZ_FIND_NETWORK,
                                                  SZ_HOW,
-                                                 SZ_WHY,
-                                                 SZ_VIRTUAL_ENTITY));
+                                                 SZ_WHY));
 
     /**
      * The package-private <b>unmodifiable</b> {@link Set} of {@link SzFlagUsageGroup}

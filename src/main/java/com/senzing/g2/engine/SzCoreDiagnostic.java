@@ -104,6 +104,27 @@ public class SzCoreDiagnostic implements SzDiagnostic {
             return (this.nativeApi == null);
         }
     }
+
+    @Override
+    public String getDatastoreInfo() throws SzException {
+        return this.env.execute(() -> {
+            // declare the buffer for the result
+            StringBuffer sb = new StringBuffer();
+
+            // call the underlying C function
+            int returnCode = this.nativeApi.getDatastoreInfo(sb);
+
+            // handle any error code if there is one
+            if (returnCode != 0) {
+                this.env.handleReturnCode(
+                    returnCode, this.nativeApi,
+                    CLASS_PREFIX + ".getDatastoreInfo()");
+            }
+
+            // return null
+            return sb.toString();
+        });
+    }
     
     @Override
     public String checkDatastorePerformance(int secondsToRun) throws SzException {
@@ -112,7 +133,7 @@ public class SzCoreDiagnostic implements SzDiagnostic {
             StringBuffer sb = new StringBuffer();
 
             // call the underlying C function
-            int returnCode = this.nativeApi.checkDBPerf(secondsToRun, sb);
+            int returnCode = this.nativeApi.checkDatastorePerformance(secondsToRun, sb);
 
             // handle any error code if there is one
             if (returnCode != 0) {
