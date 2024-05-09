@@ -47,12 +47,13 @@ jobs:
         id: jacoco
         uses: madrapps/jacoco-report@v1.6.1
         with:
-          paths: ${{ github.workspace }}/target/site/jacoco/index.html
+          paths: ${{ github.workspace }}/target/site/**/*.html
           token: ${{ secrets.GITHUB_TOKEN }}
           #min-coverage-overall: 80
           #min-coverage-changed-files: 80
           title: Code Coverage
           update-comment: true
+          skip-if-no-changes: true
           pass-emoji: ':green_circle:'
           fail-emoji: ':red_circle:'
 
