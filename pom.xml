@@ -62,7 +62,6 @@
     <url>http://github.com/senzing-garage/g2-sdk-java/tree/main</url>
   </scm>
   <dependencies>
-    
     <dependency>
       <groupId>org.glassfish</groupId>
       <artifactId>javax.json</artifactId>
