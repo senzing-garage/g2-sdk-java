@@ -1,17 +1,17 @@
 /**********************************************************************************
-Copyright Senzing, Inc. 2017, 2019
-The source code for this program is not published or otherwise divested
-of its trade secrets, irrespective of what has been deposited with the U.S.
-Copyright Office.
+ © Copyright Senzing, Inc. 2017-2024
+ The source code for this program is not published or otherwise divested
+ of its trade secrets, irrespective of what has been deposited with the U.S.
+ Copyright Office.
 **********************************************************************************/
 
 package com.senzing.g2.engine;
 
 /**
- * Implements the {@link G2Engine} interface to call the native implementations
+ * Implements the {@link NativeEngine} interface to call the native implementations
  * of each function.
  */
-public class G2JNI implements G2Engine {
+public class G2JNI implements NativeEngine {
   static {
     System.loadLibrary("G2");
   }
@@ -51,12 +51,6 @@ public class G2JNI implements G2Engine {
    * {@inheritDoc}
    */
   @Override
-  public native int purgeRepository();
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public native String stats();
 
   /**
@@ -81,58 +75,13 @@ public class G2JNI implements G2Engine {
    * {@inheritDoc}
    */
   @Override
-  public native int exportConfig(StringBuffer response);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int exportConfig(StringBuffer response, Result<Long> configID);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public native int getActiveConfigID(Result<Long> configID);
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public native int getRepositoryLastModifiedTime(Result<Long> lastModifiedTime);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int addRecord(String dataSourceCode, String recordID, String jsonData, String loadID);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int replaceRecord(String dataSourceCode, String recordID, String jsonData, String loadID);
-  
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int replaceRecordWithInfo(String        dataSourceCode,
-                                          String        recordID,
-                                          String        jsonData,
-                                          String        loadID,
-                                          long          flags,
-                                          StringBuffer  response);
-
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int addRecordWithReturnedRecordID(String        dataSourceCode,
-                                                  StringBuffer  recordID,
-                                                  String        jsonData,
-                                                  String        loadID);
+  public native int addRecord(String dataSourceCode, String recordID, String jsonData);
 
   /**
    * {@inheritDoc}
@@ -141,7 +90,6 @@ public class G2JNI implements G2Engine {
   public native int addRecordWithInfo(String        dataSourceCode,
                                       String        recordID,
                                       String        jsonData,
-                                      String        loadID,
                                       long          flags,
                                       StringBuffer  response);
 
@@ -149,21 +97,8 @@ public class G2JNI implements G2Engine {
    * {@inheritDoc}
    */
   @Override
-  public native int addRecordWithInfoWithReturnedRecordID(
-      String        dataSourceCode,
-      String        jsonData,
-      String        loadID,
-      long          flags,
-      StringBuffer  recordID,
-      StringBuffer  response);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public native int deleteRecord(String dataSourceCode,
-                                 String recordID,
-                                 String loadID);
+                                 String recordID);
   
   /**
    * {@inheritDoc}
@@ -171,7 +106,6 @@ public class G2JNI implements G2Engine {
   @Override
   public native int deleteRecordWithInfo(String       dataSourceCode,
                                          String       recordID,
-                                         String       loadID,
                                          long         flags,
                                          StringBuffer response);
 
@@ -482,37 +416,6 @@ public class G2JNI implements G2Engine {
    * {@inheritDoc}
    */
   @Override
-  public native int whyEntityByRecordID(String        dataSourceCode,
-                                        String        recordID,
-                                        StringBuffer  response);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int whyEntityByRecordID(String        dataSourceCode,
-                                        String        recordID,
-                                        long          flags,
-                                        StringBuffer  response);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int whyEntityByEntityID(long entityID, StringBuffer response);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int whyEntityByEntityID(long          entityID,
-                                        long          flags,
-                                        StringBuffer  response);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public native int whyRecords(String       dataSourceCode1,
                                String       recordID1,
                                String       dataSourceCode2,
@@ -625,14 +528,13 @@ public class G2JNI implements G2Engine {
    * {@inheritDoc}
    */
   @Override
-  public native int processRedoRecord(StringBuffer record);
+  public native int processRedoRecord(String redoRecord);
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public native int processRedoRecordWithInfo(long          flags,
-                                              StringBuffer  record,
+  public native int processRedoRecordWithInfo(String redoRecord,
                                               StringBuffer  response);
 
   /**
@@ -647,24 +549,5 @@ public class G2JNI implements G2Engine {
   @Override
   public native long countRedoRecords();
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int process(String record);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int process(String record, StringBuffer response);
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int processWithInfo(String        record,
-                                    long          flags,
-                                    StringBuffer  response);
 }
 

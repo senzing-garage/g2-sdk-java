@@ -1,11 +1,17 @@
+/**********************************************************************************
+ © Copyright Senzing, Inc. 2021
+ The source code for this program is not published or otherwise divested
+ of its trade secrets, irrespective of what has been deposited with the U.S.
+ Copyright Office.
+**********************************************************************************/
+
 package com.senzing.g2.engine;
 
 /**
- * Implements the {@link G2Config} interface to call the native implementations
+ * Implements the {@link NativeConfig} interface to call the native implementations
  * of the functions.
  */
-public class G2ConfigJNI implements G2Config
-{
+class G2ConfigJNI implements NativeConfig {
   static {
     System.loadLibrary("G2");
   }
@@ -14,8 +20,8 @@ public class G2ConfigJNI implements G2Config
    * {@inheritDoc}
    */
   @Override
-  public native int init(String   moduleName,
-                         String   iniParams,
+  public native int init(String  instanceName,
+                         String  settings,
                          boolean verboseLogging);
 
   /**
@@ -59,8 +65,8 @@ public class G2ConfigJNI implements G2Config
    */
   @Override
   public native int addDataSource(long          configHandle,
-                                  String        inputJson,
-                                  StringBuffer  response);
+                           String        inputJson,
+                           StringBuffer  response);
 
   /**
    * {@inheritDoc}
@@ -71,19 +77,16 @@ public class G2ConfigJNI implements G2Config
   /**
    * {@inheritDoc}
    */
-  @Override
   public native String getLastException();
 
   /**
    * {@inheritDoc}
    */
-  @Override
   public native int getLastExceptionCode();
 
   /**
    * {@inheritDoc}
    */
-  @Override
   public native void clearLastException();
 }
 

@@ -1,10 +1,17 @@
+/**********************************************************************************
+ © Copyright Senzing, Inc. 2021
+ The source code for this program is not published or otherwise divested
+ of its trade secrets, irrespective of what has been deposited with the U.S.
+ Copyright Office.
+**********************************************************************************/
+
 package com.senzing.g2.engine;
 
 /**
- * Implements the {@link G2Product} interface to call the native
+ * Implements the {@link NativeProduct} interface to call the native
  * implementations of each function.
  */
-public class G2ProductJNI implements G2Product
+public class G2ProductJNI implements NativeProduct
 {
 	static {
 		System.loadLibrary("G2");
