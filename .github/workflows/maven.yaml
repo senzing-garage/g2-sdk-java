@@ -40,7 +40,7 @@ jobs:
         run: |
           # temp skip checkstyle and spotbugs to verify coverage
           mvn clean install -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dcheckstyle.skip -Dspotbugs.skip -Dmaven.test.failure.ignore=true
-          ls /target
+          ls ${{ github.workspace }}/target
           grep -Ril index.html target
 
       - name: Jacoco Report to PR
