@@ -34,7 +34,7 @@ jobs:
       - name: install Senzing API
         uses: senzing-factory/github-action-install-senzing-api@v3
         with:
-          senzingapi-runtime-version: ${{ matrix.senzingapi-runtime-version }}      
+          senzingapi-runtime-version: ${{ matrix.senzingapi-runtime-version }}   
 
       - name: Build with Maven
         run: |
@@ -43,12 +43,12 @@ jobs:
           mvn clean install -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Popenclover -Dsenzing.support.dir="/opt/senzing/data"
           ls ${{ github.workspace }}/target
           ls ${{ github.workspace }}/target/site/clover
-          grep -Ril *.xml target
+          grep -R *.xml target
 
       - uses: danhunsaker/clover-reporter-action@v0.2.17-clover
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          clover-file: ${{ github.workspace }}/target/site/clover/clover.xml
+          clover-file: ./target/site/clover/clover.xml
 
       - name: Fail PR if overall coverage is less than 80%
         if: ${{ steps.jacoco.outputs.coverage-overall < 80.0 }}
