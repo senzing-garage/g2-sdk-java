@@ -45,14 +45,12 @@ class Utilities {
         int escapeCount = 0;
         for (int index = 0; index < string.length(); index++) {
             char c = string.charAt(index);
-            // CLOVER:OFF
             escapeCount += switch (c) {
                 case '\b','\f','\n','\r','\t','"','\\':
                     yield 1;
                 default:
                     yield (c < ' ') ? 6 : 0;
             };
-            // CLOVER:ON
         }
         if (escapeCount == 0) return "\"" + string + "\"";
         StringBuilder sb = new StringBuilder(string.length() + escapeCount + 2);
