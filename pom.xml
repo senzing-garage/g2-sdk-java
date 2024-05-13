@@ -274,6 +274,9 @@
             <groupId>org.openclover</groupId>
             <artifactId>clover-maven-plugin</artifactId> <!-- maven-clover2-plugin for version <= 4.0.6 -->
             <version>4.5.2</version>
+            <configuration>
+              <targetPercentage>80%</targetPercentage>
+            </configuration>
             <executions>
               <execution>
                 <id>clover</id>

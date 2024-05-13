@@ -1,4 +1,4 @@
-name: maven jacoco
+name: maven openclover
 
 on:
   push:
