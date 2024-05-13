@@ -1,24 +1,22 @@
 package com.senzing.g2.engine;
 
-import com.senzing.cmdline.*;
-import com.senzing.g2.engine.*;
-import com.senzing.nativeapi.InstallLocations;
-import com.senzing.io.RecordReader;
-import com.senzing.util.JsonUtilities;
+import static com.senzing.cmdline.CommandLineUtilities.*;
+import static com.senzing.g2.engine.LoggingUtilities.*;
+import static com.senzing.g2.engine.RepoManagerOption.*;
+import static com.senzing.io.IOUtilities.*;
+import static com.senzing.io.RecordReader.Format.*;
+import static com.senzing.util.OperatingSystemFamily.*;
+import static java.nio.file.StandardCopyOption.*;
 
-import javax.json.*;
+import com.senzing.cmdline.*;
+import com.senzing.io.RecordReader;
+import com.senzing.nativeapi.InstallLocations;
+import com.senzing.util.JsonUtilities;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-
-import static com.senzing.util.OperatingSystemFamily.*;
-import static java.nio.file.StandardCopyOption.*;
-import static com.senzing.io.IOUtilities.*;
-import static com.senzing.cmdline.CommandLineUtilities.*;
-import static com.senzing.g2.engine.LoggingUtilities.*;
-import static com.senzing.g2.engine.RepoManagerOption.*;
-import static com.senzing.io.RecordReader.Format.*;
+import javax.json.*;
 
 public class RepositoryManager {
   private static final File INSTALL_DIR;
@@ -41,8 +39,7 @@ public class RepositoryManager {
 
   private static final Set<String> EXCLUDED_TEMPLATE_FILES;
 
-  private static final ThreadLocal<String> THREAD_MODULE_NAME
-      = new ThreadLocal<>();
+  private static final ThreadLocal<String> THREAD_MODULE_NAME = new ThreadLocal<>();
 
   private static String baseInitializedWith = null;
   private static String engineInitializedWith = null;
@@ -67,28 +64,28 @@ public class RepositoryManager {
       InstallLocations locations = InstallLocations.findLocations();
 
       if (locations != null) {
-        INSTALL_DIR   = locations.getInstallDirectory();
-        CONFIG_DIR    = locations.getConfigDirectory();
-        SUPPORT_DIR   = locations.getSupportDirectory();
-        RESOURCE_DIR  = locations.getResourceDirectory();
+        INSTALL_DIR = locations.getInstallDirectory();
+        CONFIG_DIR = locations.getConfigDirectory();
+        SUPPORT_DIR = locations.getSupportDirectory();
+        RESOURCE_DIR = locations.getResourceDirectory();
         TEMPLATES_DIR = locations.getTemplatesDirectory();
       } else {
-        INSTALL_DIR   = null;
-        CONFIG_DIR    = null;
-        SUPPORT_DIR   = null;
-        RESOURCE_DIR  = null;
+        INSTALL_DIR = null;
+        CONFIG_DIR = null;
+        SUPPORT_DIR = null;
+        RESOURCE_DIR = null;
         TEMPLATES_DIR = null;
       }
 
-      NativeDiagnostic  diagnosticApi = null;
-      NativeEngine      engineApi     = null;
-      NativeConfig      configApi     = null;
-      NativeConfigMgr   configMgrApi  = null;
+      NativeDiagnostic diagnosticApi = null;
+      NativeEngine engineApi = null;
+      NativeConfig configApi = null;
+      NativeConfigMgr configMgrApi = null;
       try {
-        engineApi       = NativeApiFactory.createEngineApi();
-        diagnosticApi   = NativeApiFactory.createDiagnosticApi();
-        configApi       = NativeApiFactory.createConfigApi();
-        configMgrApi    = NativeApiFactory.createConfigMgrApi();
+        engineApi = NativeApiFactory.createEngineApi();
+        diagnosticApi = NativeApiFactory.createDiagnosticApi();
+        configApi = NativeApiFactory.createConfigApi();
+        configMgrApi = NativeApiFactory.createConfigMgrApi();
 
       } catch (Exception e) {
         File libPath = new File(INSTALL_DIR, "lib");
@@ -97,20 +94,17 @@ public class RepositoryManager {
         switch (RUNTIME_OS_FAMILY) {
           case WINDOWS:
             System.err.println("Failed to load native G2.dll library.");
-            System.err.println(
-                "Check PATH environment variable for " + libPath);
+            System.err.println("Check PATH environment variable for " + libPath);
             break;
           case MAC_OS:
             System.err.println("Failed to load native libG2.so library");
-            System.err.println(
-                "Check DYLD_LIBRARY_PATH environment variable for: ");
+            System.err.println("Check DYLD_LIBRARY_PATH environment variable for: ");
             System.err.println("     - " + libPath);
             System.err.println("     - " + (new File(libPath, "macos")));
             break;
           case UNIX:
             System.err.println("Failed to load native libG2.so library");
-            System.err.println(
-                "Check LD_LIBRARY_PATH environment variable for: ");
+            System.err.println("Check LD_LIBRARY_PATH environment variable for: ");
             System.err.println("     - " + libPath);
             System.err.println("     - " + (new File(libPath, "debian")));
             break;
@@ -120,10 +114,10 @@ public class RepositoryManager {
         throw new ExceptionInInitializerError(e);
 
       } finally {
-        ENGINE_API      = engineApi;
-        DIAGNOSTIC_API  = diagnosticApi;
-        CONFIG_API      = configApi;
-        CONFIG_MGR_API  = configMgrApi;
+        ENGINE_API = engineApi;
+        DIAGNOSTIC_API = diagnosticApi;
+        CONFIG_API = configApi;
+        CONFIG_MGR_API = configMgrApi;
       }
 
     } catch (Exception e) {
@@ -139,18 +133,16 @@ public class RepositoryManager {
   // private static final String PATH_TO_JAR;
 
   static {
-    String jarBaseUrl   = null;
-    String jarFileName  = null;
+    String jarBaseUrl = null;
+    String jarFileName = null;
 
     try {
       Class<RepositoryManager> cls = RepositoryManager.class;
 
-      String url = cls.getResource(
-          cls.getSimpleName() + ".class").toString();
+      String url = cls.getResource(cls.getSimpleName() + ".class").toString();
 
       if (url.indexOf(".jar") >= 0) {
-        int index = url.lastIndexOf(
-            cls.getName().replace(".", "/") + ".class");
+        int index = url.lastIndexOf(cls.getName().replace(".", "/") + ".class");
         jarBaseUrl = url.substring(0, index);
 
         index = jarBaseUrl.lastIndexOf("!");
@@ -173,30 +165,29 @@ public class RepositoryManager {
       throw new ExceptionInInitializerError(e);
 
     } finally {
-      JAR_BASE_URL  = jarBaseUrl;
+      JAR_BASE_URL = jarBaseUrl;
       JAR_FILE_NAME = jarFileName;
     }
   }
 
   /**
-   * Copies the config template files from the template directory to the
-   * specified configuration directory (creating the directory if necessary).
+   * Copies the config template files from the template directory to the specified configuration
+   * directory (creating the directory if necessary).
    *
    * @param templateDir The template directory to get the templates from.
    * @param configDir The config directory to copy the files to.
    * @throws IOException If an I/O failure occurs.
    */
-  public static void copyConfigFiles(File   templateDir,
-                                     File   configDir)
-    throws IOException
-  {
+  public static void copyConfigFiles(File templateDir, File configDir) throws IOException {
     if (templateDir != null) {
-      File[] templateFiles = templateDir.listFiles(
-          f -> !f.getName().endsWith(".template") && !f.isDirectory()
-              && (!EXCLUDED_TEMPLATE_FILES.contains(f.getName().toLowerCase())));
+      File[] templateFiles =
+          templateDir.listFiles(
+              f ->
+                  !f.getName().endsWith(".template")
+                      && !f.isDirectory()
+                      && (!EXCLUDED_TEMPLATE_FILES.contains(f.getName().toLowerCase())));
 
-      if (templateFiles.length > 0)
-      {
+      if (templateFiles.length > 0) {
         if (!configDir.exists()) {
           configDir.mkdirs();
         }
@@ -208,20 +199,19 @@ public class RepositoryManager {
     }
   }
 
-  /**
-   * Describes a repository configuration.
-   *
-   */
+  /** Describes a repository configuration. */
   public static class Configuration {
     private long configId;
     private JsonObject configJson;
+
     public Configuration(long configId, JsonObject configJson) {
-      this.configId   = configId;
+      this.configId = configId;
       this.configJson = configJson;
     }
 
     /**
      * Returns the configuration ID.
+     *
      * @return The configuration ID.
      */
     public long getConfigId() {
@@ -230,6 +220,7 @@ public class RepositoryManager {
 
     /**
      * Returns the configuration JSON as a {@link JsonObject}.
+     *
      * @return The {@link JsonObject} describing the configuration.
      */
     public JsonObject getConfigJson() {
@@ -238,22 +229,17 @@ public class RepositoryManager {
   }
 
   /**
-   * Parses the command line arguments and returns a {@link Map} of those
-   * arguments.
+   * Parses the command line arguments and returns a {@link Map} of those arguments.
    *
    * @param args The arguments to parse.
-   * @param deprecationWarnings The {@link List} to populate with any
-   *                            deprecation warnings that might be generated,
-   *                            or <code>null</code> if the caller is not
-   *                            interested.
+   * @param deprecationWarnings The {@link List} to populate with any deprecation warnings that
+   *     might be generated, or <code>null</code> if the caller is not interested.
    * @return The {@link Map} of options to their values.
    * @throws CommandLineException If command line arguments are invalid.
    */
   private static Map<CommandLineOption, Object> parseCommandLine(
-      String[]                      args,
-      List<DeprecatedOptionWarning> deprecationWarnings)
-      throws CommandLineException
-  {
+      String[] args, List<DeprecatedOptionWarning> deprecationWarnings)
+      throws CommandLineException {
     Map<CommandLineOption, CommandLineValue> optionValues =
         CommandLineUtilities.parseCommandLine(
             RepoManagerOption.class,
@@ -271,30 +257,26 @@ public class RepositoryManager {
     return result;
   }
 
-  /**
-   * Exits and prints the message associated with the specified exception.
-   */
+  /** Exits and prints the message associated with the specified exception. */
   private static void exitOnError(Throwable t) {
     System.err.println(t.getMessage());
     System.exit(1);
   }
 
   /**
-   * Use this method in conjunction with {@link #clearThreadModuleName()} to
-   * provide a specific module name for the repository manager to use when
-   * initializing the native API's.
+   * Use this method in conjunction with {@link #clearThreadModuleName()} to provide a specific
+   * module name for the repository manager to use when initializing the native API's.
    *
-   * @param moduleName The module name to initialize with, or <tt>null</tt>
-   *                   to do the equivalent of clearing the name.
-   *
+   * @param moduleName The module name to initialize with, or <tt>null</tt> to do the equivalent of
+   *     clearing the name.
    */
   public static void setThreadModuleName(String moduleName) {
     RepositoryManager.THREAD_MODULE_NAME.set(moduleName);
   }
 
   /**
-   * Clears any previously set thread module name.  This method should be called
-   * in a "finally" block.
+   * Clears any previously set thread module name. This method should be called in a "finally"
+   * block.
    */
   public static void clearThreadModuleName() {
     RepositoryManager.setThreadModuleName(null);
@@ -310,8 +292,7 @@ public class RepositoryManager {
     pw.println();
     Class<RepositoryManager> cls = RepositoryManager.class;
     if (checkClassIsMain(cls)) {
-      pw.println("USAGE: java -cp " + JAR_FILE_NAME + " "
-                 + cls.getName() + " <options>");
+      pw.println("USAGE: java -cp " + JAR_FILE_NAME + " " + cls.getName() + " <options>");
     } else {
       pw.println("USAGE: java -jar " + JAR_FILE_NAME + " --repomgr <options>");
     }
@@ -320,46 +301,46 @@ public class RepositoryManager {
       pw.flush();
       return sw.toString();
     }
-    pw.print(multilineFormat(
-        "<options> includes: ",
-        "   --help",
-        "        Should be the first and only option if provided.",
-        "        Displays a complete usage message describing all options.",
-        "",
-        "   --create-repo <repository-directory-path>",
-        "        Creates a new Senzing repository at the specified path.",
-        "",
-        "   --purge-repo",
-        "        Purges the Senzing repository at the specified path.",
-        "",
-        "   --config-sources <data-source-1> [data-source-2 ... data-source-n]",
-        "        Configures the specified data sources for the repository",
-        "        specified by the -repo option.",
-        "",
-        "   --load-file <source-file>",
-        "        Loads the records in the specified source CSV or JSON file.",
-        "        Records are loaded to the repository specified by the -repo option.",
-        "        Use the -dataSource option to specify or override a data source for",
-        "        the records.",
-        "",
-        "   --add-record <json-record>",
-        "        Loads the specified JSON record provided on the command line.",
-        "        The record is loaded to the repository specified by the -repo option.",
-        "        Use the -dataSource option to specify or override the data source for ",
-        "        the record.",
-        "",
-        "   --repo <repository-directory-path>",
-        "        Specifies the directory path to the repository to use when performing",
-        "        other operations such as:",
-        formatUsageOptionsList(
-            "           ".length(),
-            PURGE_REPO, CONFIG_SOURCES, LOAD_FILE, ADD_RECORD),
-        "   --data-source <data-source>",
-        "        Specifies a data source to use when loading records.  If the records",
-        "        already have a DATA_SOURCE property then this will override that value.",
-        "",
-        "   --verbose",
-        "        If provided then Senzing will be initialized in verbose mode"));
+    pw.print(
+        multilineFormat(
+            "<options> includes: ",
+            "   --help",
+            "        Should be the first and only option if provided.",
+            "        Displays a complete usage message describing all options.",
+            "",
+            "   --create-repo <repository-directory-path>",
+            "        Creates a new Senzing repository at the specified path.",
+            "",
+            "   --purge-repo",
+            "        Purges the Senzing repository at the specified path.",
+            "",
+            "   --config-sources <data-source-1> [data-source-2 ... data-source-n]",
+            "        Configures the specified data sources for the repository",
+            "        specified by the -repo option.",
+            "",
+            "   --load-file <source-file>",
+            "        Loads the records in the specified source CSV or JSON file.",
+            "        Records are loaded to the repository specified by the -repo option.",
+            "        Use the -dataSource option to specify or override a data source for",
+            "        the records.",
+            "",
+            "   --add-record <json-record>",
+            "        Loads the specified JSON record provided on the command line.",
+            "        The record is loaded to the repository specified by the -repo option.",
+            "        Use the -dataSource option to specify or override the data source for ",
+            "        the record.",
+            "",
+            "   --repo <repository-directory-path>",
+            "        Specifies the directory path to the repository to use when performing",
+            "        other operations such as:",
+            formatUsageOptionsList(
+                "           ".length(), PURGE_REPO, CONFIG_SOURCES, LOAD_FILE, ADD_RECORD),
+            "   --data-source <data-source>",
+            "        Specifies a data source to use when loading records.  If the records",
+            "        already have a DATA_SOURCE property then this will override that value.",
+            "",
+            "   --verbose",
+            "        If provided then Senzing will be initialized in verbose mode"));
     pw.flush();
     sw.flush();
 
@@ -377,7 +358,7 @@ public class RepositoryManager {
     try {
       options = parseCommandLine(args, warnings);
 
-      for (DeprecatedOptionWarning warning: warnings) {
+      for (DeprecatedOptionWarning warning : warnings) {
         System.out.println(warning);
         System.out.println();
       }
@@ -389,8 +370,7 @@ public class RepositoryManager {
       System.exit(1);
 
     } catch (Exception e) {
-      if (!isLastLoggedException(e))
-      {
+      if (!isLastLoggedException(e)) {
         e.printStackTrace();
       }
       System.exit(1);
@@ -452,18 +432,16 @@ public class RepositoryManager {
    * Creates a new Senzing SQLite repository from the default repository data.
    *
    * @param directory The directory at which to create the repository.
-   *
    * @return The {@link Configuration} describing the initial configuration.
    */
   public static Configuration createRepo(File directory) {
     return createRepo(directory, false);
   }
 
-    /**
+  /**
    * Creates a new Senzing SQLite repository from the default repository data.
    *
    * @param directory The directory at which to create the repository.
-   *
    * @return The {@link Configuration} describing the initial configuration.
    */
   public static Configuration createRepo(File directory, boolean silent) {
@@ -474,16 +452,11 @@ public class RepositoryManager {
    * Creates a new Senzing SQLite repository from the default repository data.
    *
    * @param directory The directory at which to create the repository.
-   *
-   * @param excludeConfig <code>true</code> if the default configuration
-   *                      should be excluded from the repository, and
-   *                      <code>false</code> if it should be included.
+   * @param excludeConfig <code>true</code> if the default configuration should be excluded from the
+   *     repository, and <code>false</code> if it should be included.
    * @return The {@link Configuration} describing the initial configuration.
    */
-  public static Configuration createRepo(File directory, 
-                                         boolean excludeConfig, 
-                                         boolean silent) 
-  {
+  public static Configuration createRepo(File directory, boolean excludeConfig, boolean silent) {
     JsonObject resultConfig = null;
     Long resultConfigId = null;
     try {
@@ -499,7 +472,9 @@ public class RepositoryManager {
       if (directory.listFiles().length > 0) {
         throw new IllegalArgumentException(
             "Repository directory exists and is not empty: "
-                + directory + " / " + directory.listFiles()[0]);
+                + directory
+                + " / "
+                + directory.listFiles()[0]);
       }
     }
     try {
@@ -508,9 +483,10 @@ public class RepositoryManager {
       copyConfigFiles(TEMPLATES_DIR, repoConfigDir);
 
       // find the template DB file
-      File templateDB = (TEMPLATES_DIR != null)
-          ? new File(TEMPLATES_DIR, "G2C.db")
-          : new File(SUPPORT_DIR, "G2C.db");
+      File templateDB =
+          (TEMPLATES_DIR != null)
+              ? new File(TEMPLATES_DIR, "G2C.db")
+              : new File(SUPPORT_DIR, "G2C.db");
       if (!templateDB.exists()) {
         templateDB = new File(SUPPORT_DIR, "G2C.db");
       }
@@ -586,12 +562,11 @@ public class RepositoryManager {
       subBuilder.add("DB_1", sqlitePrefix + "G2_LIB_FEAT.db");
       builder.add("C2", subBuilder);
 
-      JsonObject  initJson      = builder.build();
-      String      initJsonText  = JsonUtilities.toJsonText(initJson, true);
+      JsonObject initJson = builder.build();
+      String initJsonText = JsonUtilities.toJsonText(initJson, true);
 
-      try (FileOutputStream   fos = new FileOutputStream(jsonInitFile);
-           OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8"))
-      {
+      try (FileOutputStream fos = new FileOutputStream(jsonInitFile);
+          OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8")) {
         osw.write(initJsonText);
         osw.flush();
       }
@@ -621,20 +596,16 @@ public class RepositoryManager {
           resultConfig = JsonUtilities.parseJsonObject(configJsonText);
 
           Result<Long> result = new Result<>();
-          returnCode = CONFIG_MGR_API.addConfig(configJsonText,
-                                                "Initial Config",
-                                                result);
+          returnCode = CONFIG_MGR_API.addConfig(configJsonText, "Initial Config", result);
           if (returnCode != 0) {
-            String msg = logError("NativeConfigMgr.addConfig()",
-                                  CONFIG_MGR_API);
+            String msg = logError("NativeConfigMgr.addConfig()", CONFIG_MGR_API);
             throw new IllegalStateException(msg);
           }
 
           resultConfigId = result.getValue();
           returnCode = CONFIG_MGR_API.setDefaultConfigID(resultConfigId);
           if (returnCode != 0) {
-            String msg = logError("NativeConfigMgr.setDefaultConfigID()",
-                                  CONFIG_MGR_API);
+            String msg = logError("NativeConfigMgr.setDefaultConfigID()", CONFIG_MGR_API);
             throw new IllegalStateException(msg);
           }
 
@@ -655,9 +626,7 @@ public class RepositoryManager {
     return new Configuration(resultConfigId, resultConfig);
   }
 
-  private static void copyFile(File source, File target)
-    throws IOException
-  {
+  private static void copyFile(File source, File target) throws IOException {
     Files.copy(source.toPath(), target.toPath(), COPY_ATTRIBUTES);
   }
 
@@ -671,17 +640,14 @@ public class RepositoryManager {
     } catch (IOException e) {
       System.err.println("Failed to delete directory: " + directory);
     }
-
   }
 
-  private static synchronized void initBaseApis(File repository, boolean verbose)
-  {
+  private static synchronized void initBaseApis(File repository, boolean verbose) {
     try {
       String moduleName = THREAD_MODULE_NAME.get();
       if (moduleName == null) moduleName = "G2 Repository Manager";
       String initializer = verbose + ":" + repository.getCanonicalPath();
-      if (baseInitializedWith == null || !baseInitializedWith.equals(initializer))
-      {
+      if (baseInitializedWith == null || !baseInitializedWith.equals(initializer)) {
         if (baseInitializedWith != null) {
           destroyBaseApis();
         }
@@ -714,9 +680,7 @@ public class RepositoryManager {
       initBaseApis(repository, verbose);
 
       String initializer = verbose + ":" + repository.getCanonicalPath();
-      if (engineInitializedWith == null
-          || !engineInitializedWith.equals(initializer))
-      {
+      if (engineInitializedWith == null || !engineInitializedWith.equals(initializer)) {
         if (engineInitializedWith != null) {
           destroyApis();
         }
@@ -744,7 +708,6 @@ public class RepositoryManager {
     }
   }
 
-
   private static synchronized void destroyApis() {
     if (engineInitializedWith != null) {
       ENGINE_API.destroy();
@@ -754,8 +717,8 @@ public class RepositoryManager {
   }
 
   /**
-   * Shuts down the repository manager after use to ensure the native
-   * Senzing API destroy() functions are called.
+   * Shuts down the repository manager after use to ensure the native Senzing API destroy()
+   * functions are called.
    */
   public static void conclude() {
     destroyApis();
@@ -845,9 +808,7 @@ public class RepositoryManager {
    * Purges the repository that resides at the specified repository directory.
    *
    * @param repository The directory for the repository.
-   *
-   * @param verbose <tt>true</tt> for verbose API logging, otherwise
-   *                <tt>false</tt>
+   * @param verbose <tt>true</tt> for verbose API logging, otherwise <tt>false</tt>
    */
   public static void purgeRepo(File repository, boolean verbose) {
     purgeRepo(repository, verbose, false);
@@ -857,15 +818,11 @@ public class RepositoryManager {
    * Purges the repository that resides at the specified repository directory.
    *
    * @param repository The directory for the repository.
-   *
-   * @param verbose <tt>true</tt> for verbose API logging, otherwise
-   *                <tt>false</tt>
-   *
-   * @param silent <tt>true</tt> if no feedback should be given to the user
-   *               upon completion, otherwise <tt>false</tt>
+   * @param verbose <tt>true</tt> for verbose API logging, otherwise <tt>false</tt>
+   * @param silent <tt>true</tt> if no feedback should be given to the user upon completion,
+   *     otherwise <tt>false</tt>
    */
-  public static void purgeRepo(File repository, boolean verbose, boolean silent)
-  {
+  public static void purgeRepo(File repository, boolean verbose, boolean silent) {
     initApis(repository, verbose);
     int result = DIAGNOSTIC_API.purgeRepository();
     if (result != 0) {
@@ -878,58 +835,40 @@ public class RepositoryManager {
   }
 
   /**
-   * Loads a single CSV or JSON file to the repository -- optionally setting
-   * the data source for all the records.  NOTE: if the records in the file do
-   * not have a defined DATA_SOURCE then the specified data source is required.
+   * Loads a single CSV or JSON file to the repository -- optionally setting the data source for all
+   * the records. NOTE: if the records in the file do not have a defined DATA_SOURCE then the
+   * specified data source is required.
    *
    * @param repository The directory for the repository.
    * @param sourceFile The source file to load (JSON or CSV).
    * @param dataSource The data source to use for loading the records.
    * @return <tt>true</tt> if successful, otherwise <tt>false</tt>
    */
-  public static boolean loadFile(File   repository,
-                                 File   sourceFile,
-                                 String dataSource)
-  {
-    return loadFile(repository,
-                    false,
-                    sourceFile,
-                    dataSource,
-                    null,
-                    null,
-                    false);
+  public static boolean loadFile(File repository, File sourceFile, String dataSource) {
+    return loadFile(repository, false, sourceFile, dataSource, null, null, false);
   }
 
   /**
-   * Loads a single CSV or JSON file to the repository -- optionally setting
-   * the data source for all the records.  NOTE: if the records in the file do
-   * not have a defined DATA_SOURCE then the specified data source is required.
+   * Loads a single CSV or JSON file to the repository -- optionally setting the data source for all
+   * the records. NOTE: if the records in the file do not have a defined DATA_SOURCE then the
+   * specified data source is required.
    *
    * @param repository The directory for the repository.
    * @param sourceFile The source file to load (JSON or CSV).
    * @param dataSource The data source to use for loading the records.
-   * @param silent <tt>true</tt> if no feedback should be given to the user
-   *               upon completion, otherwise <tt>false</tt>
+   * @param silent <tt>true</tt> if no feedback should be given to the user upon completion,
+   *     otherwise <tt>false</tt>
    * @return <tt>true</tt> if successful, otherwise <tt>false</tt>
    */
-  public static boolean loadFile(File     repository,
-                                 File     sourceFile,
-                                 String   dataSource,
-                                 boolean  silent)
-  {
-    return loadFile(repository,
-                    false,
-                    sourceFile,
-                    dataSource,
-                    null,
-                    null,
-                    silent);
+  public static boolean loadFile(
+      File repository, File sourceFile, String dataSource, boolean silent) {
+    return loadFile(repository, false, sourceFile, dataSource, null, null, silent);
   }
 
   /**
-   * Loads a single CSV or JSON file to the repository -- optionally setting
-   * the data source for all the records.  NOTE: if the records in the file do
-   * not have a defined DATA_SOURCE then the specified data source is required.
+   * Loads a single CSV or JSON file to the repository -- optionally setting the data source for all
+   * the records. NOTE: if the records in the file do not have a defined DATA_SOURCE then the
+   * specified data source is required.
    *
    * @param repository The directory for the repository.
    * @param sourceFile The source file to load (JSON or CSV).
@@ -938,167 +877,120 @@ public class RepositoryManager {
    * @param failedCount The output parameter for the number that failed to load.
    * @return <tt>true</tt> if successful, otherwise <tt>false</tt>
    */
-  public static boolean loadFile(File             repository,
-                                 File             sourceFile,
-                                 String           dataSource,
-                                 Result<Integer>  loadedCount,
-                                 Result<Integer>  failedCount)
-  {
-    return loadFile(repository,
-                    false,
-                    sourceFile,
-                    dataSource,
-                    loadedCount,
-                    failedCount,
-                    false);
+  public static boolean loadFile(
+      File repository,
+      File sourceFile,
+      String dataSource,
+      Result<Integer> loadedCount,
+      Result<Integer> failedCount) {
+    return loadFile(repository, false, sourceFile, dataSource, loadedCount, failedCount, false);
   }
 
   /**
-   * Loads a single CSV or JSON file to the repository -- optionally setting
-   * the data source for all the records.  NOTE: if the records in the file do
-   * not have a defined DATA_SOURCE then the specified data source is required.
+   * Loads a single CSV or JSON file to the repository -- optionally setting the data source for all
+   * the records. NOTE: if the records in the file do not have a defined DATA_SOURCE then the
+   * specified data source is required.
    *
    * @param repository The directory for the repository.
    * @param sourceFile The source file to load (JSON or CSV).
    * @param dataSource The data source to use for loading the records.
    * @param loadedCount The output parameter for the number successfully loaded.
    * @param failedCount The output parameter for the number that failed to load.
-   * @param silent <tt>true</tt> if no feedback should be given to the user
-   *               upon completion, otherwise <tt>false</tt>
+   * @param silent <tt>true</tt> if no feedback should be given to the user upon completion,
+   *     otherwise <tt>false</tt>
    * @return <tt>true</tt> if successful, otherwise <tt>false</tt>
    */
-  public static boolean loadFile(File             repository,
-                                 File             sourceFile,
-                                 String           dataSource,
-                                 Result<Integer>  loadedCount,
-                                 Result<Integer>  failedCount,
-                                 boolean          silent)
-  {
-    return loadFile(repository,
-                    false,
-                    sourceFile,
-                    dataSource,
-                    loadedCount,
-                    failedCount,
-                    silent);
+  public static boolean loadFile(
+      File repository,
+      File sourceFile,
+      String dataSource,
+      Result<Integer> loadedCount,
+      Result<Integer> failedCount,
+      boolean silent) {
+    return loadFile(repository, false, sourceFile, dataSource, loadedCount, failedCount, silent);
   }
 
   /**
-   * Loads a single CSV or JSON file to the repository -- optionally setting
-   * the data source for all the records.  NOTE: if the records in the file do
-   * not have a defined DATA_SOURCE then the specified data source is required.
+   * Loads a single CSV or JSON file to the repository -- optionally setting the data source for all
+   * the records. NOTE: if the records in the file do not have a defined DATA_SOURCE then the
+   * specified data source is required.
    *
    * @param repository The directory for the repository.
-   * @param verbose <tt>true</tt> for verbose API logging, otherwise
-   *                <tt>false</tt>
+   * @param verbose <tt>true</tt> for verbose API logging, otherwise <tt>false</tt>
    * @param sourceFile The source file to load (JSON or CSV).
    * @param dataSource The data source to use for loading the records.
-   *
    * @return <tt>true</tt> if successful, otherwise <tt>false</tt>
    */
-  public static boolean loadFile(File     repository,
-                                 boolean  verbose,
-                                 File     sourceFile,
-                                 String   dataSource)
-  {
-    return loadFile(repository,
-                    verbose,
-                    sourceFile,
-                    dataSource,
-                    null,
-                    null,
-                    false);
+  public static boolean loadFile(
+      File repository, boolean verbose, File sourceFile, String dataSource) {
+    return loadFile(repository, verbose, sourceFile, dataSource, null, null, false);
   }
 
   /**
-   * Loads a single CSV or JSON file to the repository -- optionally setting
-   * the data source for all the records.  NOTE: if the records in the file do
-   * not have a defined DATA_SOURCE then the specified data source is required.
+   * Loads a single CSV or JSON file to the repository -- optionally setting the data source for all
+   * the records. NOTE: if the records in the file do not have a defined DATA_SOURCE then the
+   * specified data source is required.
    *
    * @param repository The directory for the repository.
-   * @param verbose <tt>true</tt> for verbose API logging, otherwise
-   *                <tt>false</tt>
+   * @param verbose <tt>true</tt> for verbose API logging, otherwise <tt>false</tt>
    * @param sourceFile The source file to load (JSON or CSV).
    * @param dataSource The data source to use for loading the records.
-   * @param silent <tt>true</tt> if no feedback should be given to the user
-   *               upon completion, otherwise <tt>false</tt>
-   *
+   * @param silent <tt>true</tt> if no feedback should be given to the user upon completion,
+   *     otherwise <tt>false</tt>
    * @return <tt>true</tt> if successful, otherwise <tt>false</tt>
    */
-  public static boolean loadFile(File     repository,
-                                 boolean  verbose,
-                                 File     sourceFile,
-                                 String   dataSource,
-                                 boolean  silent)
-  {
-    return loadFile(repository,
-                    verbose,
-                    sourceFile,
-                    dataSource,
-                    null,
-                    null,
-                    silent);
+  public static boolean loadFile(
+      File repository, boolean verbose, File sourceFile, String dataSource, boolean silent) {
+    return loadFile(repository, verbose, sourceFile, dataSource, null, null, silent);
   }
 
   /**
-   * Loads a single CSV or JSON file to the repository -- optionally setting
-   * the data source for all the records.  NOTE: if the records in the file do
-   * not have a defined DATA_SOURCE then the specified data source is required.
+   * Loads a single CSV or JSON file to the repository -- optionally setting the data source for all
+   * the records. NOTE: if the records in the file do not have a defined DATA_SOURCE then the
+   * specified data source is required.
    *
    * @param repository The directory for the repository.
-   * @param verbose <tt>true</tt> for verbose API logging, otherwise
-   *                <tt>false</tt>
+   * @param verbose <tt>true</tt> for verbose API logging, otherwise <tt>false</tt>
    * @param sourceFile The source file to load (JSON or CSV).
    * @param dataSource The data source to use for loading the records.
    * @param loadedCount The output parameter for the number successfully loaded.
    * @param failedCount The output parameter for the number that failed to load.
-   *
    * @return <tt>true</tt> if successful, otherwise <tt>false</tt>
    */
-  public static boolean loadFile(File             repository,
-                                 boolean          verbose,
-                                 File             sourceFile,
-                                 String           dataSource,
-                                 Result<Integer>  loadedCount,
-                                 Result<Integer>  failedCount)
-  {
-    return loadFile(repository,
-                    verbose,
-                    sourceFile,
-                    dataSource,
-                    loadedCount,
-                    failedCount,
-                    false);
+  public static boolean loadFile(
+      File repository,
+      boolean verbose,
+      File sourceFile,
+      String dataSource,
+      Result<Integer> loadedCount,
+      Result<Integer> failedCount) {
+    return loadFile(repository, verbose, sourceFile, dataSource, loadedCount, failedCount, false);
   }
 
   /**
-   * Loads a single CSV or JSON file to the repository -- optionally setting
-   * the data source for all the records.  NOTE: if the records in the file do
-   * not have a defined DATA_SOURCE then the specified data source is required.
+   * Loads a single CSV or JSON file to the repository -- optionally setting the data source for all
+   * the records. NOTE: if the records in the file do not have a defined DATA_SOURCE then the
+   * specified data source is required.
    *
    * @param repository The directory for the repository.
-   * @param verbose <tt>true</tt> for verbose API logging, otherwise
-   *                <tt>false</tt>
+   * @param verbose <tt>true</tt> for verbose API logging, otherwise <tt>false</tt>
    * @param sourceFile The source file to load (JSON or CSV).
    * @param dataSource The data source to use for loading the records.
    * @param loadedCount The output parameter for the number successfully loaded.
    * @param failedCount The output parameter for the number that failed to load.
-   *
    * @return <tt>true</tt> if successful, otherwise <tt>false</tt>
    */
-  public static boolean loadFile(File             repository,
-                                 boolean          verbose,
-                                 File             sourceFile,
-                                 String           dataSource,
-                                 Result<Integer>  loadedCount,
-                                 Result<Integer>  failedCount,
-                                 boolean          silent)
-  {
+  public static boolean loadFile(
+      File repository,
+      boolean verbose,
+      File sourceFile,
+      String dataSource,
+      Result<Integer> loadedCount,
+      Result<Integer> failedCount,
+      boolean silent) {
     String normalizedFileName = sourceFile.toString().toUpperCase();
-    if ((!normalizedFileName.endsWith(".JSON"))
-        && (!normalizedFileName.endsWith(".CSV"))) {
-      throw new IllegalArgumentException(
-          "File must be a CSV or JSON file: " + sourceFile);
+    if ((!normalizedFileName.endsWith(".JSON")) && (!normalizedFileName.endsWith(".CSV"))) {
+      throw new IllegalArgumentException("File must be a CSV or JSON file: " + sourceFile);
     }
 
     initApis(repository, verbose);
@@ -1133,14 +1025,12 @@ public class RepositoryManager {
     PrintStream printStream = System.err;
     try {
       for (JsonObject record = recordReader.readRecord();
-           (record != null);
-           record = recordReader.readRecord())
-      {
+          (record != null);
+          record = recordReader.readRecord()) {
         String recordId = JsonUtilities.getString(record, "RECORD_ID");
         if (recordId == null || recordId.trim().length() == 0) {
           System.err.println();
-          System.err.println(
-            "All records in the file must have a RECORD_ID: " + record);
+          System.err.println("All records in the file must have a RECORD_ID: " + record);
           return false;
         }
         String recordSource = JsonUtilities.getString(record, "DATA_SOURCE");
@@ -1161,25 +1051,23 @@ public class RepositoryManager {
         StringBuffer sb = new StringBuffer();
         String jsonRecord = JsonUtilities.toJsonText(record);
 
-
         int returnCode = ENGINE_API.addRecord(dataSource, recordId, jsonRecord);
 
         if (returnCode == 0) {
           loaded++;
-          loadedInterval = doLoadFeedback(
-              "Loaded so far", loaded, loadedInterval, loaded, failed, silent);
+          loadedInterval =
+              doLoadFeedback("Loaded so far", loaded, loadedInterval, loaded, failed, silent);
 
         } else {
           failed++;
           if (failed == 1 || ((failed % failedInterval) == 0)) {
             logError("NativeEngine.addRecord()", ENGINE_API);
           }
-          failedInterval = doLoadFeedback(
-              "Loaded so far", failed, failedInterval, loaded, failed, silent);
+          failedInterval =
+              doLoadFeedback("Loaded so far", failed, failedInterval, loaded, failed, silent);
         }
       }
-      doLoadFeedback(
-          "Loaded all records", loaded, 0, loaded, failed, silent);
+      doLoadFeedback("Loaded all records", loaded, 0, loaded, failed, silent);
       processRedos(silent);
       printStream = (silent) ? null : System.out;
 
@@ -1226,22 +1114,22 @@ public class RepositoryManager {
         if (returnCode != 0) {
           logError("NativeEngine.getRedoRecord()", ENGINE_API);
           failed++;
-          failedInterval = doLoadFeedback(
-              "Redo's so far", failed, failedInterval, loaded, failed, silent);
+          failedInterval =
+              doLoadFeedback("Redo's so far", failed, failedInterval, loaded, failed, silent);
         } else {
           returnCode = ENGINE_API.processRedoRecord(sb.toString());
           if (returnCode != 0) {
             logError("NativeEngine.processRedoRecord()", ENGINE_API);
             failed++;
-            failedInterval = doLoadFeedback(
-                "Redo's so far", failed, failedInterval, loaded, failed, silent);
+            failedInterval =
+                doLoadFeedback("Redo's so far", failed, failedInterval, loaded, failed, silent);
           } else {
             loaded++;
-            loadedInterval = doLoadFeedback(
-                "Redo's so far", loaded, loadedInterval, loaded, failed, silent);
+            loadedInterval =
+                doLoadFeedback("Redo's so far", loaded, loadedInterval, loaded, failed, silent);
           }
         }
-        if (count > (originalCount*5)) {
+        if (count > (originalCount * 5)) {
           System.err.println();
           System.err.println("Processing redo's not converging -- giving up.");
           System.err.println();
@@ -1249,8 +1137,7 @@ public class RepositoryManager {
         }
       }
       System.out.println();
-      System.out.println("Processed all redos (succeeded / failed): "
-                         + loaded + " / " + failed);
+      System.out.println("Processed all redos (succeeded / failed): " + loaded + " / " + failed);
       System.out.println();
 
       return loaded;
@@ -1262,59 +1149,44 @@ public class RepositoryManager {
       System.err.println();
       return loaded;
     }
-
   }
 
-  private static int doLoadFeedback(String  prefix,
-                                    int     count,
-                                    int     interval,
-                                    int     loaded,
-                                    int     failed,
-                                    boolean silent)
-  {
+  private static int doLoadFeedback(
+      String prefix, int count, int interval, int loaded, int failed, boolean silent) {
     if (count > (interval * 10)) {
       interval *= 10;
     }
     if ((count > 0) && ((interval == 0) || (count % interval) == 0)) {
       if (!silent) {
-        System.out.println(prefix + " (succeeded / failed): "
-                           + loaded + " / " + failed);
+        System.out.println(prefix + " (succeeded / failed): " + loaded + " / " + failed);
       }
     }
     return interval;
   }
 
-  private static boolean addDataSource(File     repository,
-                                       String   dataSource,
-                                       boolean  verbose)
-  {
+  private static boolean addDataSource(File repository, String dataSource, boolean verbose) {
     // add the data source and reinitialize
-    Configuration config = configSources(repository,
-                                         Collections.singleton(dataSource),
-                                         verbose);
+    Configuration config = configSources(repository, Collections.singleton(dataSource), verbose);
     if (config == null) return false;
     destroyApis();
     initApis(repository, verbose);
     return true;
   }
 
-  private static RecordReader provideJsonRecords(File    sourceFile,
-                                                 String  dataSource)
-  {
+  private static RecordReader provideJsonRecords(File sourceFile, String dataSource) {
     RecordReader recordReader = null;
     // check if we have a real JSON array
     try {
-      FileInputStream    fis = new FileInputStream(sourceFile);
-      InputStreamReader  isr = new InputStreamReader(fis, "UTF-8");
-      BufferedReader     br  = new BufferedReader(isr);
+      FileInputStream fis = new FileInputStream(sourceFile);
+      InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+      BufferedReader br = new BufferedReader(isr);
 
       recordReader = new RecordReader(br, dataSource);
 
       RecordReader.Format format = recordReader.getFormat();
       if (format != JSON && format != JSON_LINES) {
         System.err.println();
-        System.err.println(
-            "JSON file does not contain JSON or JSON-lines formatted records");
+        System.err.println("JSON file does not contain JSON or JSON-lines formatted records");
         System.err.println();
         return null;
       }
@@ -1331,15 +1203,13 @@ public class RepositoryManager {
     return recordReader;
   }
 
-  private static RecordReader provideCsvRecords(File   sourceFile,
-                                                String dataSource)
-  {
+  private static RecordReader provideCsvRecords(File sourceFile, String dataSource) {
     RecordReader recordReader = null;
     // check if we have a real JSON array
     try {
-      FileInputStream    fis = new FileInputStream(sourceFile);
-      InputStreamReader  isr = new InputStreamReader(fis, "UTF-8");
-      BufferedReader     br  = new BufferedReader(isr);
+      FileInputStream fis = new FileInputStream(sourceFile);
+      InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+      BufferedReader br = new BufferedReader(isr);
 
       recordReader = new RecordReader(CSV, br, dataSource);
 
@@ -1356,81 +1226,62 @@ public class RepositoryManager {
   }
 
   /**
-   * Loads a single JSON record to the repository -- optionally setting
-   * the data source for the record.  NOTE: if the specified record does not
-   * have a DATA_SOURCE property then the specified data source is required.
+   * Loads a single JSON record to the repository -- optionally setting the data source for the
+   * record. NOTE: if the specified record does not have a DATA_SOURCE property then the specified
+   * data source is required.
    *
    * @param repository The directory for the repository.
    * @param jsonRecord The JSON record to load.
    * @param dataSource The data source to use for loading the record.
    * @return <tt>true</tt> if successful, otherwise <tt>false</tt>
    */
-  public static boolean addRecord(File    repository,
-                                  String  jsonRecord,
-                                  String  dataSource)
-  {
+  public static boolean addRecord(File repository, String jsonRecord, String dataSource) {
     return addRecord(repository, false, jsonRecord, dataSource, false);
   }
 
   /**
-   * Loads a single JSON record to the repository -- optionally setting
-   * the data source for the record.  NOTE: if the specified record does not
-   * have a DATA_SOURCE property then the specified data source is required.
+   * Loads a single JSON record to the repository -- optionally setting the data source for the
+   * record. NOTE: if the specified record does not have a DATA_SOURCE property then the specified
+   * data source is required.
    *
    * @param repository The directory for the repository.
    * @param jsonRecord The JSON record to load.
    * @param dataSource The data source to use for loading the record.
-   *
    * @return <tt>true</tt> if successful, otherwise <tt>false</tt>
    */
-  public static boolean addRecord(File    repository,
-                                  boolean verbose,
-                                  String  jsonRecord,
-                                  String  dataSource)
-  {
+  public static boolean addRecord(
+      File repository, boolean verbose, String jsonRecord, String dataSource) {
     return addRecord(repository, verbose, jsonRecord, dataSource, false);
   }
 
   /**
-   * Loads a single JSON record to the repository -- optionally setting
-   * the data source for the record.  NOTE: if the specified record does not
-   * have a DATA_SOURCE property then the specified data source is required.
+   * Loads a single JSON record to the repository -- optionally setting the data source for the
+   * record. NOTE: if the specified record does not have a DATA_SOURCE property then the specified
+   * data source is required.
    *
    * @param repository The directory for the repository.
    * @param jsonRecord The JSON record to load.
    * @param dataSource The data source to use for loading the record.
-   *
    * @return <tt>true</tt> if successful, otherwise <tt>false</tt>
    */
-  public static boolean addRecord(File    repository,
-                                  String  jsonRecord,
-                                  String  dataSource,
-                                  boolean silent)
-  {
+  public static boolean addRecord(
+      File repository, String jsonRecord, String dataSource, boolean silent) {
     return addRecord(repository, false, jsonRecord, dataSource, silent);
   }
 
-
   /**
-   * Loads a single JSON record to the repository -- optionally setting
-   * the data source for the record.  NOTE: if the specified
-   * record does not have a DATA_SOURCE property then the specified data source
-   * is required.
+   * Loads a single JSON record to the repository -- optionally setting the data source for the
+   * record. NOTE: if the specified record does not have a DATA_SOURCE property then the specified
+   * data source is required.
    *
    * @param repository The directory for the repository.
    * @param jsonRecord The JSON record to load.
    * @param dataSource The data source to use for loading the record.
-   * @param verbose <tt>true</tt> for verbose API logging, otherwise
-   *                <tt>false</tt>
-   *
+   * @param verbose <tt>true</tt> for verbose API logging, otherwise <tt>false</tt>
    * @return <tt>true</tt> if successful, otherwise <tt>false</tt>
    */
-  public static boolean addRecord(File     repository,
-                                  boolean  verbose,
-                                  String   jsonRecord,
-                                  String   dataSource,
-                                  boolean  silent)
-  {
+  public static boolean addRecord(
+      File repository, boolean verbose, String jsonRecord, String dataSource, boolean silent) {
     initApis(repository, verbose);
 
     Set<String> dataSources = getDataSources();
@@ -1456,8 +1307,7 @@ public class RepositoryManager {
     String recordId = JsonUtilities.getString(jsonObject, "RECORD_ID");
     if (recordId == null || recordId.trim().length() == 0) {
       System.err.println();
-      System.err.println(
-        "All records in the file must have a RECORD_ID: " + jsonObject);
+      System.err.println("All records in the file must have a RECORD_ID: " + jsonObject);
       return false;
     }
 
@@ -1480,89 +1330,66 @@ public class RepositoryManager {
   }
 
   /**
-   * Updates the configuration to be the configuration in the specified {@link
-   * JsonObject}.
+   * Updates the configuration to be the configuration in the specified {@link JsonObject}.
    *
    * @param repository The directory for the repository.
    * @param configJson The {@link JsonObject} describing the configuration.
    * @param comment The comment to associate with the config.
-   *
-   * @return The {@link Configuration} describing the new configuration or
-   *         <tt>null</tt> if the operation failed.
+   * @return The {@link Configuration} describing the new configuration or <tt>null</tt> if the
+   *     operation failed.
    */
-  public static Configuration updateConfig(File       repository,
-                                           JsonObject configJson,
-                                           String     comment)
-  {
+  public static Configuration updateConfig(File repository, JsonObject configJson, String comment) {
     return updateConfig(repository, configJson, comment, false);
   }
 
   /**
-   * Updates the configuration to be the configuration in the specified {@link
-   * JsonObject}.
+   * Updates the configuration to be the configuration in the specified {@link JsonObject}.
    *
    * @param repository The directory for the repository.
-   * @param verbose <tt>true</tt> for verbose API logging, otherwise
-   *                <tt>false</tt>
+   * @param verbose <tt>true</tt> for verbose API logging, otherwise <tt>false</tt>
    * @param configJson The {@link JsonObject} describing the configuration.
    * @param comment The comment to associate with the config.
-   *
-   * @return The {@link Configuration} describing the new configuration or
-   *         <tt>null</tt> if the operation failed.
+   * @return The {@link Configuration} describing the new configuration or <tt>null</tt> if the
+   *     operation failed.
    */
-  public static Configuration updateConfig(File       repository,
-                                           boolean    verbose,
-                                           JsonObject configJson,
-                                           String     comment)
-  {
+  public static Configuration updateConfig(
+      File repository, boolean verbose, JsonObject configJson, String comment) {
     return updateConfig(repository, verbose, configJson, comment, false);
   }
 
   /**
-   * Updates the configuration to be the configuration in the specified {@link
-   * JsonObject}.
+   * Updates the configuration to be the configuration in the specified {@link JsonObject}.
    *
    * @param repository The directory for the repository.
    * @param configJson The {@link JsonObject} describing the configuration.
    * @param comment The comment to associate with the config.
-   * @param silent <tt>true</tt> if no feedback should be given to the user
-   *               upon completion, otherwise <tt>false</tt>
-   *
-   * @return The {@link Configuration} describing the new configuration or
-   *         <tt>null</tt> if the operation failed.
+   * @param silent <tt>true</tt> if no feedback should be given to the user upon completion,
+   *     otherwise <tt>false</tt>
+   * @return The {@link Configuration} describing the new configuration or <tt>null</tt> if the
+   *     operation failed.
    */
-  public static Configuration updateConfig(File       repository,
-                                           JsonObject configJson,
-                                           String     comment,
-                                           boolean    silent)
-  {
+  public static Configuration updateConfig(
+      File repository, JsonObject configJson, String comment, boolean silent) {
     return updateConfig(repository, false, configJson, comment, silent);
   }
 
   /**
-   * Updates the configuration to be the configuration in the specified {@link
-   * JsonObject}.
+   * Updates the configuration to be the configuration in the specified {@link JsonObject}.
    *
    * @param repository The directory for the repository.
-   * @param verbose <tt>true</tt> for verbose API logging, otherwise
-   *                <tt>false</tt>
+   * @param verbose <tt>true</tt> for verbose API logging, otherwise <tt>false</tt>
    * @param configJson The {@link JsonObject} describing the configuration.
    * @param comment The comment to associate with the config.
-   * @param silent <tt>true</tt> if no feedback should be given to the user
-   *               upon completion, otherwise <tt>false</tt>
-   *
-   * @return The {@link Configuration} describing the new configuration or
-   *         <tt>null</tt> if the operation failed.
+   * @param silent <tt>true</tt> if no feedback should be given to the user upon completion,
+   *     otherwise <tt>false</tt>
+   * @return The {@link Configuration} describing the new configuration or <tt>null</tt> if the
+   *     operation failed.
    */
-  public static Configuration updateConfig(File         repository,
-                                           boolean      verbose,
-                                           JsonObject   configJson,
-                                           String       comment,
-                                           boolean      silent)
-  {
+  public static Configuration updateConfig(
+      File repository, boolean verbose, JsonObject configJson, String comment, boolean silent) {
     initApis(repository, verbose);
-    Long        resultConfigId  = null;
-    JsonObject  resultConfig    = null;
+    Long resultConfigId = null;
+    JsonObject resultConfig = null;
 
     Result<Long> configId = new Result<>();
     int returnCode = 0;
@@ -1608,83 +1435,63 @@ public class RepositoryManager {
     return new Configuration(resultConfigId, resultConfig);
   }
 
-
   /**
-   * Configures the specified data sources for the specified repository
-   * if not already configured.
+   * Configures the specified data sources for the specified repository if not already configured.
    *
    * @param repository The directory for the repository.
    * @param dataSources The {@link Set} of data source codes.
-   *
-   * @return The {@link Configuration} describing the new configuration or
-   *         <tt>null</tt> if the operation failed.
+   * @return The {@link Configuration} describing the new configuration or <tt>null</tt> if the
+   *     operation failed.
    */
-  public static Configuration configSources(File         repository,
-                                            Set<String>  dataSources)
-  {
+  public static Configuration configSources(File repository, Set<String> dataSources) {
     return configSources(repository, dataSources, false);
   }
 
   /**
-   * Configures the specified data sources for the specified repository
-   * if not already configured.
+   * Configures the specified data sources for the specified repository if not already configured.
    *
    * @param repository The directory for the repository.
    * @param dataSources The {@link Set} of data source codes.
-   * @param verbose <tt>true</tt> for verbose API logging, otherwise
-   *                <tt>false</tt>
-   *
-   * @return The {@link Configuration} describing the new configuration or
-   *         <tt>null</tt> if the operation failed.
+   * @param verbose <tt>true</tt> for verbose API logging, otherwise <tt>false</tt>
+   * @return The {@link Configuration} describing the new configuration or <tt>null</tt> if the
+   *     operation failed.
    */
-  public static Configuration configSources(File         repository,
-                                            boolean      verbose,
-                                            Set<String>  dataSources)
-  {
+  public static Configuration configSources(
+      File repository, boolean verbose, Set<String> dataSources) {
     return configSources(repository, verbose, dataSources, false);
   }
 
   /**
-   * Configures the specified data sources for the specified repository
-   * if not already configured.
+   * Configures the specified data sources for the specified repository if not already configured.
    *
    * @param repository The directory for the repository.
    * @param dataSources The {@link Set} of data source codes.
-   * @param silent <tt>true</tt> if no feedback should be given to the user
-   *               upon completion, otherwise <tt>false</tt>
-   *
-   * @return The {@link Configuration} describing the new configuration or
-   *         <tt>null</tt> if the operation failed.
+   * @param silent <tt>true</tt> if no feedback should be given to the user upon completion,
+   *     otherwise <tt>false</tt>
+   * @return The {@link Configuration} describing the new configuration or <tt>null</tt> if the
+   *     operation failed.
    */
-  public static Configuration configSources(File         repository,
-                                            Set<String>  dataSources,
-                                            boolean      silent)
-  {
+  public static Configuration configSources(
+      File repository, Set<String> dataSources, boolean silent) {
     return configSources(repository, false, dataSources, silent);
   }
 
   /**
-   * Configures the specified data sources for the specified repository
-   * if not already configured.
+   * Configures the specified data sources for the specified repository if not already configured.
    *
    * @param repository The directory for the repository.
-   * @param verbose <tt>true</tt> for verbose API logging, otherwise
-   *                <tt>false</tt>
+   * @param verbose <tt>true</tt> for verbose API logging, otherwise <tt>false</tt>
    * @param dataSources The {@link Set} of data source codes.
-   * @param silent <tt>true</tt> if no feedback should be given to the user
-   *               upon completion, otherwise <tt>false</tt>
-   *
-   * @return The {@link Configuration} describing the new configuration or
-   *         <tt>null</tt> if the operation failed.
+   * @param silent <tt>true</tt> if no feedback should be given to the user upon completion,
+   *     otherwise <tt>false</tt>
+   * @return The {@link Configuration} describing the new configuration or <tt>null</tt> if the
+   *     operation failed.
    */
-  public static Configuration configSources(File         repository,
-                                            boolean      verbose,
-                                            Set<String>  dataSources,
-                                            boolean      silent)
-  {
+  public static Configuration configSources(
+      File repository, boolean verbose, Set<String> dataSources, boolean silent) {
     initApis(repository, verbose);
-    Long        resultConfigId  = null;
-    JsonObject  resultConfig    = null;
+    Long resultConfigId = null;
+    JsonObject resultConfig = null;
 
     Result<Long> configId = new Result<>();
     int returnCode = 0;
@@ -1703,8 +1510,7 @@ public class RepositoryManager {
         JsonObjectBuilder job = Json.createObjectBuilder();
         job.add("DSRC_CODE", dataSourceCode);
         JsonObject jsonObj = job.build();
-        returnCode = CONFIG_API.addDataSource(
-            configId.getValue(), jsonObj.toString(), sb);
+        returnCode = CONFIG_API.addDataSource(configId.getValue(), jsonObj.toString(), sb);
         if (returnCode != 0) {
           logError("NativeConfig.addDataSource()", CONFIG_API);
           return null;
@@ -1715,17 +1521,15 @@ public class RepositoryManager {
       }
 
       if (addedCount > 0) {
-        String comment = buildAddedComment(
-            "Added data sources: ", addedDataSources);
+        String comment = buildAddedComment("Added data sources: ", addedDataSources);
 
         Result<Long> configIdResult = new Result<>();
-        resultConfig = addConfigAndSetDefault(
-            configId.getValue(), comment, configIdResult);
+        resultConfig = addConfigAndSetDefault(configId.getValue(), comment, configIdResult);
 
         if (resultConfig == null) return null;
 
         // get the result config and its ID for the result
-        resultConfigId  = configIdResult.getValue();
+        resultConfigId = configIdResult.getValue();
       }
 
       if (!silent) {
@@ -1733,11 +1537,17 @@ public class RepositoryManager {
         System.out.println("Ensured specified data sources are configured.");
         System.out.println("     Repository   : " + repository);
         System.out.println("     Data Sources : ");
-        dataSourceActions.entrySet().forEach(entry -> {
-          System.out.println(
-              "          - " + entry.getKey()
-              + " (" + ((entry.getValue()) ? "added" : "preconfigured") + ")");
-        });
+        dataSourceActions
+            .entrySet()
+            .forEach(
+                entry -> {
+                  System.out.println(
+                      "          - "
+                          + entry.getKey()
+                          + " ("
+                          + ((entry.getValue()) ? "added" : "preconfigured")
+                          + ")");
+                });
         System.out.println();
       }
 
@@ -1761,9 +1571,7 @@ public class RepositoryManager {
     return new Configuration(resultConfigId, resultConfig);
   }
 
-  /**
-   * Builds a comment for adding config objects.
-   */
+  /** Builds a comment for adding config objects. */
   private static String buildAddedComment(String prefix, Set<String> addedSet) {
     String comment;
     if (addedSet.size() == 1) {
@@ -1784,13 +1592,12 @@ public class RepositoryManager {
   }
 
   /**
-   * Adds the config associated witht he specified handle using the specified
-   * comment and returns the {@link JsonObject} for the config along with
-   * setting the config's ID in the specified result parameter.
+   * Adds the config associated witht he specified handle using the specified comment and returns
+   * the {@link JsonObject} for the config along with setting the config's ID in the specified
+   * result parameter.
    */
   private static JsonObject addConfigAndSetDefault(
-      long configHandle, String comment, Result<Long> resultConfig)
-  {
+      long configHandle, String comment, Result<Long> resultConfig) {
     // write the modified config to a string buffer
     StringBuffer sb = new StringBuffer();
     int returnCode = CONFIG_API.save(configHandle, sb);
@@ -1819,8 +1626,8 @@ public class RepositoryManager {
   }
 
   /**
-   * Gets the {@link JsonObject} describing the current default config as well
-   * as setting the default config's ID in the specified result parameter.
+   * Gets the {@link JsonObject} describing the current default config as well as setting the
+   * default config's ID in the specified result parameter.
    */
   private static Configuration getDefaultConfig() {
     Result<Long> result = new Result<>();
@@ -1838,5 +1645,4 @@ public class RepositoryManager {
     JsonObject config = JsonUtilities.parseJsonObject(sb.toString());
     return new Configuration(result.getValue(), config);
   }
-
 }

@@ -1,14 +1,9 @@
 package com.senzing.nativeapi;
 
-/**
- * This exception is thrown when the Senzing native installation is invalid.
- */
+/** This exception is thrown when the Senzing native installation is invalid. */
 public class InvalidInstallationException extends RuntimeException {
-  /**
-   * Default constructor.
-   */
-  public InvalidInstallationException() {
-  }
+  /** Default constructor. */
+  public InvalidInstallationException() {}
 
   /**
    * Constructs with the specified message.

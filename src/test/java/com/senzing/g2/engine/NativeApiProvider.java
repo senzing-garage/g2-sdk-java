@@ -26,7 +26,6 @@ public interface NativeApiProvider {
    * Provides a new instance of {@link NativeConfigMgr} to use.
    *
    * @return A new instance of {@link NativeConfigMgr} to use.
-   *
    */
   NativeConfigMgr createConfigMgrApi();
 

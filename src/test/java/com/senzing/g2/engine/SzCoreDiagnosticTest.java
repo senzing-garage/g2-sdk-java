@@ -1,40 +1,35 @@
 package com.senzing.g2.engine;
 
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.LinkedHashMap;
+import static com.senzing.g2.engine.NativeEngine.*;
+import static com.senzing.util.JsonUtilities.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import static org.junit.jupiter.api.TestInstance.Lifecycle;
+import static org.junit.jupiter.params.provider.Arguments.*;
 
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import static org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import static org.junit.jupiter.api.TestInstance.Lifecycle;
-
-import javax.json.Json;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonObject;
-import javax.json.JsonArray;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-import static com.senzing.util.JsonUtilities.*;
-import static com.senzing.g2.engine.NativeEngine.*;
-import static org.junit.jupiter.params.provider.Arguments.*;
-
-/**
- * Unit tests for {@link SzCoreDiagnostic}.
- */
+/** Unit tests for {@link SzCoreDiagnostic}. */
 @TestInstance(Lifecycle.PER_CLASS)
 @Execution(ExecutionMode.SAME_THREAD)
 @TestMethodOrder(OrderAnnotation.class)
@@ -43,19 +38,20 @@ public class SzCoreDiagnosticTest extends AbstractTest {
   private static final String TEST_DATA_SOURCE = "TEST";
   private static final String TEST_RECORD_ID = "ABC123";
 
-  private static final long FLAGS = G2_ENTITY_INCLUDE_ALL_FEATURES
-      | G2_ENTITY_INCLUDE_ENTITY_NAME
-      | G2_ENTITY_INCLUDE_RECORD_SUMMARY
-      | G2_ENTITY_INCLUDE_RECORD_TYPES
-      | G2_ENTITY_INCLUDE_RECORD_DATA
-      | G2_ENTITY_INCLUDE_RECORD_JSON_DATA
-      | G2_ENTITY_INCLUDE_RECORD_MATCHING_INFO
-      | G2_ENTITY_INCLUDE_RECORD_UNMAPPED_DATA
-      | G2_ENTITY_INCLUDE_RECORD_FEATURE_IDS
-      | G2_ENTITY_INCLUDE_INTERNAL_FEATURES
-      | G2_ENTITY_INCLUDE_FEATURE_ELEMENTS
-      | G2_INCLUDE_MATCH_KEY_DETAILS
-      | G2_INCLUDE_FEATURE_SCORES;
+  private static final long FLAGS =
+      G2_ENTITY_INCLUDE_ALL_FEATURES
+          | G2_ENTITY_INCLUDE_ENTITY_NAME
+          | G2_ENTITY_INCLUDE_RECORD_SUMMARY
+          | G2_ENTITY_INCLUDE_RECORD_TYPES
+          | G2_ENTITY_INCLUDE_RECORD_DATA
+          | G2_ENTITY_INCLUDE_RECORD_JSON_DATA
+          | G2_ENTITY_INCLUDE_RECORD_MATCHING_INFO
+          | G2_ENTITY_INCLUDE_RECORD_UNMAPPED_DATA
+          | G2_ENTITY_INCLUDE_RECORD_FEATURE_IDS
+          | G2_ENTITY_INCLUDE_INTERNAL_FEATURES
+          | G2_ENTITY_INCLUDE_FEATURE_ELEMENTS
+          | G2_INCLUDE_MATCH_KEY_DETAILS
+          | G2_INCLUDE_FEATURE_SCORES;
 
   private SzCoreEnvironment env = null;
 
@@ -87,8 +83,7 @@ public class SzCoreDiagnosticTest extends AbstractTest {
       String recordDefinition = jsonObj.toString();
 
       // add a record
-      returnCode = nativeEngine.addRecord(
-          TEST_DATA_SOURCE, TEST_RECORD_ID, recordDefinition);
+      returnCode = nativeEngine.addRecord(TEST_DATA_SOURCE, TEST_RECORD_ID, recordDefinition);
 
       if (returnCode != 0) {
         throw new RuntimeException(nativeEngine.getLastException());
@@ -96,8 +91,7 @@ public class SzCoreDiagnosticTest extends AbstractTest {
 
       // get the entity
       StringBuffer sb = new StringBuffer();
-      returnCode = nativeEngine.getEntityByRecordID(
-          TEST_DATA_SOURCE, TEST_RECORD_ID, FLAGS, sb);
+      returnCode = nativeEngine.getEntityByRecordID(TEST_DATA_SOURCE, TEST_RECORD_ID, FLAGS, sb);
 
       // parse the entity and get the feature ID's
       JsonObject entity = parseJsonObject(sb.toString());
@@ -106,8 +100,7 @@ public class SzCoreDiagnosticTest extends AbstractTest {
       for (String featureName : features.keySet()) {
         JsonArray featureArr = features.getJsonArray(featureName);
         for (JsonObject feature : featureArr.getValuesAs(JsonObject.class)) {
-          this.featureMaps.put(getLong(feature, "LIB_FEAT_ID"),
-              toJsonText(feature));
+          this.featureMaps.put(getLong(feature, "LIB_FEAT_ID"), toJsonText(feature));
         }
       }
 
@@ -115,11 +108,12 @@ public class SzCoreDiagnosticTest extends AbstractTest {
       nativeEngine.destroy();
     }
 
-    this.env = SzCoreEnvironment.newBuilder()
-        .instanceName(instanceName)
-        .settings(settings)
-        .verboseLogging(false)
-        .build();
+    this.env =
+        SzCoreEnvironment.newBuilder()
+            .instanceName(instanceName)
+            .settings(settings)
+            .verboseLogging(false)
+            .build();
   }
 
   @AfterAll
@@ -138,44 +132,47 @@ public class SzCoreDiagnosticTest extends AbstractTest {
   @Test
   @Order(10)
   void testGetDatastoreInfo() {
-    this.performTest(() -> {
-      try {
-        SzDiagnostic diagnostic = this.env.getDiagnostic();
+    this.performTest(
+        () -> {
+          try {
+            SzDiagnostic diagnostic = this.env.getDiagnostic();
 
-        String result = diagnostic.getDatastoreInfo();
+            String result = diagnostic.getDatastoreInfo();
 
-        // parse the result as JSON and check that it parses
-        parseJsonObject(result);
+            // parse the result as JSON and check that it parses
+            parseJsonObject(result);
 
-      } catch (Exception e) {
-        fail("Failed testGetDatastoreInfo test with exception", e);
-      }
-    });
+          } catch (Exception e) {
+            fail("Failed testGetDatastoreInfo test with exception", e);
+          }
+        });
   }
 
   @Test
   @Order(20)
   void testCheckDatastorePerformance() {
-    this.performTest(() -> {
-      try {
-        SzDiagnostic diagnostic = this.env.getDiagnostic();
+    this.performTest(
+        () -> {
+          try {
+            SzDiagnostic diagnostic = this.env.getDiagnostic();
 
-        String result = diagnostic.checkDatastorePerformance(5);
+            String result = diagnostic.checkDatastorePerformance(5);
 
-        // parse the result as JSON and check that it parses
-        parseJsonObject(result);
+            // parse the result as JSON and check that it parses
+            parseJsonObject(result);
 
-      } catch (Exception e) {
-        fail("Failed testCheckDatastorePerformance test with exception", e);
-      }
-    });
+          } catch (Exception e) {
+            fail("Failed testCheckDatastorePerformance test with exception", e);
+          }
+        });
   }
 
   protected List<Arguments> getFeatureIdArguments() {
     List<Arguments> argumentsList = new LinkedList<>();
-    this.featureMaps.forEach((featureId, feature) -> {
-      argumentsList.add(arguments(featureId, feature));
-    });
+    this.featureMaps.forEach(
+        (featureId, feature) -> {
+          argumentsList.add(arguments(featureId, feature));
+        });
     return argumentsList;
   }
 
@@ -183,39 +180,40 @@ public class SzCoreDiagnosticTest extends AbstractTest {
   @MethodSource("getFeatureIdArguments")
   @Order(30)
   void testGetFeature(long featureId, String expected) {
-    this.performTest(() -> {
-      try {
-        SzDiagnostic diagnostic = this.env.getDiagnostic();
+    this.performTest(
+        () -> {
+          try {
+            SzDiagnostic diagnostic = this.env.getDiagnostic();
 
-        String actual = diagnostic.getFeature(featureId);
+            String actual = diagnostic.getFeature(featureId);
 
-        JsonObject actualObj = parseJsonObject(actual);
-        JsonObject expectedObj = parseJsonObject(expected);
+            JsonObject actualObj = parseJsonObject(actual);
+            JsonObject expectedObj = parseJsonObject(expected);
 
-        assertEquals(getLong(expectedObj, "LIB_FEAT_ID"),
-            getLong(actualObj, "LIB_FEAT_ID"),
-            "Feature ID does not match what is expected");
+            assertEquals(
+                getLong(expectedObj, "LIB_FEAT_ID"),
+                getLong(actualObj, "LIB_FEAT_ID"),
+                "Feature ID does not match what is expected");
 
-      } catch (Exception e) {
-        fail("Failed testPurgeRepository test with exception", e);
-      }
-    });
+          } catch (Exception e) {
+            fail("Failed testPurgeRepository test with exception", e);
+          }
+        });
   }
 
   @Test
   @Order(100)
   void testPurgeRepository() {
-    this.performTest(() -> {
-      try {
-        SzDiagnostic diagnostic = this.env.getDiagnostic();
+    this.performTest(
+        () -> {
+          try {
+            SzDiagnostic diagnostic = this.env.getDiagnostic();
 
-        diagnostic.purgeRepository();
+            diagnostic.purgeRepository();
 
-      } catch (Exception e) {
-        fail("Failed testPurgeRepository test with exception", e);
-      }
-    });
-
+          } catch (Exception e) {
+            fail("Failed testPurgeRepository test with exception", e);
+          }
+        });
   }
-
 }

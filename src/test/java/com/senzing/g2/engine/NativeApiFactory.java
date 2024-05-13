@@ -3,36 +3,29 @@ package com.senzing.g2.engine;
 import com.senzing.nativeapi.InstallLocations;
 import com.senzing.nativeapi.InvalidInstallationException;
 import com.senzing.util.AccessToken;
-
 import java.util.Objects;
 
 /**
- * Provides an abstraction for creating instances of the raw Senzing API.
- * This abstraction allows for alternate implementations to be used especially
- * during auto tests.
- *
+ * Provides an abstraction for creating instances of the raw Senzing API. This abstraction allows
+ * for alternate implementations to be used especially during auto tests.
  */
 public class NativeApiFactory {
   /**
-   * The current {@link AccessToken} required to authorize uninstalling the
-   * {@link NativeApiProvider}, or <tt>null</tt> if no provider is installed.
+   * The current {@link AccessToken} required to authorize uninstalling the {@link
+   * NativeApiProvider}, or <tt>null</tt> if no provider is installed.
    */
   private static AccessToken current_token = null;
 
   /**
-   * The currently installed {@link NativeApiProvider}, or <tt>null</tt> if no
-   * provider is installed.
+   * The currently installed {@link NativeApiProvider}, or <tt>null</tt> if no provider is
+   * installed.
    */
   private static NativeApiProvider api_provider = null;
 
-  /**
-   * The {@link InstallLocations} describing the installation directories.
-   */
+  /** The {@link InstallLocations} describing the installation directories. */
   private static InstallLocations INSTALL_LOCATIONS = null;
 
-  /**
-   * Gets the install locations.
-   */
+  /** Gets the install locations. */
   private static synchronized InstallLocations getInstallLocations() {
     if (INSTALL_LOCATIONS == null) {
       INSTALL_LOCATIONS = InstallLocations.findLocations();
@@ -41,27 +34,22 @@ public class NativeApiFactory {
   }
 
   /**
-   * Installs the {@link NativeApiProvider} to be used by the factory.  If
-   * none is installed then the default mechanism of constructing new
-   * raw API objects is used.  This returns an {@link AccessToken} to be
-   * used for uninstalling the provider later.
+   * Installs the {@link NativeApiProvider} to be used by the factory. If none is installed then the
+   * default mechanism of constructing new raw API objects is used. This returns an {@link
+   * AccessToken} to be used for uninstalling the provider later.
    *
    * @param provider The non-null {@link NativeApiProvider} to install.
-   *
    * @return The {@link AccessToken} to be used for uninstalling the provider.
-   *
    * @throws NullPointerException If the specified provider is <tt>null</tt>.
-   *
-   * @throws IllegalStateException If a provider is already installed and must
-   *                               first be uninstalled.
+   * @throws IllegalStateException If a provider is already installed and must first be uninstalled.
    */
-  public synchronized static AccessToken installProvider(NativeApiProvider provider) {
+  public static synchronized AccessToken installProvider(NativeApiProvider provider) {
     Objects.requireNonNull(provider, "The specified provider cannot be null.");
     if (current_token != null) {
       throw new IllegalStateException(
           "A provider is already installed and must first be uninstalled.");
     }
-    api_provider  = provider;
+    api_provider = provider;
     current_token = new AccessToken();
     return current_token;
   }
@@ -69,36 +57,33 @@ public class NativeApiFactory {
   /**
    * Checks if a {@link NativeApiProvider} has been installed.
    *
-   * @return <tt>true</tt> if a {@link NativeApiProvider} has been installed,
-   *         otherwise <tt>false</tt>.
+   * @return <tt>true</tt> if a {@link NativeApiProvider} has been installed, otherwise
+   *     <tt>false</tt>.
    */
-  public synchronized static boolean isProviderInstalled() {
+  public static synchronized boolean isProviderInstalled() {
     return (current_token != null);
   }
 
   /**
-   * Uninstalls a previously installed {@link NativeApiProvider} using the
-   * specified {@link AccessToken} to authorize the operation.  If no provider
-   * has been installed then this method does nothing.
+   * Uninstalls a previously installed {@link NativeApiProvider} using the specified {@link
+   * AccessToken} to authorize the operation. If no provider has been installed then this method
+   * does nothing.
    *
-   * @param token The {@link AccessToken} that was returned when installing the
-   *              provider.
-   *
-   * @throws IllegalArgumentException If the specified token does not match the
-   *                                  token that was returned when the provider
-   *                                  was installed.
+   * @param token The {@link AccessToken} that was returned when installing the provider.
+   * @throws IllegalArgumentException If the specified token does not match the token that was
+   *     returned when the provider was installed.
    */
-  private synchronized static void uninstallProvider(AccessToken token) {
+  private static synchronized void uninstallProvider(AccessToken token) {
     if (current_token == null) {
       return;
     }
     if (!current_token.equals(token)) {
       throw new IllegalArgumentException(
           "The specified access token is not the expected access token to "
-          + "authorize unintalling the provider.");
+              + "authorize unintalling the provider.");
     }
     current_token = null;
-    api_provider  = null;
+    api_provider = null;
   }
 
   /***
@@ -113,9 +98,8 @@ public class NativeApiFactory {
   }
 
   /**
-   * Creates a new instance of {@link NativeEngine} to use.  If a
-   * {@link NativeApiProvider} is installed then it is used to create
-   * the instance, otherwise a new instance of {@link G2JNI} is
+   * Creates a new instance of {@link NativeEngine} to use. If a {@link NativeApiProvider} is
+   * installed then it is used to create the instance, otherwise a new instance of {@link G2JNI} is
    * constructed and returned.
    *
    * @return A new instance of {@link NativeEngine} to use.
@@ -126,8 +110,7 @@ public class NativeApiFactory {
       return provider.createEngineApi();
 
     } else if (getInstallLocations() == null) {
-      throw new InvalidInstallationException(
-          "Unable to find Senzing native installation.");
+      throw new InvalidInstallationException("Unable to find Senzing native installation.");
 
     } else {
       return new G2JNI();
@@ -135,10 +118,9 @@ public class NativeApiFactory {
   }
 
   /**
-   * Provides a new instance of {@link NativeConfig} to use.  If a
-   * {@link NativeApiProvider} is installed then it is used to create
-   * the instance, otherwise a new instance of {@link G2ConfigJNI} is
-   * constructed and returned.
+   * Provides a new instance of {@link NativeConfig} to use. If a {@link NativeApiProvider} is
+   * installed then it is used to create the instance, otherwise a new instance of {@link
+   * G2ConfigJNI} is constructed and returned.
    *
    * @return A new instance of {@link NativeConfig} to use.
    */
@@ -148,8 +130,7 @@ public class NativeApiFactory {
       return provider.createConfigApi();
 
     } else if (getInstallLocations() == null) {
-      throw new InvalidInstallationException(
-          "Unable to find Senzing native installation.");
+      throw new InvalidInstallationException("Unable to find Senzing native installation.");
 
     } else {
       return new G2ConfigJNI();
@@ -157,10 +138,9 @@ public class NativeApiFactory {
   }
 
   /**
-   * Provides a new instance of {@link NativeProduct} to use.  If a
-   * {@link NativeApiProvider} is installed then it is used to create
-   * the instance, otherwise a new instance of {@link G2ProductJNI} is
-   * constructed and returned.
+   * Provides a new instance of {@link NativeProduct} to use. If a {@link NativeApiProvider} is
+   * installed then it is used to create the instance, otherwise a new instance of {@link
+   * G2ProductJNI} is constructed and returned.
    *
    * @return A new instance of {@link NativeProduct} to use.
    */
@@ -170,8 +150,7 @@ public class NativeApiFactory {
       return provider.createProductApi();
 
     } else if (getInstallLocations() == null) {
-      throw new InvalidInstallationException(
-          "Unable to find Senzing native installation.");
+      throw new InvalidInstallationException("Unable to find Senzing native installation.");
 
     } else {
       return new G2ProductJNI();
@@ -179,13 +158,11 @@ public class NativeApiFactory {
   }
 
   /**
-   * Provides a new instance of {@link NativeConfigMgr} to use.  If a
-   * {@link NativeApiProvider} is installed then it is used to create
-   * the instance, otherwise a new instance of {@link G2ConfigMgrJNI} is
-   * constructed and returned.
+   * Provides a new instance of {@link NativeConfigMgr} to use. If a {@link NativeApiProvider} is
+   * installed then it is used to create the instance, otherwise a new instance of {@link
+   * G2ConfigMgrJNI} is constructed and returned.
    *
    * @return A new instance of {@link NativeConfigMgr} to use.
-   *
    */
   public static NativeConfigMgr createConfigMgrApi() {
     NativeApiProvider provider = getInstalledProvider();
@@ -193,8 +170,7 @@ public class NativeApiFactory {
       return provider.createConfigMgrApi();
 
     } else if (getInstallLocations() == null) {
-      throw new InvalidInstallationException(
-          "Unable to find Senzing native installation.");
+      throw new InvalidInstallationException("Unable to find Senzing native installation.");
 
     } else {
       return new G2ConfigMgrJNI();
@@ -202,13 +178,11 @@ public class NativeApiFactory {
   }
 
   /**
-   * Provides a new instance of {@link NativeDiagnostic} to use.  If a
-   * {@link NativeApiProvider} is installed then it is used to create
-   * the instance, otherwise a new instance of {@link G2DiagnosticJNI} is
-   * constructed and returned.
+   * Provides a new instance of {@link NativeDiagnostic} to use. If a {@link NativeApiProvider} is
+   * installed then it is used to create the instance, otherwise a new instance of {@link
+   * G2DiagnosticJNI} is constructed and returned.
    *
    * @return A new instance of {@link NativeDiagnostic} to use.
-   *
    */
   public static NativeDiagnostic createDiagnosticApi() {
     NativeApiProvider provider = getInstalledProvider();
@@ -216,12 +190,10 @@ public class NativeApiFactory {
       return provider.createDiagnosticApi();
 
     } else if (getInstallLocations() == null) {
-      throw new InvalidInstallationException(
-          "Unable to find Senzing native installation.");
+      throw new InvalidInstallationException("Unable to find Senzing native installation.");
 
     } else {
       return new G2DiagnosticJNI();
     }
   }
-
 }

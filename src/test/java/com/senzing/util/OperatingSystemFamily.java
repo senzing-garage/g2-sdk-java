@@ -1,22 +1,14 @@
 package com.senzing.util;
 
-/**
- * Identifies the various types of operating systems.
- */
+/** Identifies the various types of operating systems. */
 public enum OperatingSystemFamily {
-  /**
-   * Microsoft Windows operating systems.
-   */
+  /** Microsoft Windows operating systems. */
   WINDOWS,
 
-  /**
-   * Apple Macintosh operating systems.
-   */
+  /** Apple Macintosh operating systems. */
   MAC_OS,
 
-  /**
-   * Unix, Linux and Linux-like operating systems.
-   */
+  /** Unix, Linux and Linux-like operating systems. */
   UNIX;
 
   /**
@@ -46,10 +38,7 @@ public enum OperatingSystemFamily {
     return (this == UNIX);
   }
 
-  /**
-   * The {@link OperatingSystemFamily} on which the process is currently
-   * executing.
-   */
+  /** The {@link OperatingSystemFamily} on which the process is currently executing. */
   public static final OperatingSystemFamily RUNTIME_OS_FAMILY;
 
   static {
@@ -60,8 +49,7 @@ public enum OperatingSystemFamily {
       String lowerOSName = osName.toLowerCase().trim();
       if (lowerOSName.startsWith("windows")) {
         osFamily = WINDOWS;
-      } else if (lowerOSName.startsWith("mac")
-          || lowerOSName.indexOf("darwin") >= 0) {
+      } else if (lowerOSName.startsWith("mac") || lowerOSName.indexOf("darwin") >= 0) {
         osFamily = MAC_OS;
       } else {
         osFamily = UNIX;

@@ -1,553 +1,380 @@
 /**********************************************************************************
- © Copyright Senzing, Inc. 2017-2024
- The source code for this program is not published or otherwise divested
- of its trade secrets, irrespective of what has been deposited with the U.S.
- Copyright Office.
-**********************************************************************************/
+ * © Copyright Senzing, Inc. 2017-2024
+ * The source code for this program is not published or otherwise divested
+ * of its trade secrets, irrespective of what has been deposited with the U.S.
+ * Copyright Office.
+ **********************************************************************************/
 
 package com.senzing.g2.engine;
 
 /**
- * Implements the {@link NativeEngine} interface to call the native implementations
- * of each function.
+ * Implements the {@link NativeEngine} interface to call the native implementations of each
+ * function.
  */
 public class G2JNI implements NativeEngine {
   static {
     System.loadLibrary("G2");
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public native int init(String moduleName, String iniParams, boolean verboseLogging);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int initWithConfigID(String moduleName, String iniParams, long initConfigID, boolean verboseLogging);
+  public native int initWithConfigID(
+      String moduleName, String iniParams, long initConfigID, boolean verboseLogging);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public native int reinit(long initConfigID);
 
-
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public native int destroy();
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public native int primeEngine();
-  
-  /**
-   * {@inheritDoc}
-   */
+
+  /** {@inheritDoc} */
   @Override
   public native String stats();
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public native String getLastException();
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public native int getLastExceptionCode();
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public native void clearLastException();
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public native int getActiveConfigID(Result<Long> configID);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public native int addRecord(String dataSourceCode, String recordID, String jsonData);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int addRecordWithInfo(String        dataSourceCode,
-                                      String        recordID,
-                                      String        jsonData,
-                                      long          flags,
-                                      StringBuffer  response);
+  public native int addRecordWithInfo(
+      String dataSourceCode, String recordID, String jsonData, long flags, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int deleteRecord(String dataSourceCode,
-                                 String recordID);
-  
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int deleteRecordWithInfo(String       dataSourceCode,
-                                         String       recordID,
-                                         long         flags,
-                                         StringBuffer response);
+  public native int deleteRecord(String dataSourceCode, String recordID);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int reevaluateRecord(String dataSourceCode,
-                                     String recordID,
-                                     long   flags);
+  public native int deleteRecordWithInfo(
+      String dataSourceCode, String recordID, long flags, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
+  @Override
+  public native int reevaluateRecord(String dataSourceCode, String recordID, long flags);
+
+  /** {@inheritDoc} */
   @Override
   public native int reevaluateEntity(long entityID, long flags);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int reevaluateRecordWithInfo(String       dataSourceCode,
-                                             String       recordID,
-                                             long         flags,
-                                             StringBuffer response);
+  public native int reevaluateRecordWithInfo(
+      String dataSourceCode, String recordID, long flags, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int reevaluateEntityWithInfo(long         entityID,
-                                             long         flags,
-                                             StringBuffer response);
+  public native int reevaluateEntityWithInfo(long entityID, long flags, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public native int searchByAttributes(String jsonData, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int searchByAttributes(String       jsonData,
-                                       long         flags,
-                                       StringBuffer response);
+  public native int searchByAttributes(String jsonData, long flags, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int searchByAttributes(String       jsonData,
-                                       String       searchProfile,
-                                       long         flags,
-                                       StringBuffer response);
+  public native int searchByAttributes(
+      String jsonData, String searchProfile, long flags, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public native int getEntityByEntityID(long entityID, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int getEntityByEntityID(long          entityID,
-                                        long          flags,
-                                        StringBuffer  response);
+  public native int getEntityByEntityID(long entityID, long flags, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int getEntityByRecordID(String        dataSourceCode,
-                                        String        recordID,
-                                        StringBuffer  response);
+  public native int getEntityByRecordID(
+      String dataSourceCode, String recordID, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int getEntityByRecordID(String        dataSourceCode,
-                                        String        recordID,
-                                        long          flags,
-                                        StringBuffer  response);
+  public native int getEntityByRecordID(
+      String dataSourceCode, String recordID, long flags, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int findInterestingEntitiesByEntityID(long          entityID,
-                                                      long          flags,
-                                                      StringBuffer  response);
+  public native int findInterestingEntitiesByEntityID(
+      long entityID, long flags, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int findInterestingEntitiesByRecordID(String        dataSourceCode,
-                                                      String        recordID,
-                                                      long          flags,
-                                                      StringBuffer  response);
+  public native int findInterestingEntitiesByRecordID(
+      String dataSourceCode, String recordID, long flags, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int findPathByEntityID(long         entityID1,
-                                       long         entityID2,
-                                       int          maxDegree,
-                                       StringBuffer response);
+  public native int findPathByEntityID(
+      long entityID1, long entityID2, int maxDegree, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int findPathByEntityID(long         entityID1,
-                                       long         entityID2,
-                                       int          maxDegree,
-                                       long         flags,
-                                       StringBuffer response);
+  public native int findPathByEntityID(
+      long entityID1, long entityID2, int maxDegree, long flags, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int findPathByRecordID(String       dataSourceCode1,
-                                       String       recordID1,
-                                       String       dataSourceCode2,
-                                       String       recordID2,
-                                       int          maxDegree,
-                                       StringBuffer response);
+  public native int findPathByRecordID(
+      String dataSourceCode1,
+      String recordID1,
+      String dataSourceCode2,
+      String recordID2,
+      int maxDegree,
+      StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int findPathByRecordID(String       dataSourceCode1,
-                                       String       recordID1,
-                                       String       dataSourceCode2,
-                                       String       recordID2,
-                                       int          maxDegree,
-                                       long         flags,
-                                       StringBuffer response);
+  public native int findPathByRecordID(
+      String dataSourceCode1,
+      String recordID1,
+      String dataSourceCode2,
+      String recordID2,
+      int maxDegree,
+      long flags,
+      StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int findPathExcludingByEntityID(long          entityID1,
-                                                long          entityID2,
-                                                int           maxDegree,
-                                                String        excludedEntities,
-                                                StringBuffer  response);
+  public native int findPathExcludingByEntityID(
+      long entityID1,
+      long entityID2,
+      int maxDegree,
+      String excludedEntities,
+      StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int findPathExcludingByEntityID(long          entityID1,
-                                                long          entityID2,
-                                                int           maxDegree,
-                                                String        excludedEntities,
-                                                long          flags,
-                                                StringBuffer  response);
+  public native int findPathExcludingByEntityID(
+      long entityID1,
+      long entityID2,
+      int maxDegree,
+      String excludedEntities,
+      long flags,
+      StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int findPathExcludingByRecordID(String        dataSourceCode1,
-                                                String        recordID1,
-                                                String        dataSourceCode2,
-                                                String        recordID2,
-                                                int           maxDegree,
-                                                String        excludedEntities,
-                                                StringBuffer  response);
+  public native int findPathExcludingByRecordID(
+      String dataSourceCode1,
+      String recordID1,
+      String dataSourceCode2,
+      String recordID2,
+      int maxDegree,
+      String excludedEntities,
+      StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int findPathExcludingByRecordID(String        dataSourceCode1,
-                                                String        recordID1,
-                                                String        dataSourceCode2,
-                                                String        recordID2,
-                                                int           maxDegree,
-                                                String        excludedEntities,
-                                                long          flags,
-                                                StringBuffer  response);
+  public native int findPathExcludingByRecordID(
+      String dataSourceCode1,
+      String recordID1,
+      String dataSourceCode2,
+      String recordID2,
+      int maxDegree,
+      String excludedEntities,
+      long flags,
+      StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public native int findPathIncludingSourceByEntityID(
-      long          entityID1,
-      long          entityID2,
-      int           maxDegree,
-      String        excludedEntities,
-      String        requiredDsrcs,
-      StringBuffer  response);
+      long entityID1,
+      long entityID2,
+      int maxDegree,
+      String excludedEntities,
+      String requiredDsrcs,
+      StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public native int findPathIncludingSourceByEntityID(
-      long          entityID1,
-      long          entityID2,
-      int           maxDegree,
-      String        excludedEntities,
-      String        requiredDsrcs,
-      long          flags,
-      StringBuffer  response);
+      long entityID1,
+      long entityID2,
+      int maxDegree,
+      String excludedEntities,
+      String requiredDsrcs,
+      long flags,
+      StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public native int findPathIncludingSourceByRecordID(
-      String        dataSourceCode1,
-      String        recordID1,
-      String        dataSourceCode2,
-      String        recordID2,
-      int           maxDegree,
-      String        excludedEntities,
-      String        requiredDsrcs,
-      StringBuffer  response);
+      String dataSourceCode1,
+      String recordID1,
+      String dataSourceCode2,
+      String recordID2,
+      int maxDegree,
+      String excludedEntities,
+      String requiredDsrcs,
+      StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public native int findPathIncludingSourceByRecordID(
-      String        dataSourceCode1,
-      String        recordID1,
-      String        dataSourceCode2,
-      String        recordID2,
-      int           maxDegree,
-      String        excludedEntities,
-      String        requiredDsrcs,
-      long          flags,
-      StringBuffer  response);
+      String dataSourceCode1,
+      String recordID1,
+      String dataSourceCode2,
+      String recordID2,
+      int maxDegree,
+      String excludedEntities,
+      String requiredDsrcs,
+      long flags,
+      StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int findNetworkByEntityID(String        entityList,
-                                          int           maxDegree,
-                                          int           buildOutDegree,
-                                          int           maxEntities,
-                                          StringBuffer  response);
+  public native int findNetworkByEntityID(
+      String entityList, int maxDegree, int buildOutDegree, int maxEntities, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int findNetworkByEntityID(String        entityList,
-                                          int           maxDegree,
-                                          int           buildOutDegree,
-                                          int           maxEntities,
-                                          long          flags,
-                                          StringBuffer  response);
+  public native int findNetworkByEntityID(
+      String entityList,
+      int maxDegree,
+      int buildOutDegree,
+      int maxEntities,
+      long flags,
+      StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int findNetworkByRecordID(String        recordList,
-                                          int           maxDegree,
-                                          int           buildOutDegree,
-                                          int           maxEntities,
-                                          StringBuffer  response);
+  public native int findNetworkByRecordID(
+      String recordList, int maxDegree, int buildOutDegree, int maxEntities, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int findNetworkByRecordID(String        recordList,
-                                          int           maxDegree,
-                                          int           buildOutDegree,
-                                          int           maxEntities,
-                                          long          flags,
-                                          StringBuffer  response);
+  public native int findNetworkByRecordID(
+      String recordList,
+      int maxDegree,
+      int buildOutDegree,
+      int maxEntities,
+      long flags,
+      StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int whyRecordInEntity(String        dataSourceCode,
-                                        String        recordID,
-                                        StringBuffer  response);
+  public native int whyRecordInEntity(
+      String dataSourceCode, String recordID, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int whyRecordInEntity(String        dataSourceCode,
-                                        String        recordID,
-                                        long          flags,
-                                        StringBuffer  response);
+  public native int whyRecordInEntity(
+      String dataSourceCode, String recordID, long flags, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int whyRecords(String       dataSourceCode1,
-                               String       recordID1,
-                               String       dataSourceCode2,
-                               String       recordID2,
-                               StringBuffer response);
+  public native int whyRecords(
+      String dataSourceCode1,
+      String recordID1,
+      String dataSourceCode2,
+      String recordID2,
+      StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int whyRecords(String       dataSourceCode1,
-                               String       recordID1,
-                               String       dataSourceCode2,
-                               String       recordID2,
-                               long         flags,
-                               StringBuffer response);
+  public native int whyRecords(
+      String dataSourceCode1,
+      String recordID1,
+      String dataSourceCode2,
+      String recordID2,
+      long flags,
+      StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int whyEntities(long          entityID1,
-                                long          entityID2,
-                                StringBuffer  response);
+  public native int whyEntities(long entityID1, long entityID2, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int whyEntities(long          entityID1,
-                                long          entityID2,
-                                long          flags,
-                                StringBuffer  response);
-  
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int howEntityByEntityID(long          entityID,
-                                        StringBuffer  response);
-  
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int howEntityByEntityID(long          entityID,
-                                        long          flags,
-                                        StringBuffer  response);
+  public native int whyEntities(long entityID1, long entityID2, long flags, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int getVirtualEntityByRecordID(String        recordList,
-                                               StringBuffer  response);
+  public native int howEntityByEntityID(long entityID, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int getVirtualEntityByRecordID(String        recordList,
-                                               long          flags,
-                                               StringBuffer  response);
-  
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public native int getRecord(String        dataSourceCode,
-                              String        recordID,
-                              StringBuffer  response);
+  public native int howEntityByEntityID(long entityID, long flags, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int getRecord(String        dataSourceCode,
-                              String        recordID,
-                              long          flags,
-                              StringBuffer  response);
+  public native int getVirtualEntityByRecordID(String recordList, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int exportJSONEntityReport(long         flags,
-                                           Result<Long> exportHandle);
+  public native int getVirtualEntityByRecordID(
+      String recordList, long flags, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int exportCSVEntityReport(String        csvColumnList,
-                                          long          flags,
-                                          Result<Long>  exportHandle);
+  public native int getRecord(String dataSourceCode, String recordID, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
+  @Override
+  public native int getRecord(
+      String dataSourceCode, String recordID, long flags, StringBuffer response);
+
+  /** {@inheritDoc} */
+  @Override
+  public native int exportJSONEntityReport(long flags, Result<Long> exportHandle);
+
+  /** {@inheritDoc} */
+  @Override
+  public native int exportCSVEntityReport(
+      String csvColumnList, long flags, Result<Long> exportHandle);
+
+  /** {@inheritDoc} */
   @Override
   public native int fetchNext(long exportHandle, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public native int closeExport(long exportHandle);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public native int processRedoRecord(String redoRecord);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public native int processRedoRecordWithInfo(String redoRecord,
-                                              StringBuffer  response);
+  public native int processRedoRecordWithInfo(String redoRecord, StringBuffer response);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public native int getRedoRecord(StringBuffer record);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public native long countRedoRecords();
-
 }
-

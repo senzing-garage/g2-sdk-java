@@ -1,12 +1,8 @@
 package com.senzing.cmdline;
 
-/**
- * Thrown when a command-line argument is specified that is not recognized.
- */
+/** Thrown when a command-line argument is specified that is not recognized. */
 public class UnrecognizedOptionException extends CommandLineException {
-  /**
-   * The unrecognized option.
-   */
+  /** The unrecognized option. */
   private String option;
 
   /**

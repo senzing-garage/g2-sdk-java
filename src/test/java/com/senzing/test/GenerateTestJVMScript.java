@@ -1,8 +1,8 @@
 package com.senzing.test;
 
-import java.io.*;
-
 import static com.senzing.util.OperatingSystemFamily.*;
+
+import java.io.*;
 
 public class GenerateTestJVMScript {
   public static void main(String[] args) {
@@ -15,20 +15,21 @@ public class GenerateTestJVMScript {
     if (targetDir != null && !targetDir.exists()) {
       targetDir.mkdirs();
     }
-    String  senzingDirPath  = System.getProperty("senzing.install.dir");
-    String  javaHome        = System.getProperty("java.home");
-    File    javaHomeDir     = new File(javaHome);
-    File    javaBinDir      = new File(javaHomeDir, "bin");
-    String  javaExeName     = (RUNTIME_OS_FAMILY == WINDOWS) ? "javaw.exe" : "java";
-    File    javaExecutable  = new File(javaBinDir, javaExeName);
-    File    senzingDir      = (senzingDirPath != null && senzingDirPath.trim().length() > 0)
-                              ? new File(senzingDirPath) : null;
+    String senzingDirPath = System.getProperty("senzing.install.dir");
+    String javaHome = System.getProperty("java.home");
+    File javaHomeDir = new File(javaHome);
+    File javaBinDir = new File(javaHomeDir, "bin");
+    String javaExeName = (RUNTIME_OS_FAMILY == WINDOWS) ? "javaw.exe" : "java";
+    File javaExecutable = new File(javaBinDir, javaExeName);
+    File senzingDir =
+        (senzingDirPath != null && senzingDirPath.trim().length() > 0)
+            ? new File(senzingDirPath)
+            : null;
 
     // normalize the senzing directory path
     if (senzingDir != null) {
       String dirName = senzingDir.getName();
-      if (senzingDir.exists() && senzingDir.isDirectory()
-          && !dirName.equalsIgnoreCase("g2")) {
+      if (senzingDir.exists() && senzingDir.isDirectory() && !dirName.equalsIgnoreCase("g2")) {
         if (RUNTIME_OS_FAMILY == MAC_OS) {
           // for macOS be tolerant of Senzing.app or the electron app dir
           if (dirName.equalsIgnoreCase("Senzing.app")) {
@@ -89,15 +90,16 @@ public class GenerateTestJVMScript {
         break;
     }
 
-    String libraryPath = quote + libDir.toString() + quote
-        + ((platformLibDir != null)
-           ? pathSep + quote + platformLibDir + quote : "");
+    String libraryPath =
+        quote
+            + libDir.toString()
+            + quote
+            + ((platformLibDir != null) ? pathSep + quote + platformLibDir + quote : "");
 
     try {
       try (FileOutputStream fos = new FileOutputStream(targetFile);
-           OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
-           PrintWriter pw = new PrintWriter(osw))
-      {
+          OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
+          PrintWriter pw = new PrintWriter(osw)) {
         if (RUNTIME_OS_FAMILY == WINDOWS) {
           pw.println("@echo off");
           pw.println("set Path=" + libraryPath + ";%Path%");
@@ -106,11 +108,9 @@ public class GenerateTestJVMScript {
         } else {
           pw.println("#!/bin/sh");
           if (RUNTIME_OS_FAMILY == MAC_OS) {
-            pw.println("export DYLD_LIBRARY_PATH=" + libraryPath
-                           + ":$DYLD_LIBRARY_PATH");
+            pw.println("export DYLD_LIBRARY_PATH=" + libraryPath + ":$DYLD_LIBRARY_PATH");
           }
-          pw.println("export LD_LIBRARY_PATH=" + libraryPath
-                     + ":$LD_LIBRARY_PATH");
+          pw.println("export LD_LIBRARY_PATH=" + libraryPath + ":$LD_LIBRARY_PATH");
           pw.println("\"" + javaExecutable.toString() + "\" \"$@\"");
         }
       }

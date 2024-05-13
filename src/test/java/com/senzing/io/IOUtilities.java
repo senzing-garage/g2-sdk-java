@@ -1,5 +1,9 @@
 package com.senzing.io;
 
+import static java.nio.file.FileVisitResult.*;
+
+import com.ibm.icu.text.CharsetDetector;
+import com.ibm.icu.text.CharsetMatch;
 import java.io.*;
 import java.io.File;
 import java.nio.charset.Charset;
@@ -7,53 +11,33 @@ import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
-
 import org.mozilla.universalchardet.UniversalDetector;
-import com.ibm.icu.text.CharsetDetector;
-import com.ibm.icu.text.CharsetMatch;
 
-import static java.nio.file.FileVisitResult.*;
-
-/**
- * Static I/O utility functions.
- */
+/** Static I/O utility functions. */
 public class IOUtilities {
-  /**
-   * Constant for the name of the UTF-8 character encoding.
-   */
+  /** Constant for the name of the UTF-8 character encoding. */
   public static final String UTF_8 = "UTF-8";
 
-  /**
-   * Constant for the UTF-8 {@link Charset}.
-   */
+  /** Constant for the UTF-8 {@link Charset}. */
   public static final Charset UTF_8_CHARSET = Charset.forName(UTF_8);
 
-  /**
-   * Private default constructor.
-   */
+  /** Private default constructor. */
   private IOUtilities() {
     // do nothing
   }
 
   /**
-   * Reads an ASCII line of text from the specified {@link InputStream} until
-   * a linefeed character is encountered.
+   * Reads an ASCII line of text from the specified {@link InputStream} until a linefeed character
+   * is encountered.
    *
    * @param inputStream The input stream to read from.
-   *
    * @return The line that was read or <code>null</code> if EOF was reached.
-   *
    * @throws IOException If an I/O exception occurs.
    */
-  public static String readAsciiLine(InputStream inputStream)
-      throws IOException
-  {
+  public static String readAsciiLine(InputStream inputStream) throws IOException {
     StringBuilder sb = new StringBuilder();
     int readCount = 0;
-    for (int readByte = inputStream.read();
-         readByte >= 0;
-         readByte = inputStream.read())
-    {
+    for (int readByte = inputStream.read(); readByte >= 0; readByte = inputStream.read()) {
       readCount++;
       if (readByte == '\n') break;
       sb.append((char) readByte);
@@ -76,27 +60,23 @@ public class IOUtilities {
   }
 
   /**
-   * Reads the contents of the file as text and returns the {@link String}
-   * representing the contents.  The text is expected to be encoded in the
-   * specified character encoding.  If the specified character encoding is
-   * <code>null</code> then the system default encoding is used.
+   * Reads the contents of the file as text and returns the {@link String} representing the
+   * contents. The text is expected to be encoded in the specified character encoding. If the
+   * specified character encoding is <code>null</code> then the system default encoding is used.
    *
    * @param file The {@link File} whose contents should be read.
    * @param charEncoding The character encoding for the text in the file.
    * @return The {@link String} representing the contents of the file.
    * @throws IOException If an I/O failure occurs.
    */
-  public static String readTextFileAsString(File file, String charEncoding)
-    throws IOException
-  {
-    Charset charset = (charEncoding == null) ? Charset.defaultCharset()
-                    : Charset.forName(charEncoding);
+  public static String readTextFileAsString(File file, String charEncoding) throws IOException {
+    Charset charset =
+        (charEncoding == null) ? Charset.defaultCharset() : Charset.forName(charEncoding);
 
     try (FileInputStream fis = new FileInputStream(file);
-         InputStreamReader isr = new InputStreamReader(fis, charset);
-         Reader reader = bomSkippingReader(isr, charset.name());
-         BufferedReader br = new BufferedReader(reader))
-    {
+        InputStreamReader isr = new InputStreamReader(fis, charset);
+        Reader reader = bomSkippingReader(isr, charset.name());
+        BufferedReader br = new BufferedReader(reader)) {
       long size = file.length();
       if (size > Integer.MAX_VALUE) size = Integer.MAX_VALUE;
 
@@ -110,18 +90,16 @@ public class IOUtilities {
   }
 
   /**
-   * Reads text from the specified {@link Reader} until EOF is reached and
-   * returns a {@link String} representing the text that was read.  This
-   * function will close the specified {@link Reader} upon completion.
+   * Reads text from the specified {@link Reader} until EOF is reached and returns a {@link String}
+   * representing the text that was read. This function will close the specified {@link Reader} upon
+   * completion.
    *
    * @param reader The {@link Reader} whose contents should be read.
    * @return The {@link String} representing the text from the {@link Reader}.
    * @throws IOException If an I/O failure occurs.
    */
-  public static String readFully(Reader reader) throws IOException
-  {
-    try (BufferedReader br = new BufferedReader(reader))
-    {
+  public static String readFully(Reader reader) throws IOException {
+    try (BufferedReader br = new BufferedReader(reader)) {
       StringBuilder sb = new StringBuilder();
       for (int nextChar = br.read(); nextChar >= 0; nextChar = br.read()) {
         if (nextChar == 0) continue;
@@ -132,41 +110,37 @@ public class IOUtilities {
   }
 
   /**
-   * Reads data from the specified {@link InputStream} assuming the data
-   * represents characters and attempts via several methods to guess the
-   * character encoding of those characters.  If no character encoding can
-   * be determined with confidence then this returns <code>null</code>.
+   * Reads data from the specified {@link InputStream} assuming the data represents characters and
+   * attempts via several methods to guess the character encoding of those characters. If no
+   * character encoding can be determined with confidence then this returns <code>null</code>.
    *
    * @param is The {@link InputStream} to read from.
    * @return The name of the character encoding that was guessed.
    * @throws IOException If an I/O failure occurs.
    */
-  public static String detectCharacterEncoding(InputStream is)
-      throws IOException
-  {
+  public static String detectCharacterEncoding(InputStream is) throws IOException {
     UniversalDetector detector = new UniversalDetector(null);
     int readCount = 0;
     int totalReadCount = 0;
     byte[] buffer = new byte[50];
-    int maxReadCount = 10*1024*1024;
+    int maxReadCount = 10 * 1024 * 1024;
     boolean allAscii = true;
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     while ((totalReadCount < maxReadCount)
-           && !detector.isDone()
-           && ((readCount = is.read(buffer)) >= 0))
-    {
+        && !detector.isDone()
+        && ((readCount = is.read(buffer)) >= 0)) {
       totalReadCount += readCount;
       detector.handleData(buffer, 0, readCount);
       baos.write(buffer, 0, readCount);
     }
     detector.dataEnd();
     String encoding = detector.getDetectedCharset();
-    //if (encoding != null) return encoding;
+    // if (encoding != null) return encoding;
 
     // check if all ascii
     byte[] bytes = baos.toByteArray();
     for (byte b : bytes) {
-      if (((int)b) < 0) {
+      if (((int) b) < 0) {
         allAscii = false;
         break;
       }
@@ -212,12 +186,11 @@ public class IOUtilities {
   }
 
   /**
-   * Using the specified character encoding, this method will wraps the
-   * specified {@link Reader} in a new {@link Reader} that will skip
-   * the "byte order mark" (BOM) character at the beginning of the file for
-   * UTF character encodings (e.g.: "UTF-8", "UTF-16" or "UTF-32").  If the
-   * specified character encoding is not a "UTF" character encoding then it is
-   * simply returned as-is.
+   * Using the specified character encoding, this method will wraps the specified {@link Reader} in
+   * a new {@link Reader} that will skip the "byte order mark" (BOM) character at the beginning of
+   * the file for UTF character encodings (e.g.: "UTF-8", "UTF-16" or "UTF-32"). If the specified
+   * character encoding is not a "UTF" character encoding then it is simply returned as-is.
+   *
    * @param src The source {@link Reader}.
    * @param encoding The character encoding.
    * @return The new {@link Reader} that will skip the byte-order mark.
@@ -225,8 +198,7 @@ public class IOUtilities {
    * @throws NullPointerException If either parameter is <code>null</code>.
    */
   public static Reader bomSkippingReader(Reader src, String encoding)
-      throws IOException, NullPointerException
-  {
+      throws IOException, NullPointerException {
     // check if encoding is null (illegal)
     if (encoding == null) {
       throw new NullPointerException(
@@ -263,18 +235,15 @@ public class IOUtilities {
    * Creates the specified directory if it does not exist.
    *
    * @param dir The {@link File} representing the directory.
-   *
-   * @return <code>true</code> if the directory was created and
-   *         <code>false</code> if the directory already existed.
-   *
-   * @throws IOException If a failure occurs creating the directory or if
-   *                     the named directory exists but is not a directory.
+   * @return <code>true</code> if the directory was created and <code>false</code> if the directory
+   *     already existed.
+   * @throws IOException If a failure occurs creating the directory or if the named directory exists
+   *     but is not a directory.
    */
   public static boolean createDirectoryIfMissing(File dir) throws IOException {
     if (dir.exists() && dir.isDirectory()) return false;
     if (dir.exists()) {
-      throw new IOException(
-          "The named directory file exists, but is not a directory: " + dir);
+      throw new IOException("The named directory file exists, but is not a directory: " + dir);
     }
     boolean created = dir.mkdirs();
     if (!created) {
@@ -284,28 +253,30 @@ public class IOUtilities {
   }
 
   /**
-   * Recursively deletes the specified directory and returns the number of
-   * files in the directory that failed to be deleted.
+   * Recursively deletes the specified directory and returns the number of files in the directory
+   * that failed to be deleted.
    *
    * @param dir The {@link File} representing the directory.
-   *
    * @return The number of files in the directory that could not be deleted.
-   *
    * @throws IOException If a serious failure occurs.
    */
   public static int recursiveDeleteDirectory(File dir) throws IOException {
-    int[] failedCount = { 0 };
+    int[] failedCount = {0};
 
     Files.walkFileTree(
-        dir.toPath(), new FileVisitor<java.nio.file.Path>() {
-          public FileVisitResult preVisitDirectory(java.nio.file.Path path, BasicFileAttributes attrs) {
+        dir.toPath(),
+        new FileVisitor<java.nio.file.Path>() {
+          public FileVisitResult preVisitDirectory(
+              java.nio.file.Path path, BasicFileAttributes attrs) {
             return CONTINUE;
           }
+
           public FileVisitResult postVisitDirectory(java.nio.file.Path path, IOException e) {
             if (e != null) return CONTINUE;
             path.toFile().delete();
             return CONTINUE;
           }
+
           public FileVisitResult visitFile(java.nio.file.Path path, BasicFileAttributes attrs) {
             boolean result = path.toFile().delete();
             if (!result) {
@@ -313,6 +284,7 @@ public class IOUtilities {
             }
             return CONTINUE;
           }
+
           public FileVisitResult visitFileFailed(java.nio.file.Path path, IOException e) {
             e.printStackTrace();
             return CONTINUE;
@@ -333,12 +305,9 @@ public class IOUtilities {
    * @param file1 The first file.
    * @param file2 the second file.
    * @return <code>true</code> if the files differ, otherwise <code>false</code>
-   *
    * @throws IOException If an I/O exception occurs.
    */
-  public static boolean checkFilesDiffer(File file1, File file2)
-      throws IOException
-  {
+  public static boolean checkFilesDiffer(File file1, File file2) throws IOException {
     return checkFilesDiffer(file1, file2, false);
   }
 
@@ -347,17 +316,13 @@ public class IOUtilities {
    *
    * @param file1 The first file.
    * @param file2 the second file.
-   * @param timestampSignificant <code>true</code> if timestamps need to be the
-   *                             same, otherwise <code>false</code>
+   * @param timestampSignificant <code>true</code> if timestamps need to be the same, otherwise
+   *     <code>false</code>
    * @return <code>true</code> if the files differ, otherwise <code>false</code>
-   *
    * @throws IOException If an I/O exception occurs.
    */
-  public static boolean checkFilesDiffer(File     file1,
-                                         File     file2,
-                                         boolean  timestampSignificant)
-      throws IOException
-  {
+  public static boolean checkFilesDiffer(File file1, File file2, boolean timestampSignificant)
+      throws IOException {
     if (file1.equals(file2)) return false;
     if (!file1.exists() && !file2.exists()) return false;
     if (!file1.exists() || !file2.exists()) return true;
@@ -368,10 +333,9 @@ public class IOUtilities {
     }
 
     try (FileInputStream fis1 = new FileInputStream(file1);
-         FileInputStream fis2 = new FileInputStream(file2);
-         BufferedInputStream bis1 = new BufferedInputStream(fis1);
-         BufferedInputStream bis2 = new BufferedInputStream(fis2))
-    {
+        FileInputStream fis2 = new FileInputStream(file2);
+        BufferedInputStream bis1 = new BufferedInputStream(fis1);
+        BufferedInputStream bis2 = new BufferedInputStream(fis2)) {
       int byte1, byte2;
       do {
         byte1 = bis1.read();
@@ -386,13 +350,11 @@ public class IOUtilities {
   }
 
   /**
-   * Creates the specified file if it does not exist, otherwise it updates
-   * the modified time for the specified file.
+   * Creates the specified file if it does not exist, otherwise it updates the modified time for the
+   * specified file.
    *
    * @param file The {@link File} to be touched.
-   *
    * @return The last modified time of the file in milliseconds.
-   *
    * @throws IOException If a failure occurs.
    */
   public static long touchFile(File file) throws IOException {
@@ -405,74 +367,60 @@ public class IOUtilities {
   }
 
   /**
-   * Wraps the specified {@link InputStream} in one that will <b>not</b>
-   * close the underlying {@link InputStream} when {@link InputStream#close()}
-   * is called.  This means you must keep a reference to the original input
-   * stream so that you can close it when appropriate.
+   * Wraps the specified {@link InputStream} in one that will <b>not</b> close the underlying {@link
+   * InputStream} when {@link InputStream#close()} is called. This means you must keep a reference
+   * to the original input stream so that you can close it when appropriate.
    *
    * @param inputStream The backing input stream to wrap.
-   *
-   * @return The {@link InputStream} that is backed by the specified {@link
-   *         InputStream}, but will not close the backing {@link InputStream}
-   *         when closed.
+   * @return The {@link InputStream} that is backed by the specified {@link InputStream}, but will
+   *     not close the backing {@link InputStream} when closed.
    */
   public static InputStream nonClosingWrapper(InputStream inputStream) {
     return new NonClosingInputStream(inputStream);
   }
 
   /**
-   * Wraps the specified {@link OutputStream} in one that will <b>not</b>
-   * close the underlying {@link OutputStream} when {@link OutputStream#close()}
-   * is called -- it will instead call {@link OutputStream#flush()}  This means
-   * you must keep a reference to the original output stream so that you can
-   * close it when appropriate.
+   * Wraps the specified {@link OutputStream} in one that will <b>not</b> close the underlying
+   * {@link OutputStream} when {@link OutputStream#close()} is called -- it will instead call {@link
+   * OutputStream#flush()} This means you must keep a reference to the original output stream so
+   * that you can close it when appropriate.
    *
    * @param outputStream The backing output stream to wrap.
-   *
-   * @return The {@link OutputStream} that is backed by the specified {@link
-   *         OutputStream}, but will not close the backing {@link OutputStream}
-   *         when closed.
+   * @return The {@link OutputStream} that is backed by the specified {@link OutputStream}, but will
+   *     not close the backing {@link OutputStream} when closed.
    */
   public static OutputStream nonClosingWrapper(OutputStream outputStream) {
     return new NonClosingOutputStream(outputStream);
   }
 
   /**
-   * Wraps the specified {@link Reader} in one that will <b>not</b>
-   * close the underlying {@link Reader} when {@link Reader#close()}
-   * is called.  This means you must keep a reference to the original reader
-   * so that you can close it when appropriate.
+   * Wraps the specified {@link Reader} in one that will <b>not</b> close the underlying {@link
+   * Reader} when {@link Reader#close()} is called. This means you must keep a reference to the
+   * original reader so that you can close it when appropriate.
    *
    * @param reader The backing reader to wrap.
-   *
-   * @return The {@link Reader} that is backed by the specified {@link
-   *         Reader}, but will not close the backing {@link Reader}
-   *         when closed.
+   * @return The {@link Reader} that is backed by the specified {@link Reader}, but will not close
+   *     the backing {@link Reader} when closed.
    */
   public static Reader nonClosingWrapper(Reader reader) {
     return new NonClosingReader(reader);
   }
 
   /**
-   * Wraps the specified {@link Writer} in one that will <b>not</b>
-   * close the underlying {@link Writer} when {@link Writer#close()}
-   * is called -- it will instead call {@link Writer#flush()}  This means
-   * you must keep a reference to the original output stream so that you can
-   * close it when appropriate.
+   * Wraps the specified {@link Writer} in one that will <b>not</b> close the underlying {@link
+   * Writer} when {@link Writer#close()} is called -- it will instead call {@link Writer#flush()}
+   * This means you must keep a reference to the original output stream so that you can close it
+   * when appropriate.
    *
    * @param writer The backing output stream to wrap.
-   *
-   * @return The {@link Writer} that is backed by the specified {@link
-   *         Writer}, but will not close the backing {@link Writer}
-   *         when closed.
+   * @return The {@link Writer} that is backed by the specified {@link Writer}, but will not close
+   *     the backing {@link Writer} when closed.
    */
   public static Writer nonClosingWrapper(Writer writer) {
     return new NonClosingWriter(writer);
   }
 
-  /**
-   * Extends {@link FilterInputStream} to prevent closing of the backing stream.
-   */
+  /** Extends {@link FilterInputStream} to prevent closing of the backing stream. */
   private static class NonClosingInputStream extends FilterInputStream {
     private NonClosingInputStream(InputStream backingStream) {
       super(backingStream);
@@ -483,10 +431,7 @@ public class IOUtilities {
     }
   }
 
-  /**
-   * Extends {@link FilterOutputStream} to prevent closing of the backing
-   * stream.
-   */
+  /** Extends {@link FilterOutputStream} to prevent closing of the backing stream. */
   private static class NonClosingOutputStream extends FilterOutputStream {
     private NonClosingOutputStream(OutputStream backingStream) {
       super(backingStream);
@@ -501,9 +446,7 @@ public class IOUtilities {
     }
   }
 
-  /**
-   * Extends {@link FilterReader} to prevent closing of the backing reader.
-   */
+  /** Extends {@link FilterReader} to prevent closing of the backing reader. */
   private static class NonClosingReader extends FilterReader {
     private NonClosingReader(Reader backingReader) {
       super(backingReader);
@@ -514,9 +457,7 @@ public class IOUtilities {
     }
   }
 
-  /**
-   * Extends {@link FilterWriter} to prevent closing of the backing writer.
-   */
+  /** Extends {@link FilterWriter} to prevent closing of the backing writer. */
   private static class NonClosingWriter extends FilterWriter {
     private NonClosingWriter(Writer backingWriter) {
       super(backingWriter);

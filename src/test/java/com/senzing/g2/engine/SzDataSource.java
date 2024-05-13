@@ -1,36 +1,26 @@
 package com.senzing.g2.engine;
 
 import java.util.Objects;
-
 import javax.json.Json;
-import javax.json.JsonObjectBuilder;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 
-/**
- * Provides a simple data source implementation.
- */
+/** Provides a simple data source implementation. */
 public class SzDataSource {
-  /**
-   * The data source code.
-   */
+  /** The data source code. */
   private String dataSourceCode;
 
-  /**
-   * The data source ID.
-   */
+  /** The data source ID. */
   private Integer dataSourceId;
 
-  /**
-   * Default constructor.
-   */
+  /** Default constructor. */
   public SzDataSource() {
     this.dataSourceCode = null;
-    this.dataSourceId   = null;
+    this.dataSourceId = null;
   }
 
   /**
-   * Constructs with the specified data source code and a <tt>null</tt>
-   * data source ID.
+   * Constructs with the specified data source code and a <tt>null</tt> data source ID.
    *
    * @param dataSourceCode The data source code for the data source.
    */
@@ -42,13 +32,12 @@ public class SzDataSource {
    * Constructs with the specified data source code and data source ID.
    *
    * @param dataSourceCode The data source code for the data source.
-   * @param dataSourceId The data source ID for the data source, or
-   *                     <tt>null</tt> if the data source ID is not
-   *                     specified.
+   * @param dataSourceId The data source ID for the data source, or <tt>null</tt> if the data source
+   *     ID is not specified.
    */
   public SzDataSource(String dataSourceCode, Integer dataSourceId) {
     this.dataSourceCode = dataSourceCode.toUpperCase().trim();
-    this.dataSourceId   = dataSourceId;
+    this.dataSourceId = dataSourceId;
   }
 
   /**

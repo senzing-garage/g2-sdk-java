@@ -4,80 +4,66 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Represents a value obtained from the command-line parser for a given
- * {@link CommandLineOption}.
+ * Represents a value obtained from the command-line parser for a given {@link CommandLineOption}.
  */
 public class CommandLineValue implements SpecifiedOption {
-  /**
-   * The option for this value.
-   */
+  /** The option for this value. */
   private CommandLineOption option;
 
-  /**
-   * The {@link CommandLineSource} from whence the value came.
-   */
+  /** The {@link CommandLineSource} from whence the value came. */
   private CommandLineSource source;
 
   /**
-   * The command-line flag or environment variable from which the value
-   * was obtained if the source is not {@link CommandLineSource#DEFAULT}.
+   * The command-line flag or environment variable from which the value was obtained if the source
+   * is not {@link CommandLineSource#DEFAULT}.
    */
   private String specifier;
 
-  /**
-   * The processed value for the option.
-   */
+  /** The processed value for the option. */
   private Object processedValue;
 
-  /**
-   * The original text parameter values for the option.
-   */
+  /** The original text parameter values for the option. */
   private List<String> parameters;
 
   /**
-   * Constructs with the specified option, {@link CommandLineSource}, processed
-   * value and {@link List} of {@link String} parameters that were used to
-   * specify this option.
+   * Constructs with the specified option, {@link CommandLineSource}, processed value and {@link
+   * List} of {@link String} parameters that were used to specify this option.
    *
-   * @param source The {@link CommandLineSource} that represents the source of
-   *               the value.
+   * @param source The {@link CommandLineSource} that represents the source of the value.
    * @param option The {@link CommandLineOption} that for with this value.
    * @param processedValue The processed value from the command-line parser.
    * @param parameters The {@link String} parameters used to specify this.
    */
-  public CommandLineValue(CommandLineSource source,
-                          CommandLineOption option,
-                          Object            processedValue,
-                          List<String>      parameters)
-  {
+  public CommandLineValue(
+      CommandLineSource source,
+      CommandLineOption option,
+      Object processedValue,
+      List<String> parameters) {
     this(source, option, null, processedValue, parameters);
   }
 
   /**
-   * Constructs with the specified option, {@link CommandLineSource}, processed
-   * value and {@link List} of {@link String} parameters that were used to
-   * specify this option.
+   * Constructs with the specified option, {@link CommandLineSource}, processed value and {@link
+   * List} of {@link String} parameters that were used to specify this option.
    *
-   * @param source The {@link CommandLineSource} that represents the source of
-   *               the value.
+   * @param source The {@link CommandLineSource} that represents the source of the value.
    * @param option The {@link CommandLineOption} that for with this value.
-   * @param specifier The {@link String} specifier associated with the {@link
-   *                  CommandLineSource} or <code>null</code> if it does not
-   *                  apply.
+   * @param specifier The {@link String} specifier associated with the {@link CommandLineSource} or
+   *     <code>null</code> if it does not apply.
    * @param processedValue The processed value from the command-line parser.
    * @param parameters The {@link String} parameters used to specify this.
    */
-  public CommandLineValue(CommandLineSource source,
-                          CommandLineOption option,
-                          String            specifier,
-                          Object            processedValue,
-                          List<String>      parameters)
-  {
-    this.option         = option;
-    this.source         = source;
-    this.specifier      = specifier;
+  public CommandLineValue(
+      CommandLineSource source,
+      CommandLineOption option,
+      String specifier,
+      Object processedValue,
+      List<String> parameters) {
+    this.option = option;
+    this.source = source;
+    this.specifier = specifier;
     this.processedValue = processedValue;
-    this.parameters     = List.copyOf(parameters);
+    this.parameters = List.copyOf(parameters);
   }
 
   /**
@@ -110,11 +96,11 @@ public class CommandLineValue implements SpecifiedOption {
   }
 
   /**
-   * Gets the specifier associated with the {@link CommandLineSource} (if any).
-   * This returns <code>null</code> if none.
+   * Gets the specifier associated with the {@link CommandLineSource} (if any). This returns <code>
+   * null</code> if none.
    *
-   * @return The specifier associated with the {@link CommandLineSource}, or
-   *         <code>null</code> if none.
+   * @return The specifier associated with the {@link CommandLineSource}, or <code>null</code> if
+   *     none.
    */
   @Override
   public String getSpecifier() {
@@ -122,11 +108,11 @@ public class CommandLineValue implements SpecifiedOption {
   }
 
   /**
-   * Sets the specifier associated with the {@link CommandLineSource} (if any).
-   * Set this to <code>null</code> if none.
+   * Sets the specifier associated with the {@link CommandLineSource} (if any). Set this to <code>
+   * null</code> if none.
    *
-   * @param specifier The specifier associated with the {@link
-   *                  CommandLineSource}, or <code>null</code> if none.
+   * @param specifier The specifier associated with the {@link CommandLineSource}, or <code>null
+   *     </code> if none.
    */
   public void setSpecifier(String specifier) {
     this.specifier = specifier;
@@ -144,16 +130,15 @@ public class CommandLineValue implements SpecifiedOption {
   /**
    * Sets the processed value associated with the {@link CommandLineOption}.
    *
-   * @param processedValue The processed value associated with the {@link
-   *                       CommandLineOption}.
+   * @param processedValue The processed value associated with the {@link CommandLineOption}.
    */
   public void setProcessedValue(Object processedValue) {
     this.processedValue = processedValue;
   }
 
   /**
-   * Gets the {@link List} of {@link String} parameters for this option.
-   * These are the unprocessed parameter values that were passed.
+   * Gets the {@link List} of {@link String} parameters for this option. These are the unprocessed
+   * parameter values that were passed.
    *
    * @return The {@link List} of {@link String} parameters for this option.
    */
@@ -162,11 +147,10 @@ public class CommandLineValue implements SpecifiedOption {
   }
 
   /**
-   * Sets the {@link List} of {@link String} parameters for this option.
-   * These are the unprocessed parameter values that were passed.
+   * Sets the {@link List} of {@link String} parameters for this option. These are the unprocessed
+   * parameter values that were passed.
    *
-   * @param parameters The {@link List} of {@link String} parameters for this
-   *                   option.
+   * @param parameters The {@link List} of {@link String} parameters for this option.
    */
   public void setParameters(List<String> parameters) {
     this.parameters = parameters;
@@ -178,10 +162,17 @@ public class CommandLineValue implements SpecifiedOption {
    * @return A diagnostic {@link String} describing this instance.
    */
   public String toString() {
-    return ("{ option=[ " + this.getOption() + " ], processedValue=[ "
-            + this.getProcessedValue() + " ], source=[ " + this.getSource()
-            + " ], specifier=[ " + this.getSpecifier() + " ], parameters=[ "
-            + this.getParameters() + " ] }");
+    return ("{ option=[ "
+        + this.getOption()
+        + " ], processedValue=[ "
+        + this.getProcessedValue()
+        + " ], source=[ "
+        + this.getSource()
+        + " ], specifier=[ "
+        + this.getSpecifier()
+        + " ], parameters=[ "
+        + this.getParameters()
+        + " ] }");
   }
 
   @Override
@@ -199,10 +190,11 @@ public class CommandLineValue implements SpecifiedOption {
 
   @Override
   public int hashCode() {
-    return Objects.hash(this.getOption(),
-                        this.getSource(),
-                        this.getSpecifier(),
-                        this.getProcessedValue(),
-                        this.getParameters());
+    return Objects.hash(
+        this.getOption(),
+        this.getSource(),
+        this.getSpecifier(),
+        this.getProcessedValue(),
+        this.getParameters());
   }
 }
