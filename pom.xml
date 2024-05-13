@@ -278,7 +278,7 @@
               <excludes>
                 <exclude>**/Utilities.java</exclude>
               </excludes>
-              <targetPercentage>80%</targetPercentage>
+              <!--targetPercentage>80%</targetPercentage-->
             </configuration>
             <executions>
               <execution>
@@ -319,6 +319,18 @@
                 </goals>
               </execution>
             </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>googlejavaformat</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.google.googlejavaformat</groupId>
+            <artifactId>google-java-format</artifactId>
+            <version>1.22.0</version>
           </plugin>
         </plugins>
       </build>

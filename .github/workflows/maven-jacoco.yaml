@@ -40,7 +40,7 @@ jobs:
         run: |
           # temp skip checkstyle and spotbugs to verify coverage
           # -Dmaven.test.failure.ignore=true
-          mvn clean install -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Pjacoco -Djacoco.haltOnFailure=false -Djacoco.ignoreFailture=true -Dsenzing.support.dir="/opt/senzing/data"
+          mvn clean install -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Pjacoco,googlejavaformat -Djacoco.haltOnFailure=false -Djacoco.ignoreFailture=true -Dsenzing.support.dir="/opt/senzing/data"
           ls ${{ github.workspace }}/target
           ls ${{ github.workspace }}/target/site/jacoco
           grep -Ril *.xml target
