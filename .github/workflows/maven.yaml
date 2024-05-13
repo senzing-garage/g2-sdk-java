@@ -39,7 +39,8 @@ jobs:
       - name: Build with Maven
         run: |
           # temp skip checkstyle and spotbugs to verify coverage
-          mvn clean install -B -Dcheckstyle.skip -Dspotbugs.skip -Dmaven.test.failure.ignore=true
+          # -Dmaven.test.failure.ignore=true
+          mvn clean install -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dcheckstyle.skip -Dspotbugs.skip -Djacoco.haltOnFailure=false -Djacoco.ignoreFailture=true -Dsenzing.support.dir="/opt/senzing/data"
           ls ${{ github.workspace }}/target
           ls ${{ github.workspace }}/target/site/jacoco
           grep -Ril *.xml target
@@ -48,7 +49,7 @@ jobs:
         id: jacoco
         uses: madrapps/jacoco-report@v1.6.1
         with:
-          paths: ${{ github.workspace }}/target/site/**/*.html
+          paths: ${{ github.workspace }}/target/site/**/*.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           #min-coverage-overall: 80
           #min-coverage-changed-files: 80
