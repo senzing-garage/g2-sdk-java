@@ -43,7 +43,10 @@ jobs:
           mvn clean install -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Popenclover -Dsenzing.support.dir="/opt/senzing/data"
           ls ${{ github.workspace }}/target
           ls ${{ github.workspace }}/target/site/clover
+          find . -name "*.xml"
           grep -R *.xml target
+          mkdir ./coverage
+          cp ./target/site/clover/clover.xml ./coverage/clover.xml
 
       - uses: danhunsaker/clover-reporter-action@v0.2.17-clover
         with:
