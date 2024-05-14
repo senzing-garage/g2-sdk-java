@@ -24,7 +24,7 @@ jobs:
         with:
           format: rdjson
           output: rd.json
-          diff: true
+          #diff: true
 
       - name: Run reviewdog
         if: always()

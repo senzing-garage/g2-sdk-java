@@ -34,7 +34,7 @@ jobs:
       - name: install Senzing API
         uses: senzing-factory/github-action-install-senzing-api@v3
         with:
-          senzingapi-runtime-version: ${{ matrix.senzingapi-runtime-version }}      
+          senzingapi-runtime-version: ${{ matrix.senzingapi-runtime-version }}
 
       - name: Build with Maven
         run: |
