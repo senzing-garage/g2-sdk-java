@@ -1,18 +1,14 @@
-name: maven openclover
+name: maven darwin
 
-on:
-  push:
-    branches-ignore: [main]
-  pull_request:
-    branches: [main]
+on: [pull_request, workflow_dispatch]
 
 permissions:
   contents: read
   pull-requests: write
 
 jobs:
-  maven:
-    runs-on: ubuntu-latest
+  maven-darwin:
+    runs-on: macos-latest
     strategy:
       matrix:
         include:
@@ -34,24 +30,25 @@ jobs:
       - name: install Senzing API
         uses: senzing-factory/github-action-install-senzing-api@v3
         with:
-          senzingapi-runtime-version: ${{ matrix.senzingapi-runtime-version }}   
+          senzingapi-runtime-version: ${{ matrix.senzingapi-runtime-version }}      
 
       - name: Build with Maven
         run: |
-          # temp skip checkstyle and spotbugs to verify coverage
-          # -Dmaven.test.failure.ignore=true
-          mvn clean install -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Popenclover -Dsenzing.support.dir="/opt/senzing/data"
-          ls ${{ github.workspace }}/target
-          ls ${{ github.workspace }}/target/site/clover
-          find . -name "*.xml"
-          grep -R *.xml target
-          mkdir ./coverage
-          cp ./target/site/clover/clover.xml ./coverage/clover.xml
+          mvn clean install -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Pjacoco -Djacoco.haltOnFailure=false -Djacoco.ignoreFailture=true -Dsenzing.support.dir="/opt/senzing/data"
 
-      - uses: danhunsaker/clover-reporter-action@v0.2.17-clover
+      - name: Jacoco Report to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.6.1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          clover-file: ./coverage/clover.xml
+          paths: ${{ github.workspace }}/target/site/**/*.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          #min-coverage-overall: 80
+          #min-coverage-changed-files: 80
+          title: Code Coverage
+          update-comment: true
+          skip-if-no-changes: true
+          pass-emoji: ':green_circle:'
+          fail-emoji: ':red_circle:'
 
       - name: Fail PR if overall coverage is less than 80%
         if: ${{ steps.jacoco.outputs.coverage-overall < 80.0 }}
