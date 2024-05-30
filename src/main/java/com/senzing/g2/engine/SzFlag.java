@@ -546,8 +546,9 @@ public enum SzFlag {
         SzFlags.SZ_INCLUDE_MATCH_KEY_DETAILS, SZ_ENTITY_HOW_SET),
 
     /**
-     * The value for find-path functionality to indicate that
-     * excluded entities are still allowed, but not preferred.
+     * The value for find-path functionality to indicate that avoided entities
+     * must be strictly avoided even if using an avoided entity would be the 
+     * only means to find a path between two entities.
      * <p>
      * This flag belongs to the following usage groups:
      * <ul>
@@ -555,8 +556,8 @@ public enum SzFlag {
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
-    SZ_FIND_PATH_PREFER_EXCLUDE(
-        SzFlags.SZ_FIND_PATH_PREFER_EXCLUDE, SZ_FIND_PATH_SET),
+    SZ_FIND_PATH_STRICT_AVOID(
+        SzFlags.SZ_FIND_PATH_STRICT_AVOID, SZ_FIND_PATH_SET),
 
     /**
      * The value for find-path functionality to include matching info on entity paths.
@@ -779,7 +780,7 @@ public enum SzFlag {
      */
     public static final Set<SzFlag> SZ_WITH_INFO_FLAGS
         = Collections.unmodifiableSet(EnumSet.of(SZ_WITH_INFO));
-
+    
     /**
      * The <b>unmodifiable</b> {@link Set} of {@link SzFlag} instances indicating
      * that an export should include all entities in the export.

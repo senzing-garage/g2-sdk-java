@@ -202,12 +202,12 @@ public class SzCoreConfigManagerTest extends AbstractTest {
 
     @Test
     @Order(50)
-    void testGetConfigList() {
+    void testGetConfigs() {
         this.performTest(() -> {
             try {
                 SzConfigManager configMgr = this.env.getConfigManager();
                     
-                String result = configMgr.getConfigList();
+                String result = configMgr.getConfigs();
                 
                 JsonObject jsonObj = parseJsonObject(result);
 
@@ -245,7 +245,7 @@ public class SzCoreConfigManagerTest extends AbstractTest {
                 assertTrue(comments.contains(MODIFIED_COMMENT), "Second config comment not as expected");
 
             } catch (Exception e) {
-                fail("Failed testGetConfigList test with exception", e);
+                fail("Failed testGetConfigs test with exception", e);
             }
         });
     }

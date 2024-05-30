@@ -100,7 +100,7 @@ public class SzCoreEngine implements SzEngine {
     }
 
     /**
-     * The package-protected function to destroy the Senzing Config SDK.
+     * The package-protected function to destroy the Senzing Engine SDK.
      */
     void destroy() {
         synchronized (this) {
@@ -140,7 +140,9 @@ public class SzCoreEngine implements SzEngine {
             int returnCode = 0;
             String result = NO_INFO;
             // check if we have flags to pass downstream or need info
-            if (downstreamFlags == 0L && !flags.contains(SZ_WITH_INFO)) {
+            if (downstreamFlags == 0L
+                && (flags == null || !flags.contains(SZ_WITH_INFO)))
+            {
                 // no info needed, no flags to pass, go simple
                 returnCode = this.nativeApi.addRecord(dataSourceCode,
                                                       recordId,
@@ -156,7 +158,9 @@ public class SzCoreEngine implements SzEngine {
                                                               sb);
 
                 // set the info result if requested
-                if (flags.contains(SZ_WITH_INFO)) result = sb.toString();
+                if (flags != null && flags.contains(SZ_WITH_INFO)) {
+                    result = sb.toString();
+                }
             }
 
             // check the return code
@@ -236,7 +240,9 @@ public class SzCoreEngine implements SzEngine {
             int returnCode = 0;
             String result = NO_INFO;
             // check if we have flags to pass downstream or need info
-            if (downstreamFlags == 0L && !flags.contains(SZ_WITH_INFO)) {
+            if (downstreamFlags == 0L 
+                && (flags == null || !flags.contains(SZ_WITH_INFO))) 
+            {
                 // no info needed, no flags to pass, go simple
                 returnCode = this.nativeApi.deleteRecord(
                     dataSourceCode, recordId);
@@ -248,7 +254,9 @@ public class SzCoreEngine implements SzEngine {
                     dataSourceCode, recordId, downstreamFlags, sb);
 
                 // set the info result if requested
-                if (flags.contains(SZ_WITH_INFO)) result = sb.toString();
+                if (flags != null && flags.contains(SZ_WITH_INFO)) {
+                    result = sb.toString();
+                }
             }
 
             // check the return code
@@ -368,7 +376,7 @@ public class SzCoreEngine implements SzEngine {
      */
     protected static String encodeEntityIds(Set<Long> entityIds) {
         StringBuilder sb = new StringBuilder();
-        sb.append("{\"ENTITIES\": [");
+        sb.append("{\"ENTITIES\":[");
         if (entityIds != null) {
             String prefix = "";
             for (Long entityId : entityIds) {
@@ -410,7 +418,7 @@ public class SzCoreEngine implements SzEngine {
      */
     protected static String encodeRecordKeys(Set<SzRecordKey> recordKeys) {
         StringBuilder sb = new StringBuilder();
-        sb.append("{\"RECORDS\": [");
+        sb.append("{\"RECORDS\":[");
         if (recordKeys != null) {
             String prefix = "";
             for (SzRecordKey recordKey : recordKeys) {
@@ -430,8 +438,8 @@ public class SzCoreEngine implements SzEngine {
     }
 
     /**
-     * Encodes the {@link Set} of {@link SzRecordKey} instances as JSON.
-     * The JSON is formatted as:
+     * Encodes the {@link Set} of {@link String} data source codes
+     * as JSON.  The JSON is formatted as:
      * <pre>
      *    { "DATA_SOURCES": [
      *        "&lt;data_source_code1&gt;",
@@ -447,7 +455,7 @@ public class SzCoreEngine implements SzEngine {
      */
     protected static String encodeDataSources(Set<String> dataSources) {
         StringBuilder sb = new StringBuilder();
-        sb.append("{\"DATA_SOURCES\": [");
+        sb.append("{\"DATA_SOURCES\":[");
         if (dataSources != null) {
             String prefix = "";
             for (String dataSourceCode : dataSources) {
@@ -547,12 +555,12 @@ public class SzCoreEngine implements SzEngine {
     }
 
     @Override
-    public String findPathByEntityId(long           startEntityId, 
-                                     long           endEntityId,
-                                     int            maxDegrees,
-                                     Set<Long>      exclusions,
-                                     Set<String>    requiredDataSources,
-                                     Set<SzFlag>    flags)
+    public String findPath(long         startEntityId, 
+                           long         endEntityId,
+                           int          maxDegrees,
+                           Set<Long>    exclusions,
+                           Set<String>  requiredDataSources,
+                           Set<SzFlag>  flags)
         throws SzNotFoundException,
                SzUnknownDataSourceException,
                SzException
@@ -570,7 +578,7 @@ public class SzCoreEngine implements SzEngine {
             {
                 // call the base function
                 returnCode = this.nativeApi.findPathByEntityID(
-                    startEntityId, endEntityId, maxDegrees, sb);
+                    startEntityId, endEntityId, maxDegrees, downstreamFlags, sb);
 
             } else if (requiredDataSources == null || requiredDataSources.isEmpty()) {
                 // encode the entity ID's
@@ -578,7 +586,8 @@ public class SzCoreEngine implements SzEngine {
 
                 // call the variant with exclusions, but without required data sources
                 returnCode = this.nativeApi.findPathExcludingByEntityID(
-                    startEntityId, endEntityId, maxDegrees, exclusionJson, sb);
+                    startEntityId, endEntityId, maxDegrees, exclusionJson, 
+                    downstreamFlags, sb);
 
             } else {
                 // encode the entity ID's
@@ -589,7 +598,8 @@ public class SzCoreEngine implements SzEngine {
 
                 // we have to call the full-blown variant of the function
                 returnCode = this.nativeApi.findPathIncludingSourceByEntityID(
-                    startEntityId, endEntityId, maxDegrees, exclusionJson, dataSourceJson, sb);
+                    startEntityId, endEntityId, maxDegrees, exclusionJson, 
+                    dataSourceJson, downstreamFlags, sb);
             }
 
             // check the return code
@@ -613,26 +623,26 @@ public class SzCoreEngine implements SzEngine {
     }
 
     @Override
-    public String findPathByRecordId(String             startDataSourceCode,
-                                     String             startRecordId, 
-                                     String             endDataSourceCode, 
-                                     String             endRecordId,
-                                     int                maxDegrees,
-                                     Set<SzRecordKey>   exclusions,
-                                     Set<String>        requiredDataSources,
-                                     Set<SzFlag>        flags)
+    public String findPath(String           startDataSourceCode,
+                           String           startRecordId, 
+                           String           endDataSourceCode, 
+                           String           endRecordId,
+                           int              maxDegrees,
+                           Set<SzRecordKey> exclusions,
+                           Set<String>      requiredDataSources,
+                           Set<SzFlag>      flags)
             throws SzNotFoundException,
                    SzUnknownDataSourceException,
                    SzException 
     {
         // clear out the SDK-specific flags
-        long downstreamFlags = SzFlag.toLong(flags) & SDK_FLAG_MASK;
+        long downstreamFlags = (SzFlag.toLong(flags) & SDK_FLAG_MASK);
 
         return this.env.execute(() -> {
             StringBuffer sb = new StringBuffer();
 
             int returnCode = 0;
-            
+            String callVersion = null;
             if ((exclusions == null || exclusions.isEmpty())
                 && (requiredDataSources == null || requiredDataSources.isEmpty()))
             {
@@ -643,7 +653,9 @@ public class SzCoreEngine implements SzEngine {
                     endDataSourceCode, 
                     endRecordId,
                     maxDegrees,
+                    downstreamFlags,
                     sb);
+                callVersion = "findPathByRecordID()";
 
             } else if (requiredDataSources == null || requiredDataSources.isEmpty()) {
                 // encode the entity ID's
@@ -657,8 +669,11 @@ public class SzCoreEngine implements SzEngine {
                     endRecordId,
                     maxDegrees,
                     exclusionJson,
+                    downstreamFlags,
                     sb);
 
+                callVersion = "findPathExcludingByRecordID()";
+            
             } else {
                 // encode the entity ID's
                 String exclusionJson = encodeRecordKeys(exclusions);
@@ -675,7 +690,10 @@ public class SzCoreEngine implements SzEngine {
                     maxDegrees,
                     exclusionJson,
                     dataSourceJson,
+                    downstreamFlags,
                     sb);
+
+                callVersion = "findPathIncludingSourceByRecordID()";    
             }
 
             // check the return code
@@ -694,14 +712,14 @@ public class SzCoreEngine implements SzEngine {
                         "flags", SzFlag.toString(flags),
                         "[downstreamFlags]",
                         SZ_FIND_PATH.toString(downstreamFlags)));
-                }
+            }
 
             return sb.toString();
         });
     }
 
     @Override
-    public String findPathByRecordId(SzRecordKey        startRecordKey,
+    public String findPath(SzRecordKey        startRecordKey,
                                      SzRecordKey        endRecordKey,
                                      int                maxDegrees,
                                      Set<SzRecordKey>   exclusions,
@@ -711,7 +729,7 @@ public class SzCoreEngine implements SzEngine {
                    SzUnknownDataSourceException,
                    SzException 
     {
-        return this.findPathByRecordId(startRecordKey.dataSourceCode(),
+        return this.findPath(startRecordKey.dataSourceCode(),
                                        startRecordKey.recordId(),
                                        endRecordKey.dataSourceCode(),
                                        endRecordKey.recordId(),
@@ -853,7 +871,8 @@ public class SzCoreEngine implements SzEngine {
             }
 
             // return the result
-            return sb.toString();
+            String redoRecord = sb.toString();
+            return (redoRecord.length() == 0) ? null : redoRecord;
         });
     }
 
@@ -952,7 +971,7 @@ public class SzCoreEngine implements SzEngine {
             int returnCode = 0;
             String result = NO_INFO;
             // check if we have flags to pass downstream
-            if (!flags.contains(SZ_WITH_INFO)) {
+            if (flags == null || !flags.contains(SZ_WITH_INFO)) {
                 returnCode = this.nativeApi.processRedoRecord(redoRecord);
 
             } else {
@@ -988,7 +1007,7 @@ public class SzCoreEngine implements SzEngine {
             String result = NO_INFO;
 
             // check if we have flags to pass downstream or need info
-            if (!flags.contains(SZ_WITH_INFO)) {
+            if (flags == null || !flags.contains(SZ_WITH_INFO)) {
                 // no info needed, no flags to pass, go simple
                 returnCode = this.nativeApi.reevaluateEntity(
                     entityId, downstreamFlags);
@@ -1033,7 +1052,7 @@ public class SzCoreEngine implements SzEngine {
             String result = NO_INFO;
 
             // check if we have flags to pass downstream or need info
-            if (!flags.contains(SZ_WITH_INFO)) {
+            if (flags == null || !flags.contains(SZ_WITH_INFO)) {
                 // no info needed, no flags to pass, go simple
                 returnCode = this.nativeApi.reevaluateRecord(
                     dataSourceCode, recordId, downstreamFlags);

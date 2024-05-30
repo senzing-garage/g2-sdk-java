@@ -127,7 +127,7 @@ public enum SzFlagUsageGroup {
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_FEATURE_STATS}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_FEATURE_ELEMENTS}
      *      <li>{@link SzFlag#SZ_INCLUDE_MATCH_KEY_DETAILS}
-     *      <li>{@link SzFlag#SZ_FIND_PATH_PREFER_EXCLUDE}
+     *      <li>{@link SzFlag#SZ_FIND_PATH_STRICT_AVOID}
      *      <li>{@link SzFlag#SZ_FIND_PATH_INCLUDE_MATCHING_INFO}
      * </ul>
      * <p>

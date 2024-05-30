@@ -1,7 +1,10 @@
 package com.senzing.g2.engine;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -14,9 +17,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
 import com.senzing.g2.engine.RepositoryManager.Configuration;
+import com.senzing.util.JsonUtilities;
 
 import static com.senzing.io.IOUtilities.*;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -993,4 +1000,248 @@ public abstract class AbstractTest {
     protected static <T> Iterator<T> circularIterator(Collection<T> collection) {
         return new CircularIterator<>(collection);
     }
+
+  /**
+   * Creates a CSV temp file with the specified headers and records.
+   *
+   * @param filePrefix The prefix for the temp file name.
+   * @param headers    The CSV headers.
+   * @param records    The one or more records.
+   * @return The {@link File} that was created.
+   */
+  protected File prepareCSVFile(String filePrefix,
+                                String[] headers,
+                                String[]... records) {
+    // check the arguments
+    int count = headers.length;
+    for (int index = 0; index < records.length; index++) {
+      String[] record = records[index];
+      if (record.length != count) {
+        throw new IllegalArgumentException(
+            "The header and records do not all have the same number of "
+                + "elements.  expected=[ " + count + " ], received=[ "
+                + record.length + " ], index=[ " + index + " ]");
+      }
+    }
+
+    try {
+      File csvFile = File.createTempFile(filePrefix, ".csv");
+
+      // populate the file as a CSV
+      try (FileOutputStream fos = new FileOutputStream(csvFile);
+           OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
+           PrintWriter pw = new PrintWriter(osw)) {
+        String prefix = "";
+        for (String header : headers) {
+          pw.print(prefix);
+          pw.print(csvQuote(header));
+          prefix = ",";
+        }
+        pw.println();
+        pw.flush();
+
+        for (String[] record : records) {
+          prefix = "";
+          for (String value : record) {
+            pw.print(prefix);
+            pw.print(csvQuote(value));
+            prefix = ",";
+          }
+          pw.println();
+          pw.flush();
+        }
+        pw.flush();
+
+      }
+
+      return csvFile;
+
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+
+  /**
+   * Creates a JSON array temp file with the specified headers and records.
+   *
+   * @param filePrefix The prefix for the temp file name.
+   * @param headers    The CSV headers.
+   * @param records    The one or more records.
+   * @return The {@link File} that was created.
+   */
+  protected File prepareJsonArrayFile(String filePrefix,
+                                      String[] headers,
+                                      String[]... records) {
+    // check the arguments
+    int count = headers.length;
+    for (int index = 0; index < records.length; index++) {
+      String[] record = records[index];
+      if (record.length != count) {
+        throw new IllegalArgumentException(
+            "The header and records do not all have the same number of "
+                + "elements.  expected=[ " + count + " ], received=[ "
+                + record.length + " ], index=[ " + index + " ]");
+      }
+    }
+
+    try {
+      File jsonFile = File.createTempFile(filePrefix, ".json");
+
+      // populate the file with a JSON array
+      try (FileOutputStream fos = new FileOutputStream(jsonFile);
+           OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8")) {
+        JsonArrayBuilder jab = Json.createArrayBuilder();
+        JsonObjectBuilder job = Json.createObjectBuilder();
+        for (String[] record : records) {
+          for (int index = 0; index < record.length; index++) {
+            String key = headers[index];
+            String value = record[index];
+            job.add(key, value);
+          }
+          jab.add(job);
+        }
+
+        String jsonText = JsonUtilities.toJsonText(jab);
+        osw.write(jsonText);
+        osw.flush();
+      }
+
+      return jsonFile;
+
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Creates a JSON temp file with the specified headers and records.
+   *
+   * @param filePrefix The prefix for the temp file name.
+   * @param headers    The CSV headers.
+   * @param records    The one or more records.
+   * @return The {@link File} that was created.
+   */
+  protected File prepareJsonFile(String filePrefix,
+                                 String[] headers,
+                                 String[]... records) {
+    // check the arguments
+    int count = headers.length;
+    for (int index = 0; index < records.length; index++) {
+      String[] record = records[index];
+      if (record.length != count) {
+        throw new IllegalArgumentException(
+            "The header and records do not all have the same number of "
+                + "elements.  expected=[ " + count + " ], received=[ "
+                + record.length + " ], index=[ " + index + " ]");
+      }
+    }
+
+    try {
+      File jsonFile = File.createTempFile(filePrefix, ".json");
+
+      // populate the file as one JSON record per line
+      try (FileOutputStream fos = new FileOutputStream(jsonFile);
+           OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
+           PrintWriter pw = new PrintWriter(osw)) {
+        for (String[] record : records) {
+          JsonObjectBuilder job = Json.createObjectBuilder();
+          for (int index = 0; index < record.length; index++) {
+            String key = headers[index];
+            String value = record[index];
+            job.add(key, value);
+          }
+          String jsonText = JsonUtilities.toJsonText(job);
+          pw.println(jsonText);
+          pw.flush();
+        }
+        pw.flush();
+      }
+
+      return jsonFile;
+
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Creates a JSON-lines temp file with the specified headers and records.
+   *
+   * @param filePrefix The prefix for the temp file name.
+   * @param jsonArray The {@link JsonArray} describing the records.
+   * @return The {@link File} that was created.
+   */
+  protected File prepareJsonArrayFile(String filePrefix, JsonArray jsonArray) {
+    try {
+      File jsonFile = File.createTempFile(filePrefix, ".json");
+
+      // populate the file as one JSON record per line
+      try (FileOutputStream fos = new FileOutputStream(jsonFile);
+           OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
+           PrintWriter pw = new PrintWriter(osw))
+      {
+        String jsonText = JsonUtilities.toJsonText(jsonArray, true);
+        pw.println(jsonText);
+        pw.flush();
+      }
+
+      return jsonFile;
+
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Creates a JSON-lines temp file with the specified headers and records.
+   *
+   * @param filePrefix The prefix for the temp file name.
+   * @param jsonArray The {@link JsonArray} describing the records.
+   * @return The {@link File} that was created.
+   */
+  protected File prepareJsonFile(String filePrefix, JsonArray jsonArray) {
+    try {
+      File jsonFile = File.createTempFile(filePrefix, ".json");
+
+      // populate the file as one JSON record per line
+      try (FileOutputStream fos = new FileOutputStream(jsonFile);
+           OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
+           PrintWriter pw = new PrintWriter(osw)) {
+        for (JsonObject record: jsonArray.getValuesAs(JsonObject.class)) {
+          String jsonText = JsonUtilities.toJsonText(record);
+          pw.println(jsonText);
+          pw.flush();
+        }
+        pw.flush();
+      }
+
+      return jsonFile;
+
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+   /**
+   * Quotes the specified text as a quoted string for a CSV value or header.
+   *
+   * @param text The text to be quoted.
+   * @return The quoted text.
+   */
+  protected String csvQuote(String text) {
+    if (text.indexOf("\"") < 0 && text.indexOf("\\") < 0) {
+      return "\"" + text + "\"";
+    }
+    char[] textChars = text.toCharArray();
+    StringBuilder sb = new StringBuilder(text.length() * 2);
+    for (char c : textChars) {
+      if (c == '"' || c == '\\') {
+        sb.append('\\');
+      }
+      sb.append(c);
+    }
+    return sb.toString();
+  }
+
 }

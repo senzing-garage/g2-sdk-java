@@ -429,6 +429,19 @@ public class SzCoreEnvironment implements SzEnvironment {
         String  message     = nativeApi.getLastException();
         nativeApi.clearLastException();
         switch (errorCode) {
+            case 23:
+            case 24:
+                throw new SzBadInputException(
+                    errorCode, message, operation, parameters);
+            case 27: // this is going away
+            case 2207:
+                throw new SzUnknownDataSourceException(
+                    errorCode, message, operation, parameters);
+            case 33:
+            case 37:
+                throw new SzNotFoundException(
+                    errorCode, message, operation, parameters);
+                    
             case 7245:
                 throw new SzReplaceConflictException(
                     errorCode, message, operation, parameters);

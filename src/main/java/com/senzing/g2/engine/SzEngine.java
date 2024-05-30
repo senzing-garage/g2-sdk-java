@@ -3,7 +3,9 @@ package com.senzing.g2.engine;
 import java.util.Set;
 
 /**
- * 
+ * Defines the Java interface to the Senzing engine functions.  The Senzing
+ * engine functions primarily provide means of working with identity data
+ * records, entities and their relationships.
  */
 public interface SzEngine {
     /**
@@ -536,10 +538,13 @@ public interface SzEngine {
      * Finds a relationship path between two entities identified by their
      * entity ID's.
      * <p>
-     * Entities to be excluded from the path may optionally be specified as a
-     * non-null {@link Set} of {@link Long} entity ID's.  If specified as as
-     * non-null, then the exclusions {@link Set} contains non-null {@link Long}
-     * entity ID's that identify entities to be excluded from the path.
+     * Entities to be avoided when finding the path may optionally be specified
+     * as a non-null {@link Set} of {@link Long} entity ID's.  If specified as
+     * non-null, then the avoidance {@link Set} contains non-null {@link Long}
+     * entity ID's that identify entities to be avoided.  By default the
+     * specified entities will be avoided unless absolutely neccessary to find
+     * the path.  To strictly avoid the specified entities specify the {@link
+     * SzFlag#SZ_FIND_PATH_STRICT_AVOID} flag. 
      * <p>
      * Further, a JSON required data sources {@link Set} of {@link String} 
      * data source codes may optionally be specified.  If specified as non-null,
@@ -563,10 +568,10 @@ public interface SzEngine {
      * 
      * @param maxDegrees The maximum number of degrees for the path search.
      * 
-     * @param exclusions The optional {@link Set} of non-null {@link Long}
-     *                   entity ID's identifying entities to be excluded
-     *                   from the path, or <code>null</code> if no entities
-     *                   identified by are to be excluded.
+     * @param avoidances The optional {@link Set} of non-null {@link Long}
+     *                   entity ID's identifying entities to be avoided when 
+     *                   finding the path, or <code>null</code> if no entities
+     *                   identified by are to be avoided.
      * 
      * @param requiredDataSources The optional {@link Set} of non-null {@link String}
      *                            data source codes identifying the data sources for
@@ -595,27 +600,29 @@ public interface SzEngine {
      * @see SzFlag#SZ_FIND_PATH_DEFAULT_FLAGS
      * @see SzFlagUsageGroup#SZ_FIND_PATH
      * 
-     * @see #findPathByRecordId(String,String,String,String,int,Set,Set,Set)
-     * @see #findPathByRecordId(SzRecordKey,SzRecordKey,int,Set,Set,Set)
+     * @see #findPath(String,String,String,String,int,Set,Set,Set)
+     * @see #findPath(SzRecordKey,SzRecordKey,int,Set,Set,Set)
      */
-    String findPathByEntityId(long              startEntityId,
-                              long              endEntityId,
-                              int               maxDegrees,
-                              Set<Long>         exclusions,
-                              Set<String>       requiredDataSources,
-                              Set<SzFlag>       flags)
+    String findPath(long              startEntityId,
+                    long              endEntityId,
+                    int               maxDegrees,
+                    Set<Long>         avoidances,
+                    Set<String>       requiredDataSources,
+                    Set<SzFlag>       flags)
         throws SzNotFoundException, SzUnknownDataSourceException, SzException;
 
     /**
      * Finds a relationship path between two entities identified by the
      * data source codes and record ID's of their constituent records.
      * <p>
-     * Entities to be excluded from the path may be optionally specified as
-     * a non-null {@link Set} of {@link SzRecordKey} instances.  If specified
-     * as non-null, then the exclusions {@link Set} contains the non-null
+     * Entities to be avoided when finding the path may be optionally specified
+     * as a non-null {@link Set} of {@link SzRecordKey} instances.  If specified
+     * as non-null, then the avoidance {@link Set} contains the non-null
      * {@link SzRecordKey} instances providing the data source code and record
      * ID pairs that identify the constituent records of entities to be
-     * excluded from the path.
+     * avoided.  By default the associated entities will be avoided unless
+     * absolutely neccessary to find the path.  To strictly avoid the associated
+     * entities specify the {@link SzFlag#SZ_FIND_PATH_STRICT_AVOID} flag.
      * <p>
      * Further, a JSON required data sources {@link Set} of {@link String} 
      * data source codes may optionally be specified.  If specified as non-null,
@@ -645,11 +652,11 @@ public interface SzEngine {
      * 
      * @param maxDegrees The maximum number of degrees for the path search.
      * 
-     * @param exclusions The optional {@link Set} of non-null {@link
-     *                   SzRecordKey} instances providing the data source
-     *                   code and record ID pairs of the records whose 
-     *                   entities are to be excluded from the path, or 
-     *                   <code>null</code> if no entities are to be excluded.
+     * @param avoidances The optional {@link Set} of non-null {@link SzRecordKey}
+     *                   instances providing the data source code and record ID
+     *                   pairs of the records whose entities are to be avoided 
+     *                   when finding the path, or <code>null</code> if no entities
+     *                   identified by are to be avoided.
      * 
      * @param requiredDataSources The optional {@link Set} of non-null {@link String}
      *                            data source codes identifying the data sources for
@@ -679,17 +686,17 @@ public interface SzEngine {
      * @see SzFlag#SZ_FIND_PATH_DEFAULT_FLAGS
      * @see SzFlagUsageGroup#SZ_FIND_PATH
      * 
-     * @see #findPathByEntityId(long,long,int,Set,Set,Set)
-     * @see #findPathByRecordId(SzRecordKey,SzRecordKey,int,Set,Set,Set)
+     * @see #findPath(long,long,int,Set,Set,Set)
+     * @see #findPath(SzRecordKey,SzRecordKey,int,Set,Set,Set)
      */
-    String findPathByRecordId(String            startDataSourceCode,
-                              String            startRecordId,
-                              String            endDataSourceCode,
-                              String            endRecordId,
-                              int               maxDegrees,
-                              Set<SzRecordKey>  exclusions,
-                              Set<String>       requiredDataSources,
-                              Set<SzFlag>       flags)
+    String findPath(String            startDataSourceCode,
+                    String            startRecordId,
+                    String            endDataSourceCode,
+                    String            endRecordId,
+                    int               maxDegrees,
+                    Set<SzRecordKey>  avoidances,
+                    Set<String>       requiredDataSources,
+                    Set<SzFlag>       flags)
         throws SzNotFoundException, SzUnknownDataSourceException, SzException;
 
     /**
@@ -697,12 +704,14 @@ public interface SzEngine {
      * data source codes and record ID's of their constituent records
      * given by the specified start and end {@link SzRecordKey} instances.
      * <p>
-     * Entities to be excluded from the path may be optionally specified as
-     * a non-null {@link Set} of {@link SzRecordKey} instances.  If specified
-     * as non-null, then the exclusions {@link Set} contains the non-null
+     * Entities to be avoided when finding the path may be optionally specified
+     * as a non-null {@link Set} of {@link SzRecordKey} instances.  If specified
+     * as non-null, then the avoidance {@link Set} contains the non-null
      * {@link SzRecordKey} instances providing the data source code and record
      * ID pairs that identify the constituent records of entities to be
-     * excluded from the path.
+     * avoided.  By default the associated entities will be avoided unless
+     * absolutely neccessary to find the path.  To strictly avoid the associated
+     * entities specify the {@link SzFlag#SZ_FIND_PATH_STRICT_AVOID} flag.
      * <p>
      * Further, a JSON required data sources {@link Set} of {@link String} 
      * data source codes may optionally be specified.  If specified as non-null,
@@ -730,11 +739,11 @@ public interface SzEngine {
      * 
      * @param maxDegrees The maximum number of degrees for the path search.
      * 
-     * @param exclusions The optional {@link Set} of non-null {@link
-     *                   SzRecordKey} instances providing the data source
-     *                   code and record ID pairs of the records whose 
-     *                   entities are to be excluded from the path, or 
-     *                   <code>null</code> if no entities are to be excluded.
+     * @param avoidances The optional {@link Set} of non-null {@link SzRecordKey}
+     *                   instances providing the data source code and record ID
+     *                   pairs of the records whose entities are to be avoided 
+     *                   when finding the path, or <code>null</code> if no entities
+     *                   identified by are to be avoided.
      * 
      * @param requiredDataSources The optional {@link Set} of non-null {@link String}
      *                            data source codes identifying the data sources for
@@ -764,15 +773,15 @@ public interface SzEngine {
      * @see SzFlag#SZ_FIND_PATH_DEFAULT_FLAGS
      * @see SzFlagUsageGroup#SZ_FIND_PATH
      * 
-     * @see #findPathByRecordId(String,String,String,String,int,Set,Set,Set)
-     * @see #findPathByEntityId(long,long,int,Set,Set,Set)
+     * @see #findPath(String,String,String,String,int,Set,Set,Set)
+     * @see #findPath(long,long,int,Set,Set,Set)
      */
-    String findPathByRecordId(SzRecordKey       startRecordKey,
-                              SzRecordKey       endRecordKey,
-                              int               maxDegrees,
-                              Set<SzRecordKey>  exclusions,
-                              Set<String>       requiredDataSources,
-                              Set<SzFlag>       flags)
+    String findPath(SzRecordKey       startRecordKey,
+                    SzRecordKey       endRecordKey,
+                    int               maxDegrees,
+                    Set<SzRecordKey>  avoidances,
+                    Set<String>       requiredDataSources,
+                    Set<SzFlag>       flags)
         throws SzNotFoundException, SzUnknownDataSourceException, SzException;
 
     /**

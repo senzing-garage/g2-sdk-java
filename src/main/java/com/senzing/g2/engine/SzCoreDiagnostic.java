@@ -82,7 +82,7 @@ public class SzCoreDiagnostic implements SzDiagnostic {
     }
 
     /**
-     * The package-protected function to destroy the Senzing Config SDK.
+     * The package-protected function to destroy the Senzing Diagnostic SDK.
      */
     void destroy() {
         synchronized (this) {

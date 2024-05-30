@@ -58,7 +58,7 @@ public class SzCoreConfigManager implements SzConfigManager {
     }
 
     /**
-     * The package-protected function to destroy the Senzing Config SDK.
+     * The package-protected function to destroy the Senzing Config Manager SDK.
      */
     void destroy() {
         synchronized (this) {
@@ -131,7 +131,7 @@ public class SzCoreConfigManager implements SzConfigManager {
     }
 
     @Override
-	public String getConfigList() throws SzException {
+	public String getConfigs() throws SzException {
         return this.env.execute(() -> {
             // create the result object
             StringBuffer sb = new StringBuffer();

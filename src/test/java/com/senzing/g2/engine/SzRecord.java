@@ -278,34 +278,37 @@ public class SzRecord {
     private SzRecordKey recordKey = null;
     private Map<Object, List<SzRecordData>> dataMap;
 
-    public SzRecord(SzRecordKey key, SzRecord other) {
-        this.recordKey = key;
+    public SzRecord(SzRecordKey recordKey, SzRecord other) {
+        this.recordKey = recordKey;
         this.dataMap = new LinkedHashMap<>();
-        if (other != null) {
-            this.dataMap.putAll(other.dataMap);
-        }
-        if (this.recordKey == null) {
-            this.dataMap.remove(SzDataSourceCode.class);
-            this.dataMap.remove(SzRecordId.class);
-        } else {
+        if (this.recordKey != null) {
             this.dataMap.put(SzDataSourceCode.class, 
                 List.of(SzDataSourceCode.of(recordKey.dataSourceCode())));
             this.dataMap.put(SzRecordId.class,
                 List.of(SzRecordId.of(recordKey.recordId())));
+        }
+        if (other != null) {
+            other.dataMap.forEach((key, valueList) -> {
+                if (key.equals(SzDataSourceCode.class)) return;
+                if (key.equals(SzRecordId.class)) return;
+                this.dataMap.put(key, valueList);
+            });
         }
     }
 
-    public SzRecord(SzRecordKey key, SzRecordData... recordData) {
+    public SzRecord(SzRecordKey recordKey, SzRecordData... recordData) {
         this(recordData);
-        this.recordKey = key;
-        if (this.recordKey == null) {
-            this.dataMap.remove(SzDataSourceCode.class);
-            this.dataMap.remove(SzRecordId.class);
-        } else {
-            this.dataMap.put(SzDataSourceCode.class, 
+        this.recordKey = recordKey;
+        this.dataMap.remove(SzDataSourceCode.class);
+        this.dataMap.remove(SzRecordId.class);
+        if (recordKey != null) {
+            Map<Object, List<SzRecordData>> map = new LinkedHashMap<>();
+            map.put(SzDataSourceCode.class, 
                 List.of(SzDataSourceCode.of(recordKey.dataSourceCode())));
-            this.dataMap.put(SzRecordId.class,
+            map.put(SzRecordId.class,
                 List.of(SzRecordId.of(recordKey.recordId())));
+            map.putAll(this.dataMap);
+            this.dataMap = map;
         }
     }
 
