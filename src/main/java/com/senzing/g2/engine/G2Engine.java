@@ -205,7 +205,7 @@ public interface G2Engine extends G2Fallible
    * The bitwise flag for find-path functionality to indicate that
    * excluded entities are still allowed, but not preferred
    */
-  long G2_FIND_PATH_PREFER_EXCLUDE = ( 1L << 25 );
+  long G2_FIND_PATH_STRICT_AVOID = ( 1L << 25 );
 
   /**
    * The bitwise flag for find-path functionality to include
