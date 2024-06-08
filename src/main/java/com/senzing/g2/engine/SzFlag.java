@@ -27,25 +27,6 @@ import static com.senzing.g2.engine.Utilities.*;
  */
 public enum SzFlag {
     /**
-     * The value representing no flags are being passed.  Alternatively, a 
-     * <code>null</code> value will indicate no flags as well.
-     * <p>
-     * This flag belongs to <b>all</b> {@link SzFlagUsageGroup}'s.  These are:
-     * <ul>
-     *    <li>{@link SzFlagUsageGroup#SZ_MODIFY} 
-     *    <li>{@link SzFlagUsageGroup#SZ_RECORD} 
-     *    <li>{@link SzFlagUsageGroup#SZ_ENTITY} 
-     *    <li>{@link SzFlagUsageGroup#SZ_SEARCH} 
-     *    <li>{@link SzFlagUsageGroup#SZ_EXPORT} 
-     *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
-     *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK}
-     *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
-     * </ul>
-      */
-    SZ_NO_FLAGS(0L, SZ_ALL_GROUPS_SET),
-
-    /**
      * Indicates that the Senzing engine should produce and return the INFO
      * document describing the affected entities from an operation.
      * <p>
@@ -661,6 +642,12 @@ public enum SzFlag {
     SZ_SEARCH_INCLUDE_NAME_ONLY(
         SzFlags.SZ_SEARCH_INCLUDE_NAME_ONLY, SZ_SEARCH_SET);
 
+    /**
+     * An <b>unmodifiable</b> {@link Set} of {@link SzFlag} instances 
+     * containing <b>NO</b> flags (an empty set).
+     */
+    public static final Set<SzFlag> SZ_NO_FLAGS 
+        = Collections.unmodifiableSet(EnumSet.noneOf(SzFlag.class));
 
     /**
      * The <b>unmodifiable</b> {@link Set} of {@link SzFlag} instances
@@ -850,7 +837,6 @@ public enum SzFlag {
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK} 
      *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
@@ -906,7 +892,6 @@ public enum SzFlag {
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK}
      *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
@@ -941,7 +926,6 @@ public enum SzFlag {
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK} 
      *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
@@ -981,7 +965,6 @@ public enum SzFlag {
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_PATH} 
      *    <li>{@link SzFlagUsageGroup#SZ_FIND_NETWORK} 
      *    <li>{@link SzFlagUsageGroup#SZ_WHY}
-     *    <li>{@link SzFlagUsageGroup#SZ_HOW}
      * </ul>
      * @see <a href="https://docs.senzing.com/flags/index.html">https://docs.senzing.com/flags/index.html</a>
      */
@@ -1358,6 +1341,67 @@ public enum SzFlag {
             value |= flag.toLong();
         }
         return value;
+    }
+
+    /**
+     * Checks if any intersection exists between two sets of {@link SzFlag}
+     * instances.
+     * 
+     * @param set1 The first {@link Set} of {@link SzFlag} instances.
+     * @param set2 The second {@link Set} of {@link SzFlag} instances.
+     * 
+     * @return <code>true</code> if there is any intersection between the
+     *         specified sets, or <code>false</code> if there is no
+     *         intersection.
+     */
+    public static boolean intersects(Set<SzFlag> set1, Set<SzFlag> set2) {
+        if (set1 == null || set2 == null) return false;
+        for (SzFlag flag : set1) {
+            if (set2.contains(flag)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Creates a new {@link EnumSet} of {@link SzFlag} instances that
+     * represents the intersection between the two specified sets of
+     * {@link SzFlag} instances.
+     * 
+     * @param set1 The first {@link Set} of {@link SzFlag} instances.
+     * @param set2 The second {@link Set} of {@link SzFlag} instances.
+     * 
+     * @return A new {@link Set} of {@link SzFlag} instances representing
+     *         intersection between the two specified sets.
+     */
+    public static EnumSet<SzFlag> intersect(Set<SzFlag> set1, Set<SzFlag> set2) {
+        EnumSet<SzFlag> result = EnumSet.noneOf(SzFlag.class);
+        if (set1 == null || set2 == null) return result;
+        for (SzFlag flag : set1) {
+            if (set2.contains(flag)) {
+                result.add(flag);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Creates a new {@link EnumSet} of {@link SzFlag} instances that
+     * represents the union between the two specified sets of
+     * {@link SzFlag} instances.
+     * 
+     * @param set1 The first {@link Set} of {@link SzFlag} instances.
+     * @param set2 The second {@link Set} of {@link SzFlag} instances.
+     * 
+     * @return A new {@link Set} of {@link SzFlag} instances representing
+     *         union between the two specified sets.
+     */
+    public static EnumSet<SzFlag> union(Set<SzFlag> set1, Set<SzFlag> set2) {
+        EnumSet<SzFlag> result = EnumSet.noneOf(SzFlag.class);
+        if (set1 != null) result.addAll(set1);
+        if (set2 != null) result.addAll(set2);
+        return result;
     }
 
     /**

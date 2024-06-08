@@ -1,17 +1,10 @@
 package com.senzing.g2.engine;
 
-import static com.senzing.g2.engine.SzException.*;
-
 /**
  * The package-protected implementation of {@link SzDiagnostic} that works
  * with the {@link SzCoreEnvironment} class.
  */
 public class SzCoreDiagnostic implements SzDiagnostic {
-    /**
-     * Gets the class prefix to use for {@link SzException} construction.
-     */
-    private static final String CLASS_PREFIX = SzCoreDiagnostic.class.getSimpleName();
-
     /**
      * The {@link SzCoreEnvironment} that constructed this instance.
      */
@@ -30,6 +23,7 @@ public class SzCoreDiagnostic implements SzDiagnostic {
      * 
      * @throws IllegalStateException If the underlying {@link SzCoreEnvironment} instance 
      *                               has already been destroyed.
+     * 
      * @throws SzException If a Senzing failure occurs during initialization.
      */
     SzCoreDiagnostic(SzCoreEnvironment environment) 
@@ -48,14 +42,7 @@ public class SzCoreDiagnostic implements SzDiagnostic {
                     this.env.isVerboseLogging());
  
                 // handle any failure
-                if (returnCode != 0) {
-                    this.env.handleReturnCode(
-                        returnCode, this.nativeApi,
-                        CLASS_PREFIX + "()",
-                        paramsOf("instanceName", this.env.getInstanceName(),
-                                "settings", redact(this.env.getSettings()),
-                                "verboseLogging", this.env.isVerboseLogging()));
-                }
+                this.env.handleReturnCode(returnCode, this.nativeApi);
 
             } else {
                 // if so then call init with config ID
@@ -66,17 +53,10 @@ public class SzCoreDiagnostic implements SzDiagnostic {
                     this.env.isVerboseLogging());
 
                 // handle any failure
-                if (returnCode != 0) {
-                    this.env.handleReturnCode(
-                        returnCode, this.nativeApi,
-                        CLASS_PREFIX + "()",
-                        paramsOf("instanceName", this.env.getInstanceName(),
-                                "settings", redact(this.env.getSettings()),
-                                "configId", this.env.getConfigId(),
-                                "verboseLogging", this.env.isVerboseLogging()));
-                }
+                this.env.handleReturnCode(returnCode, this.nativeApi);
             }
 
+            // return null
             return null;
         });
     }
@@ -115,13 +95,9 @@ public class SzCoreDiagnostic implements SzDiagnostic {
             int returnCode = this.nativeApi.getDatastoreInfo(sb);
 
             // handle any error code if there is one
-            if (returnCode != 0) {
-                this.env.handleReturnCode(
-                    returnCode, this.nativeApi,
-                    CLASS_PREFIX + ".getDatastoreInfo()");
-            }
+            this.env.handleReturnCode(returnCode, this.nativeApi);
 
-            // return null
+            // return the JSON from the string buffer
             return sb.toString();
         });
     }
@@ -136,14 +112,9 @@ public class SzCoreDiagnostic implements SzDiagnostic {
             int returnCode = this.nativeApi.checkDatastorePerformance(secondsToRun, sb);
 
             // handle any error code if there is one
-            if (returnCode != 0) {
-                this.env.handleReturnCode(
-                    returnCode, this.nativeApi,
-                    CLASS_PREFIX + ".checkDatastorePerformance(int)",
-                    paramsOf("secondsToRun", secondsToRun));
-            }
+            this.env.handleReturnCode(returnCode, this.nativeApi);
 
-            // return null
+            // return the JSON from the string buffer
             return sb.toString();
         });
     }
@@ -158,14 +129,9 @@ public class SzCoreDiagnostic implements SzDiagnostic {
             int returnCode = this.nativeApi.getFeature(featureId, sb);
 
             // handle any error code if there is one
-            if (returnCode != 0) {
-                this.env.handleReturnCode(
-                    returnCode, this.nativeApi,
-                    CLASS_PREFIX + ".getFeature(long)",
-                    paramsOf("featureId", featureId));
-            }
+            this.env.handleReturnCode(returnCode, this.nativeApi);
 
-            // return null
+            // return the JSON from the string buffer
             return sb.toString();
         });
     }
@@ -177,11 +143,7 @@ public class SzCoreDiagnostic implements SzDiagnostic {
             int returnCode = this.nativeApi.purgeRepository();
             
             // handle any error code if there is one
-            if (returnCode != 0) {
-                this.env.handleReturnCode(
-                    returnCode, this.nativeApi,
-                    CLASS_PREFIX + ".purgeRepository()");
-            }
+            this.env.handleReturnCode(returnCode, this.nativeApi);
 
             // return null
             return null;

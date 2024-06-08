@@ -203,9 +203,9 @@ interface NativeEngine extends NativeApi
 
   /**
    * The bitwise flag for find-path functionality to indicate that
-   * excluded entities are still allowed, but not preferred
+   * avoided entities are strictly forbidden.
    */
-  long G2_FIND_PATH_PREFER_EXCLUDE = ( 1L << 25 );
+  long G2_FIND_PATH_STRICT_AVOID = ( 1L << 25 );
 
   /**
    * The bitwise flag for find-path functionality to include
@@ -832,11 +832,11 @@ interface NativeEngine extends NativeApi
   /**
    * <p>
    * This method is used to find a relationship path between two entities
-   * identified by their entity ID's that excludes one or more entities, also
+   * identified by their entity ID's that avoids one or more entities, also
    * identified by their entity ID's.
    *
    * <p>
-   * The excluded entities are identified by their entity ID's in a JSON
+   * The avoided entities are identified by their entity ID's in a JSON
    * document with the following format:
    * <pre>
    *   {
@@ -852,26 +852,26 @@ interface NativeEngine extends NativeApi
    * @param entityID1 The entity ID of the first entity.
    * @param entityID2 The entity ID of the second entity.
    * @param maxDegrees The maximum number of degrees for the path search.
-   * @param excludedEntities The JSON document identifying the excluded entities
-   *                         via their entity ID's.
+   * @param avoidedEntities The JSON document identifying the avoided entities
+   *                        via their entity ID's.
    * @param response The {@link StringBuffer} to write the JSON response
    *                 document to.
    * @return Zero (0) on success and non-zero on failure.
    */
-  int findPathExcludingByEntityID(long          entityID1,
-                                  long          entityID2,
-                                  int           maxDegrees,
-                                  String        excludedEntities,
-                                  StringBuffer  response);
+  int findPathByEntityIDWithAvoids(long         entityID1,
+                                   long         entityID2,
+                                   int          maxDegrees,
+                                   String       avoidedEntities,
+                                   StringBuffer response);
 
   /**
    * <p>
    * This method is used to find a relationship path between two entities
-   * identified by their entity ID's that excludes one or more entities, also
+   * identified by their entity ID's that avoids one or more entities, also
    * identified by their entity ID's.
    *
    * <p>
-   * The excluded entities are identified by their entity ID's in a JSON
+   * The avoided entities are identified by their entity ID's in a JSON
    * document with the following format:
    * <pre>
    *   {
@@ -887,31 +887,30 @@ interface NativeEngine extends NativeApi
    * @param entityID1 The entity ID of the first entity.
    * @param entityID2 The entity ID of the second entity.
    * @param maxDegrees The maximum number of degrees for the path search.
-   * @param excludedEntities The JSON document identifying the excluded entities
-   *                         via their entity ID's.
+   * @param avoidedEntities The JSON document identifying the avoided entities
+   *                        via their entity ID's.
    * @param flags The flags to control how the operation is performed and
    *              specifically the content of the response JSON document.
    * @param response The {@link StringBuffer} to write the JSON response
    *                 document to.
    * @return Zero (0) on success and non-zero on failure.
    */
-  int findPathExcludingByEntityID(long          entityID1,
-                                  long          entityID2,
-                                  int           maxDegrees,
-                                  String        excludedEntities,
-                                  long          flags,
-                                  StringBuffer  response);
+  int findPathByEntityIDWithAvoids(long         entityID1,
+                                   long         entityID2,
+                                   int          maxDegrees,
+                                   String       avoidedEntities,
+                                   long         flags,
+                                   StringBuffer response);
 
   /**
    * <p>
    * This method is used to find a relationship path between two entities
    * identified by the data source codes and record IDs of their composite
-   * records where that path excludes one or more entities, also
-   * identified by the data sourec codes and record IDs of their composite
-   * records.
+   * records where that path avoids one or more entities, also identified
+   * by the data source codes and record IDs of their composite records.
    *
    * <p>
-   * The excluded entities are identified by the data source codes and record
+   * The avoided entities are identified by the data source codes and record
    * ID's of their composite records in a JSON document with the following
    * format:
    * <pre>
@@ -939,30 +938,30 @@ interface NativeEngine extends NativeApi
    * @param dataSourceCode2 The data source code of the second record.
    * @param recordID2 The record ID of the second record.
    * @param maxDegrees The maximum number of degrees for the path search.
-   * @param excludedEntities The JSON document identifying the excluded entities
-   *                         via their entity ID's.
+   * @param avoidedEntities The JSON document identifying the avoided entities
+   *                        via their entity ID's.
    * @param response The {@link StringBuffer} to write the JSON response
    *                 document to.
    * @return Zero (0) on success and non-zero on failure.
    */
-  int findPathExcludingByRecordID(String        dataSourceCode1,
-                                  String        recordID1,
-                                  String        dataSourceCode2,
-                                  String        recordID2,
-                                  int           maxDegrees,
-                                  String        excludedEntities,
-                                  StringBuffer  response);
+  int findPathByRecordIDWithAvoids(String       dataSourceCode1,
+                                   String       recordID1,
+                                   String       dataSourceCode2,
+                                   String       recordID2,
+                                   int          maxDegrees,
+                                   String       avoidedEntities,
+                                   StringBuffer response);
 
   /**
    * <p>
    * This method is used to find a relationship path between two entities
    * identified by the data source codes and record IDs of their composite
-   * records where that path excludes one or more entities, also
-   * identified by the data sourec codes and record IDs of their composite
+   * records where that path avoids one or more entities, also
+   * identified by the data source codes and record IDs of their composite
    * records.
    *
    * <p>
-   * The excluded entities are identified by the data source codes and record
+   * The avoided entities are identified by the data source codes and record
    * ID's of their composite records in a JSON document with the following
    * format:
    * <pre>
@@ -990,33 +989,33 @@ interface NativeEngine extends NativeApi
    * @param dataSourceCode2 The data source code of the second record.
    * @param recordID2 The record ID of the second record.
    * @param maxDegrees The maximum number of degrees for the path search.
-   * @param excludedEntities The JSON document identifying the excluded entities
-   *                         via their entity ID's.
+   * @param avoidedEntities The JSON document identifying the avoided entities
+   *                        via their entity ID's.
    * @param flags The flags to control how the operation is performed and
    *              specifically the content of the response JSON document.
    * @param response The {@link StringBuffer} to write the JSON response
    *                 document to.
    * @return Zero (0) on success and non-zero on failure.
    */
-  int findPathExcludingByRecordID(String        dataSourceCode1,
-                                  String        recordID1,
-                                  String        dataSourceCode2,
-                                  String        recordID2,
-                                  int           maxDegrees,
-                                  String        excludedEntities,
-                                  long          flags,
-                                  StringBuffer  response);
+  int findPathByRecordIDWithAvoids(String       dataSourceCode1,
+                                   String       recordID1,
+                                   String       dataSourceCode2,
+                                   String       recordID2,
+                                   int          maxDegrees,
+                                   String       avoidedEntities,
+                                   long         flags,
+                                   StringBuffer response);
 
   /**
    * <p>
    * This method is used to find a relationship path between two entities
-   * identified by their entity ID's.  The path will exclude the one or more
+   * identified by their entity ID's.  The path will avoid the one or more
    * entities, also identified by the specified entity ID's and will require
    * that the path contains <b>at least one</b> of the data sources identified
    * by the one or more specified data sources codes.
    *
    * <p>
-   * The excluded entities are identified by their entity ID's in a JSON
+   * The avoided entities are identified by their entity ID's in a JSON
    * document with the following format:
    * <pre>
    *   {
@@ -1045,7 +1044,7 @@ interface NativeEngine extends NativeApi
    * @param entityID1 The entity ID of the first entity.
    * @param entityID2 The entity ID of the second entity.
    * @param maxDegrees The maximum number of degrees for the path search.
-   * @param excludedEntities The JSON document identifying the excluded entities
+   * @param avoidedEntities The JSON document identifying the avoided entities
    *                         via their entity ID's.
    * @param requiredSources The JSON document identifying the data sources that
    *                        must be included on the path.
@@ -1053,23 +1052,23 @@ interface NativeEngine extends NativeApi
    *                 document to.
    * @return Zero (0) on success and non-zero on failure.
    */
-  int findPathIncludingSourceByEntityID(long          entityID1,
+  int findPathByEntityIDIncludingSource(long          entityID1,
                                         long          entityID2,
                                         int           maxDegrees,
-                                        String        excludedEntities,
+                                        String        avoidedEntities,
                                         String        requiredSources,
                                         StringBuffer  response);
 
   /**
    * <p>
    * This method is used to find a relationship path between two entities
-   * identified by their entity ID's.  The path will exclude the one or more
+   * identified by their entity ID's.  The path will avoid the one or more
    * entities, also identified by the specified entity ID's and will require
    * that the path contains <b>at least one</b> of the data sources identified
    * by the one or more specified data sources codes.
    *
    * <p>
-   * The excluded entities are identified by their entity ID's in a JSON
+   * The avoided entities are identified by their entity ID's in a JSON
    * document with the following format:
    * <pre>
    *   {
@@ -1098,8 +1097,8 @@ interface NativeEngine extends NativeApi
    * @param entityID1 The entity ID of the first entity.
    * @param entityID2 The entity ID of the second entity.
    * @param maxDegrees The maximum number of degrees for the path search.
-   * @param excludedEntities The JSON document identifying the excluded entities
-   *                         via their entity ID's.
+   * @param avoidedEntities The JSON document identifying the avoided entities
+   *                        via their entity ID's.
    * @param requiredSources The JSON document identifying the data sources that
    *                        must be included on the path.
    * @param flags The flags to control how the operation is performed and
@@ -1108,10 +1107,10 @@ interface NativeEngine extends NativeApi
    *                 document to.
    * @return Zero (0) on success and non-zero on failure.
    */
-  int findPathIncludingSourceByEntityID(long          entityID1,
+  int findPathByEntityIDIncludingSource(long          entityID1,
                                         long          entityID2,
                                         int           maxDegrees,
-                                        String        excludedEntities,
+                                        String        avoidedEntities,
                                         String        requiredSources,
                                         long          flags,
                                         StringBuffer  response);
@@ -1120,14 +1119,14 @@ interface NativeEngine extends NativeApi
    * <p>
    * This method is used to find a relationship path between two entities
    * identified by the data source codes and record IDs of their composite
-   * records.  THe path will exclude the one or more entities also identified
+   * records.  The path will avoid the one or more entities also identified
    * by the specified data source code and record ID pairs that identify the
-   * composite records of the excluded entities and further will require the
+   * composite records of the avoided entities and further will require the
    * path contains <b>at least one</b> of the data sources identified by the
    * one or more specified data sources codes.
    *
    * <p>
-   * The excluded entities are identified by the data source codes and record
+   * The avoided entities are identified by the data source codes and record
    * ID's of their composite records in a JSON document with the following
    * format:
    * <pre>
@@ -1168,20 +1167,20 @@ interface NativeEngine extends NativeApi
    * @param dataSourceCode2 The data source code of the second record.
    * @param recordID2 The record ID of the second record.
    * @param maxDegrees The maximum number of degrees for the path search.
-   * @param excludedEntities The JSON document identifying the excluded entities
-   *                         via their entity ID's.
+   * @param avoidedEntities The JSON document identifying the avoided entities
+   *                        via their entity ID's.
    * @param requiredSources The JSON document identifying the data sources that
    *                        must be included on the path.
    * @param response The {@link StringBuffer} to write the JSON response
    *                 document to.
    * @return Zero (0) on success and non-zero on failure.
    */
-  int findPathIncludingSourceByRecordID(String        dataSourceCode1,
+  int findPathByRecordIDIncludingSource(String        dataSourceCode1,
                                         String        recordID1,
                                         String        dataSourceCode2,
                                         String        recordID2,
                                         int           maxDegrees,
-                                        String        excludedEntities,
+                                        String        avoidedEntities,
                                         String        requiredSources,
                                         StringBuffer  response);
 
@@ -1189,14 +1188,14 @@ interface NativeEngine extends NativeApi
    * <p>
    * This method is used to find a relationship path between two entities
    * identified by the data source codes and record IDs of their composite
-   * records.  THe path will exclude the one or more entities also identified
+   * records.  THe path will avoid the one or more entities also identified
    * by the specified data source code and record ID pairs that identify the
-   * composite records of the excluded entities and further will require the
+   * composite records of the avoided entities and further will require the
    * path contains <b>at least one</b> of the data sources identified by the
    * one or more specified data sources codes.
    *
    * <p>
-   * The excluded entities are identified by the data source codes and record
+   * The avoided entities are identified by the data source codes and record
    * ID's of their composite records in a JSON document with the following
    * format:
    * <pre>
@@ -1237,8 +1236,8 @@ interface NativeEngine extends NativeApi
    * @param dataSourceCode2 The data source code of the second record.
    * @param recordID2 The record ID of the second record.
    * @param maxDegrees The maximum number of degrees for the path search.
-   * @param excludedEntities The JSON document identifying the excluded entities
-   *                         via their entity ID's.
+   * @param avoidedEntities The JSON document identifying the avoided entities
+   *                        via their entity ID's.
    * @param requiredSources The JSON document identifying the data sources that
    *                        must be included on the path.
    * @param flags The flags to control how the operation is performed and
@@ -1247,15 +1246,15 @@ interface NativeEngine extends NativeApi
    *                 document to.
    * @return Zero (0) on success and non-zero on failure.
    */
-  int findPathIncludingSourceByRecordID(String        dataSourceCode1,
-                                        String        recordID1,
-                                        String        dataSourceCode2,
-                                        String        recordID2,
-                                        int           maxDegrees,
-                                        String        excludedEntities,
-                                        String        requiredSources,
-                                        long          flags,
-                                        StringBuffer  response);
+  int findPathByRecordIDIncludingSource(String          dataSourceCode1,
+                                        String          recordID1,
+                                        String          dataSourceCode2,
+                                        String          recordID2,
+                                        int             maxDegrees,
+                                        String          avoidedEntities,
+                                        String          requiredSources,
+                                        long            flags,
+                                        StringBuffer    response);
 
   /**
    * <p>

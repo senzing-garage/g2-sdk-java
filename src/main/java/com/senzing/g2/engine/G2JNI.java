@@ -257,57 +257,57 @@ public class G2JNI implements NativeEngine {
    * {@inheritDoc}
    */
   @Override
-  public native int findPathExcludingByEntityID(long          entityID1,
-                                                long          entityID2,
-                                                int           maxDegree,
-                                                String        excludedEntities,
-                                                StringBuffer  response);
+  public native int findPathByEntityIDWithAvoids(long         entityID1,
+                                                 long         entityID2,
+                                                 int          maxDegree,
+                                                 String       avoidedEntities,
+                                                 StringBuffer response);
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public native int findPathExcludingByEntityID(long          entityID1,
-                                                long          entityID2,
-                                                int           maxDegree,
-                                                String        excludedEntities,
-                                                long          flags,
-                                                StringBuffer  response);
+  public native int findPathByEntityIDWithAvoids(long         entityID1,
+                                                 long         entityID2,
+                                                 int          maxDegree,
+                                                 String       avoidedEntities,
+                                                 long         flags,
+                                                 StringBuffer response);
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public native int findPathExcludingByRecordID(String        dataSourceCode1,
-                                                String        recordID1,
-                                                String        dataSourceCode2,
-                                                String        recordID2,
-                                                int           maxDegree,
-                                                String        excludedEntities,
-                                                StringBuffer  response);
+  public native int findPathByRecordIDWithAvoids(String         dataSourceCode1,
+                                                 String         recordID1,
+                                                 String         dataSourceCode2,
+                                                 String         recordID2,
+                                                 int            maxDegree,
+                                                 String         avoidedEntities,
+                                                 StringBuffer   response);
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public native int findPathExcludingByRecordID(String        dataSourceCode1,
-                                                String        recordID1,
-                                                String        dataSourceCode2,
-                                                String        recordID2,
-                                                int           maxDegree,
-                                                String        excludedEntities,
-                                                long          flags,
-                                                StringBuffer  response);
+  public native int findPathByRecordIDWithAvoids(String         dataSourceCode1,
+                                                 String         recordID1,
+                                                 String         dataSourceCode2,
+                                                 String         recordID2,
+                                                 int            maxDegree,
+                                                 String         avoidedEntities,
+                                                 long           flags,
+                                                 StringBuffer   response);
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public native int findPathIncludingSourceByEntityID(
+  public native int findPathByEntityIDIncludingSource(
       long          entityID1,
       long          entityID2,
       int           maxDegree,
-      String        excludedEntities,
+      String        avoidedEntities,
       String        requiredDsrcs,
       StringBuffer  response);
 
@@ -315,11 +315,11 @@ public class G2JNI implements NativeEngine {
    * {@inheritDoc}
    */
   @Override
-  public native int findPathIncludingSourceByEntityID(
+  public native int findPathByEntityIDIncludingSource(
       long          entityID1,
       long          entityID2,
       int           maxDegree,
-      String        excludedEntities,
+      String        avoidedEntities,
       String        requiredDsrcs,
       long          flags,
       StringBuffer  response);
@@ -328,13 +328,13 @@ public class G2JNI implements NativeEngine {
    * {@inheritDoc}
    */
   @Override
-  public native int findPathIncludingSourceByRecordID(
+  public native int findPathByRecordIDIncludingSource(
       String        dataSourceCode1,
       String        recordID1,
       String        dataSourceCode2,
       String        recordID2,
       int           maxDegree,
-      String        excludedEntities,
+      String        avoidedEntities,
       String        requiredDsrcs,
       StringBuffer  response);
 
@@ -342,13 +342,13 @@ public class G2JNI implements NativeEngine {
    * {@inheritDoc}
    */
   @Override
-  public native int findPathIncludingSourceByRecordID(
+  public native int findPathByRecordIDIncludingSource(
       String        dataSourceCode1,
       String        recordID1,
       String        dataSourceCode2,
       String        recordID2,
       int           maxDegree,
-      String        excludedEntities,
+      String        avoidedEntities,
       String        requiredDsrcs,
       long          flags,
       StringBuffer  response);

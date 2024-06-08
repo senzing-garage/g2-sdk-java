@@ -8,6 +8,7 @@ import java.util.EnumSet;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Arrays;
+import java.util.LinkedList;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
@@ -182,8 +183,7 @@ public class SzFlagTest {
     private List<Arguments> getSetToLongParams() {
         List<Arguments> results = new ArrayList<>();
         results.add(Arguments.of(null, 0L));
-        results.add(Arguments.of(EnumSet.noneOf(SzFlag.class), 0L));
-        results.add(Arguments.of(EnumSet.of(SZ_NO_FLAGS), 0L));
+        results.add(Arguments.of(SZ_NO_FLAGS, 0L));
     
         SzFlag[] flags = SzFlag.values();
         int start = 0;
@@ -222,11 +222,7 @@ public class SzFlagTest {
             null, 
             "{ NONE } [0000 0000 0000 0000]"));
         results.add(Arguments.of(
-            EnumSet.noneOf(SzFlag.class), 
-            "{ NONE } [0000 0000 0000 0000]"));
-        results.add(Arguments.of(
-            EnumSet.of(SZ_NO_FLAGS),
-            "SZ_NO_FLAGS [0000 0000 0000 0000]"));
+            SZ_NO_FLAGS, "{ NONE } [0000 0000 0000 0000]"));
 
         StringBuilder sb = new StringBuilder(300);
         SzFlag[] flags = SzFlag.values();
@@ -287,4 +283,104 @@ public class SzFlagTest {
             "toString(EnumSet<SzFlag>) did not return as expected: "
             + flagSet);
     }
+
+    private List<Arguments> getFlagSetIntersections() {
+        List<Arguments> result = new LinkedList<>();
+        result.add(Arguments.of(
+            EnumSet.of(SZ_ENTITY_INCLUDE_ALL_FEATURES,SZ_ENTITY_INCLUDE_FEATURE_STATS),
+            EnumSet.of(SZ_ENTITY_INCLUDE_ENTITY_NAME,SZ_ENTITY_INCLUDE_RECORD_DATA),
+            EnumSet.noneOf(SzFlag.class),
+            false));
+
+        result.add(Arguments.of(
+            EnumSet.of(SZ_ENTITY_INCLUDE_ALL_FEATURES),
+            EnumSet.noneOf(SzFlag.class),
+            EnumSet.noneOf(SzFlag.class),
+            false));
+        
+        result.add(Arguments.of(
+            EnumSet.of(SZ_ENTITY_INCLUDE_ALL_FEATURES),
+            null,
+            EnumSet.noneOf(SzFlag.class),
+            false));
+
+        result.add(Arguments.of(
+            EnumSet.of(SZ_ENTITY_INCLUDE_FEATURE_STATS),
+            EnumSet.of(SZ_ENTITY_INCLUDE_ALL_FEATURES,SZ_ENTITY_INCLUDE_FEATURE_STATS),
+            EnumSet.of(SZ_ENTITY_INCLUDE_FEATURE_STATS),
+            true));
+        
+        result.add(Arguments.of(
+            EnumSet.allOf(SzFlag.class),
+            EnumSet.of(SZ_ENTITY_INCLUDE_NAME_ONLY_RELATIONS,SZ_ENTITY_INCLUDE_ENTITY_NAME),
+            EnumSet.of(SZ_ENTITY_INCLUDE_NAME_ONLY_RELATIONS,SZ_ENTITY_INCLUDE_ENTITY_NAME),
+            true));
+        
+        return result;
+    }
+
+    @ParameterizedTest
+    @MethodSource("getFlagSetIntersections")
+    void testIntersects(Set<SzFlag> set1,
+                        Set<SzFlag> set2,
+                        Set<SzFlag> intersection,
+                        boolean     intersects) 
+    {
+        boolean actual = SzFlag.intersects(set1, set2);
+        assertEquals(intersects, actual, "Intersection not as expected: "
+                     + "set1=[ " + set1 + " ], set2=[ " + set2 + " ]");
+    }
+
+    @ParameterizedTest
+    @MethodSource("getFlagSetIntersections")
+    void testIntersection(Set<SzFlag>   set1,
+                          Set<SzFlag>   set2,
+                          Set<SzFlag>   intersection,
+                          boolean       intersects) 
+    {
+        Set<SzFlag> actual = SzFlag.intersect(set1, set2);
+        assertEquals(intersection, actual, "Intersection not as expected: "
+                     + "set1=[ " + set1 + " ], set2=[ " + set2 + " ]");
+    }
+
+    private List<Arguments> getFlagSetUnions() {
+        List<Arguments> result = new LinkedList<>();
+        result.add(Arguments.of(
+            EnumSet.of(SZ_ENTITY_INCLUDE_ALL_FEATURES,SZ_ENTITY_INCLUDE_FEATURE_STATS),
+            EnumSet.of(SZ_ENTITY_INCLUDE_ENTITY_NAME,SZ_ENTITY_INCLUDE_RECORD_DATA),
+            EnumSet.of(SZ_ENTITY_INCLUDE_ALL_FEATURES,SZ_ENTITY_INCLUDE_FEATURE_STATS,
+                       SZ_ENTITY_INCLUDE_ENTITY_NAME,SZ_ENTITY_INCLUDE_RECORD_DATA)));
+
+        result.add(Arguments.of(
+            EnumSet.of(SZ_ENTITY_INCLUDE_ALL_FEATURES),
+            EnumSet.noneOf(SzFlag.class),
+            EnumSet.of(SZ_ENTITY_INCLUDE_ALL_FEATURES)));
+        
+        result.add(Arguments.of(
+            EnumSet.of(SZ_ENTITY_INCLUDE_ALL_FEATURES),
+            null,
+            EnumSet.of(SZ_ENTITY_INCLUDE_ALL_FEATURES)));
+        
+        result.add(Arguments.of(
+            EnumSet.of(SZ_ENTITY_INCLUDE_FEATURE_STATS),
+            EnumSet.of(SZ_ENTITY_INCLUDE_ALL_FEATURES,SZ_ENTITY_INCLUDE_FEATURE_STATS),
+            EnumSet.of(SZ_ENTITY_INCLUDE_ALL_FEATURES,SZ_ENTITY_INCLUDE_FEATURE_STATS)));
+        
+        result.add(Arguments.of(
+            EnumSet.allOf(SzFlag.class),
+            EnumSet.of(SZ_ENTITY_INCLUDE_NAME_ONLY_RELATIONS,SZ_ENTITY_INCLUDE_ENTITY_NAME),
+            EnumSet.allOf(SzFlag.class)));
+        
+        return result;
+    }
+
+    @ParameterizedTest
+    @MethodSource("getFlagSetUnions")
+    void testUnion(Set<SzFlag> set1, Set<SzFlag> set2, Set<SzFlag> union) 
+    {
+        Set<SzFlag> actual = SzFlag.union(set1, set2);
+        assertEquals(union, actual, "Union not as expected: "
+                     + "set1=[ " + set1 + " ], set2=[ " + set2 + " ]");
+    }
+
 }

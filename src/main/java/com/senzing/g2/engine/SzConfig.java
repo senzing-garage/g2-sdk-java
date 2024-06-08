@@ -98,9 +98,12 @@ public interface SzConfig {
    *                     configuration to close.
    * @param dataSourceCode The data source code for the new data source.
    *
+   * @return The JSON {@link String} describing the data source was 
+   *         added to the configuration.
+   * 
    * @throws SzException If a failure occurs.
    */
-  void addDataSource(long configHandle, String dataSourceCode)
+  String addDataSource(long configHandle, String dataSourceCode)
     throws SzException;
 
   /**

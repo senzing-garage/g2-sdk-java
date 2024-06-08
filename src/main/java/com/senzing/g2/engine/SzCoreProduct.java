@@ -1,17 +1,10 @@
 package com.senzing.g2.engine;
 
-import static com.senzing.g2.engine.SzException.*;
-
 /**
  * The package-protected implementation of {@link SzProduct} that works
  * with the {@link SzCoreEnvironment} class.
  */
 public class SzCoreProduct implements SzProduct {
-    /**
-     * Gets the class prefix to use for {@link SzException} construction.
-     */
-    private static final String CLASS_PREFIX = SzCoreProduct.class.getSimpleName();
-
     /**
      * The {@link SzCoreEnvironment} that constructed this instance.
      */
@@ -38,15 +31,9 @@ public class SzCoreProduct implements SzProduct {
                                                  this.env.getSettings(),
                                                  this.env.isVerboseLogging());
 
-            if (returnCode != 0) {
-                this.env.handleReturnCode(
-                    returnCode, this.nativeApi,
-                    CLASS_PREFIX + "()",
-                    paramsOf("instanceName", this.env.getInstanceName(),
-                            "settings", redact(this.env.getSettings()),
-                            "verboseLogging", this.env.isVerboseLogging()));
-            }                      
+            this.env.handleReturnCode(returnCode, this.nativeApi);
 
+            // no return value, so return null
             return null;
         });
     }

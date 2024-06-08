@@ -263,8 +263,19 @@ public class SzCoreConfigTest extends AbstractTest {
                 try {
                     configHandle = config.createConfig();
 
-                    config.addDataSource(configHandle, EMPLOYEES_DATA_SOURCE);
+                    String result = config.addDataSource(configHandle, EMPLOYEES_DATA_SOURCE);
 
+                    JsonObject resultObj = null;
+                    try {
+                        resultObj = parseJsonObject(result);
+                    } catch (Exception e) {
+                        fail("The addDataSource() result did not parse as JSON: " + result);
+                    }
+
+                    String resultId = getString(resultObj, "DSRC_ID");
+
+                    assertNotNull(resultId, "The DSRC_ID was missing or null in the result: " + result);
+                    
                     String configJson = config.exportConfig(configHandle);
 
                     JsonObject jsonObj = parseJsonObject(configJson);

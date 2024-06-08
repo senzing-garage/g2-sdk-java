@@ -154,8 +154,7 @@ public class SzCoreEngineWhyTest extends AbstractTest {
     static {
         List<Set<SzFlag>> list = new LinkedList<>();
         list.add(null);
-        list.add(EnumSet.noneOf(SzFlag.class));
-        list.add(EnumSet.of(SZ_NO_FLAGS));
+        list.add(SZ_NO_FLAGS);
         list.add(SZ_WHY_ENTITIES_DEFAULT_FLAGS);
         list.add(SZ_WHY_ALL_FLAGS);
         list.add(Collections.unmodifiableSet(EnumSet.of(
@@ -171,8 +170,7 @@ public class SzCoreEngineWhyTest extends AbstractTest {
     static {
         List<Set<SzFlag>> list = new LinkedList<>();
         list.add(null);
-        list.add(EnumSet.noneOf(SzFlag.class));
-        list.add(EnumSet.of(SZ_NO_FLAGS));
+        list.add(SZ_NO_FLAGS);
         list.add(SZ_WHY_RECORDS_DEFAULT_FLAGS);
         list.add(SZ_WHY_ALL_FLAGS);
         list.add(Collections.unmodifiableSet(EnumSet.of(
@@ -188,8 +186,7 @@ public class SzCoreEngineWhyTest extends AbstractTest {
     static {
         List<Set<SzFlag>> list = new LinkedList<>();
         list.add(null);
-        list.add(EnumSet.noneOf(SzFlag.class));
-        list.add(EnumSet.of(SZ_NO_FLAGS));
+        list.add(SZ_NO_FLAGS);
         list.add(SZ_WHY_RECORD_IN_ENTITY_DEFAULT_FLAGS);
         list.add(SZ_WHY_ALL_FLAGS);
         list.add(Collections.unmodifiableSet(EnumSet.of(
@@ -201,9 +198,6 @@ public class SzCoreEngineWhyTest extends AbstractTest {
         WHY_RECORD_IN_ENITTY_FLAG_SETS = Collections.unmodifiableList(list);
     }
 
-    private static final List<Boolean> VIA_KEY_LIST
-        = List.of(true,false,true);
-    
     private static final Map<SzRecordKey, Long> LOADED_RECORD_MAP
         = Collections.synchronizedMap(new LinkedHashMap<>());
 
@@ -765,11 +759,9 @@ public class SzCoreEngineWhyTest extends AbstractTest {
                 if (e instanceof SzException) {
                     SzException sze = (SzException) e;
                     description = "errorCode=[ " + sze.getErrorCode()
-                        + " ], methodSignature=[ " + sze.getMethodSignature()
-                        + " ], parameters=[ " + sze.getMethodParameters()
                         + " ], exception=[ " + e.toString() + " ]";
                 } else {
-                    description = e.toString();
+                    description = "exception=[ " + e.toString() + " ]";
                 }
 
                 if (exceptionType == null) {
@@ -792,9 +784,6 @@ public class SzCoreEngineWhyTest extends AbstractTest {
         Iterator<Set<SzFlag>> flagSetIter 
             = circularIterator(WHY_RECORD_IN_ENITTY_FLAG_SETS);
 
-        Iterator<Boolean> viaKeyIter
-            = circularIterator(VIA_KEY_LIST);
-
         final Class<?> NOT_FOUND = SzNotFoundException.class;
         final Class<?> UNKNOWN_SOURCE = SzUnknownDataSourceException.class;
 
@@ -803,7 +792,6 @@ public class SzCoreEngineWhyTest extends AbstractTest {
                 "Why " + recordKey + " in Entity " + LOADED_RECORD_MAP.get(recordKey),
                 recordKey,
                 flagSetIter.next(),
-                viaKeyIter.next(),
                 null));
         }
 
@@ -811,14 +799,12 @@ public class SzCoreEngineWhyTest extends AbstractTest {
             "Unknown data source code test",
             SzRecordKey.of(UNKNOWN_DATA_SOURCE, "ABC123"),
             flagSetIter.next(),
-            viaKeyIter.next(),
             UNKNOWN_SOURCE));
 
         result.add(Arguments.of(
             "Not found record ID test",
             SzRecordKey.of(PASSENGERS, "XXX000"),
             flagSetIter.next(),
-            viaKeyIter.next(),
             NOT_FOUND));
 
         return result;
@@ -920,14 +906,12 @@ public class SzCoreEngineWhyTest extends AbstractTest {
     void testWhyRecordInEntity(String          testDescription,
                                SzRecordKey     recordKey,
                                Set<SzFlag>     flags,
-                               boolean         viaKey,
                                Class<?>        exceptionType)
     {
         StringBuilder sb = new StringBuilder(
             "description=[ " + testDescription + " ], recordKey=[ "
             + recordKey + " ], flags=[ " + SzFlag.toString(flags)
-            + " ], viaKey=[ " + viaKey + " ], expectedException=[ "
-            + exceptionType + " ]");
+            + " ], expectedException=[ " + exceptionType + " ]");
 
         String testData = sb.toString();
 
@@ -935,16 +919,7 @@ public class SzCoreEngineWhyTest extends AbstractTest {
             try {
                 SzEngine engine = this.env.getEngine();
 
-                String result = null;
-                if (viaKey) {
-                    result = engine.whyRecordInEntity(recordKey, flags);
-
-                } else {
-                    result = engine.whyRecordInEntity(
-                        recordKey.dataSourceCode(),
-                        recordKey.recordId(),
-                        flags);
-                }
+                String result = engine.whyRecordInEntity(recordKey, flags);
 
                 if (exceptionType != null) {
                     fail("Unexpectedly succeeded whyRecordInEntity(): "
@@ -959,11 +934,9 @@ public class SzCoreEngineWhyTest extends AbstractTest {
                 if (e instanceof SzException) {
                     SzException sze = (SzException) e;
                     description = "errorCode=[ " + sze.getErrorCode()
-                        + " ], methodSignature=[ " + sze.getMethodSignature()
-                        + " ], parameters=[ " + sze.getMethodParameters()
                         + " ], exception=[ " + e.toString() + " ]";
                 } else {
-                    description = e.toString();
+                    description = "exception=[ " + e.toString() + " ]";
                 }
 
                 if (exceptionType == null) {
@@ -1005,7 +978,6 @@ public class SzCoreEngineWhyTest extends AbstractTest {
         }
     
         Iterator<Set<SzFlag>> flagSetIter = circularIterator(WHY_RECORDS_FLAG_SETS);
-        Iterator<Boolean>     viaKeyIter  = circularIterator(VIA_KEY_LIST);
 
         final Class<?> NOT_FOUND = SzNotFoundException.class;
         final Class<?> UNKNOWN_SOURCE = SzUnknownDataSourceException.class;
@@ -1019,7 +991,6 @@ public class SzCoreEngineWhyTest extends AbstractTest {
                 recordKey1,
                 recordKey2,
                 flagSetIter.next(),
-                viaKeyIter.next(),
                 null));
         }
 
@@ -1028,7 +999,6 @@ public class SzCoreEngineWhyTest extends AbstractTest {
             RECORD_KEYS.get(0),
             RECORD_KEYS.get(0),
             flagSetIter.next(),
-            viaKeyIter.next(),
             null));
 
         result.add(Arguments.of(
@@ -1036,7 +1006,6 @@ public class SzCoreEngineWhyTest extends AbstractTest {
             SzRecordKey.of(UNKNOWN_DATA_SOURCE, "ABC123"),
             DEF890,
             flagSetIter.next(),
-            viaKeyIter.next(),
             UNKNOWN_SOURCE));
 
         result.add(Arguments.of(
@@ -1044,7 +1013,6 @@ public class SzCoreEngineWhyTest extends AbstractTest {
             SzRecordKey.of(PASSENGERS, "XXX000"),
             DEF890,
             flagSetIter.next(),
-            viaKeyIter.next(),
             NOT_FOUND));
 
         return result;
@@ -1174,15 +1142,13 @@ public class SzCoreEngineWhyTest extends AbstractTest {
                         SzRecordKey     recordKey1,
                         SzRecordKey     recordKey2,
                         Set<SzFlag>     flags,
-                        boolean         viaKey,
                         Class<?>        exceptionType)
     {
         StringBuilder sb = new StringBuilder(
             "description=[ " + testDescription + " ], recordKey1=[ "
             + recordKey1 + " ], recordKey2=[ " + recordKey2 
             + " ], flags=[ " + SzFlag.toString(flags)
-            + " ], viaKey=[ " + viaKey + " ], expectedException=[ "
-            + exceptionType + " ]");
+            + " ], expectedException=[ " + exceptionType + " ]");
 
         String testData = sb.toString();
 
@@ -1190,19 +1156,8 @@ public class SzCoreEngineWhyTest extends AbstractTest {
             try {
                 SzEngine engine = this.env.getEngine();
 
-                String result = null;
-                if (viaKey) {
-                    result = engine.whyRecords(
-                        recordKey1, recordKey2, flags);
-
-                } else {
-                    result = engine.whyRecords(
-                        recordKey1.dataSourceCode(),
-                        recordKey1.recordId(),
-                        recordKey2.dataSourceCode(),
-                        recordKey2.recordId(),
-                        flags);
-                }
+                String result = engine.whyRecords(
+                    recordKey1, recordKey2, flags);
 
                 if (exceptionType != null) {
                     fail("Unexpectedly succeeded whyRecords(): "
@@ -1217,11 +1172,9 @@ public class SzCoreEngineWhyTest extends AbstractTest {
                 if (e instanceof SzException) {
                     SzException sze = (SzException) e;
                     description = "errorCode=[ " + sze.getErrorCode()
-                        + " ], methodSignature=[ " + sze.getMethodSignature()
-                        + " ], parameters=[ " + sze.getMethodParameters()
                         + " ], exception=[ " + e.toString() + " ]";
                 } else {
-                    description = e.toString();
+                    description = "exception=[ " + e.toString() + " ]";
                 }
 
                 if (exceptionType == null) {

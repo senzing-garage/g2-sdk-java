@@ -13,50 +13,25 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
-import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Parsed;
-import org.junit.jupiter.params.shadow.com.univocity.parsers.common.processor.CustomMatcher;
-
-import com.senzing.g2.engine.SzRecord.SzAddressByParts;
-import com.senzing.g2.engine.SzRecord.SzDataSourceCode;
-import com.senzing.g2.engine.SzRecord.SzDateOfBirth;
-import com.senzing.g2.engine.SzRecord.SzFullAddress;
-import com.senzing.g2.engine.SzRecord.SzFullName;
-import com.senzing.g2.engine.SzRecord.SzNameByParts;
-import com.senzing.g2.engine.SzRecord.SzPhoneNumber;
-import com.senzing.g2.engine.SzRecord.SzRecordId;
-import com.senzing.g2.engine.SzRecord.SzRecordKey;
-
-import static org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import static org.junit.jupiter.api.TestInstance.Lifecycle;
 
-import javax.json.Json;
-import javax.json.JsonObjectBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonArray;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 import static com.senzing.util.JsonUtilities.*;
-import static com.senzing.g2.engine.NativeEngine.*;
-import static org.junit.jupiter.params.provider.Arguments.*;
 import static com.senzing.g2.engine.SzFlag.*;
 import static com.senzing.g2.engine.Utilities.*;
-import static com.senzing.g2.engine.SzRecord.*;
 
 /**
  * Unit tests for {@link SzCoreDiagnostic}.
@@ -100,12 +75,11 @@ public class SzCoreEngineReadTest extends AbstractTest {
     private static final SzRecordKey FGH012
         = SzRecordKey.of(MARRIAGES, "FGH012");
   
-    private static final List<Set<SzFlag>> READ_FLAG_SETS;
+    private static final List<Set<SzFlag>> ENTITY_FLAG_SETS;
     static {
         List<Set<SzFlag>> list = new LinkedList<>();
         list.add(null);
-        list.add(EnumSet.noneOf(SzFlag.class));
-        list.add(EnumSet.of(SZ_NO_FLAGS));
+        list.add(SZ_NO_FLAGS);
         list.add(SZ_ENTITY_DEFAULT_FLAGS);
         list.add(SZ_ENTITY_BRIEF_DEFAULT_FLAGS);
         list.add(Collections.unmodifiableSet(EnumSet.of(
@@ -114,12 +88,66 @@ public class SzCoreEngineReadTest extends AbstractTest {
             SZ_ENTITY_INCLUDE_RECORD_DATA,
             SZ_ENTITY_INCLUDE_RECORD_MATCHING_INFO)));
         list.add(Collections.unmodifiableSet(EnumSet.of(SZ_ENTITY_INCLUDE_ENTITY_NAME)));
-        READ_FLAG_SETS = Collections.unmodifiableList(list);
+        ENTITY_FLAG_SETS = Collections.unmodifiableList(list);
     }
 
-    private static final List<Boolean> VIA_KEY_LIST
-        = List.of(true,false,true);
-    
+    private static final List<Set<SzFlag>> RECORD_FLAG_SETS;
+    static {
+        List<Set<SzFlag>> list = new LinkedList<>();
+        list.add(null);
+        list.add(SZ_NO_FLAGS);
+        list.add(SZ_RECORD_DEFAULT_FLAGS);
+        list.add(SZ_RECORD_ALL_FLAGS);
+        list.add(Collections.unmodifiableSet(EnumSet.of(
+            SZ_ENTITY_INCLUDE_RECORD_MATCHING_INFO,
+            SZ_ENTITY_INCLUDE_RECORD_UNMAPPED_DATA)));
+        list.add(Collections.unmodifiableSet(EnumSet.of(
+            SZ_ENTITY_INCLUDE_RECORD_TYPES,
+            SZ_ENTITY_INCLUDE_RECORD_JSON_DATA)));
+        RECORD_FLAG_SETS = Collections.unmodifiableList(list);
+    }
+
+    private static final List<SzFlag> SEARCH_INCLUDE_FLAGS
+        = List.of(SZ_SEARCH_INCLUDE_POSSIBLY_RELATED,
+                  SZ_SEARCH_INCLUDE_POSSIBLY_SAME,
+                  SZ_SEARCH_INCLUDE_RESOLVED);
+
+    private static final List<Set<SzFlag>> SEARCH_FLAG_SETS;
+    static {
+        List<Set<SzFlag>> list = new LinkedList<>();
+        list.add(null);
+        list.add(SZ_NO_FLAGS);
+        list.add(SZ_SEARCH_BY_ATTRIBUTES_DEFAULT_FLAGS);
+        list.add(SZ_SEARCH_BY_ATTRIBUTES_MINIMAL_ALL);
+        list.add(SZ_SEARCH_BY_ATTRIBUTES_MINIMAL_STRONG);
+        list.add(SZ_SEARCH_BY_ATTRIBUTES_STRONG);
+        Set<SzFlag> set = EnumSet.of(
+            SZ_ENTITY_INCLUDE_ENTITY_NAME,
+            SZ_ENTITY_INCLUDE_RECORD_SUMMARY,
+            SZ_ENTITY_INCLUDE_RECORD_DATA);
+        set.addAll(SZ_SEARCH_INCLUDE_ALL_ENTITIES);
+        list.add(Collections.unmodifiableSet(set));
+
+        Set<Set<SzFlag>> includeSets    = new LinkedHashSet<>();
+        Set<Set<SzFlag>> prevSets       = Set.of(SZ_ENTITY_DEFAULT_FLAGS);
+        for (int index = 0; index < SEARCH_INCLUDE_FLAGS.size(); index++) {
+            Set<Set<SzFlag>> currentSets = new LinkedHashSet<>();
+            for (Set<SzFlag> prevSet: prevSets) {
+                for (SzFlag flag : SEARCH_INCLUDE_FLAGS) {
+                    Set<SzFlag> currentSet = EnumSet.noneOf(SzFlag.class);
+                    currentSet.addAll(prevSet);
+                    currentSet.add(flag);
+                    currentSets.add(currentSet);
+                }
+            }
+            prevSets = currentSets;
+            includeSets.addAll(currentSets);
+            currentSets = new LinkedHashSet<>();
+        }
+        list.addAll(includeSets);
+        SEARCH_FLAG_SETS = Collections.unmodifiableList(list);
+    }
+
     private static final Map<SzRecordKey, Long> LOADED_RECORD_MAP
         = Collections.synchronizedMap(new LinkedHashMap<>());
 
@@ -195,7 +223,7 @@ public class SzCoreEngineReadTest extends AbstractTest {
     }
 
     public static Long getEntityId(SzRecordKey recordKey) {
-        return getEntityId(recordKey);
+        return LOADED_RECORD_MAP.get(recordKey);
     }
 
     /**
@@ -225,24 +253,24 @@ public class SzCoreEngineReadTest extends AbstractTest {
                                         true);
 
         RepositoryManager.loadFile(repoDirectory,
-                                    passengerFile,
-                                    PASSENGERS,
-                                    true);
+                                   passengerFile,
+                                   PASSENGERS,
+                                   true);
 
         RepositoryManager.loadFile(repoDirectory,
-                                    employeeFile,
-                                    EMPLOYEES,
-                                    true);
+                                   employeeFile,
+                                   EMPLOYEES,
+                                   true);
 
         RepositoryManager.loadFile(repoDirectory,
-                                    vipFile,
-                                    VIPS,
-                                    true);
+                                   vipFile,
+                                   VIPS,
+                                   true);
 
         RepositoryManager.loadFile(repoDirectory,
-                                    marriagesFile,
-                                    MARRIAGES,
-                                    true);
+                                   marriagesFile,
+                                   MARRIAGES,
+                                   true);
     }
 
     private static String relationshipKey(SzRecordKey recordKey1,
@@ -356,108 +384,278 @@ public class SzCoreEngineReadTest extends AbstractTest {
 
     private List<Arguments> getGetEntityParameters() {
         List<Arguments>         result      = new LinkedList<>();
+        Iterator<Set<SzFlag>>   flagSetIter = circularIterator(ENTITY_FLAG_SETS);
 
-        for (SzRecordKey key : RECORD_KEYS) {
-            // check if this record was loaded
-            boolean loaded = LOADED_RECORD_MAP.containsKey(key);
+        final Class<?> UNKNOWN_SOURCE = SzUnknownDataSourceException.class;
+        final Class<?> NOT_FOUND = SzNotFoundException.class;
 
-            for (Boolean viaKey : VIA_KEY_LIST) {
-                for (Set<SzFlag> flagSet : READ_FLAG_SETS) {
-
-                    boolean unknownDataSource = UNKNOWN_DATA_SOURCE.equals(
-                        key.dataSourceCode());
-
-                    Class<?> expectedException = null;
-                    if (unknownDataSource) {
-                        expectedException = SzUnknownDataSourceException.class;
-                    } else if (!loaded) {
-                        expectedException = SzNotFoundException.class;
-                    }
-                    result.add(Arguments.of(key, flagSet, viaKey, expectedException));
-
-                    // no need to try different flags if not loaded
-                    if (!loaded) break;
-                }
-            }
+        for (SzRecordKey recordKey : RECORD_KEYS) {
+            long entityId = getEntityId(recordKey);
+            result.add(Arguments.of(
+                "Get entity for " + recordKey + "(" + entityId + ") test",
+                recordKey,
+                entityId,
+                flagSetIter.next(), 
+                null,
+                null));
         }
+
+        result.add(Arguments.of(
+            "Get Entity with bad data source code / entity ID test",
+            SzRecordKey.of(UNKNOWN_DATA_SOURCE, "ABC123"),
+            -200L,
+            flagSetIter.next(),
+            UNKNOWN_SOURCE,
+            NOT_FOUND));
+
+        result.add(Arguments.of(
+            "Get Entity with not-found record ID / entity ID test",
+            SzRecordKey.of(PASSENGERS, "XXX000"),
+            200000000L,
+            flagSetIter.next(),
+            NOT_FOUND,
+            NOT_FOUND));
+
         return result;
     }
 
     @ParameterizedTest
-    @MethodSource("getGetEntityByRecordParameters")
-    void testGetEntityByRecordId(SzRecordKey    recordKey,
+    @MethodSource("getGetEntityParameters")
+    void testGetEntityByRecordId(String         testDescription,
+                                 SzRecordKey    recordKey,
                                  long           entityId,
                                  Set<SzFlag>    flags,
-                                 boolean        viaKey,
                                  Class<?>       recordExceptionType,
                                  Class<?>       entityExceptionType)
     {
+        String testData = "description=[ " + testDescription
+            + " ], recordKey=[ " + recordKey + " ], entityId=[ "
+            + entityId + " ], flags=[ " + SzFlag.toString(flags)
+            + " ], expectedExceptionType=[ " + recordExceptionType + " ]";
+
         this.performTest(() -> {
             try {
                 SzEngine engine = this.env.getEngine();
 
-                String result = null;
-                if (viaKey) {
-                    result = engine.getEntity(recordKey, flags);
+                String result = engine.getEntity(recordKey, flags);
 
-                } else {
-                    result = engine.getEntity(
-                        recordKey.dataSourceCode(),
-                        recordKey.recordId(),
-                        flags);
-                }
-
-                if (expectedExceptionType != null) {
-                    fail("Unexpectedly succeeded in getting an entity: viaKey=[ "
-                         + viaKey + " ], recordKey=[ " + recordKey 
-                         + " ], flags=[ " + SzFlag.toString(flags)
-                         + " ], expectedException=[ " + expectedExceptionType
-                         + " ]");
+                if (recordExceptionType != null) {
+                    fail("Unexpectedly succeeded in getting an entity: " + testData);
                 }
                 
                 // parse the result
                 JsonObject  jsonObject = null;
                 try {
                     jsonObject = parseJsonObject(result);
-                } catch (Exception e) {
-                    fail("Failed to parse entity result JSON for record (" + recordKey + ")"
-                         + result, e);
-                }
 
-                // check if we have an expected entity ID
-                Long expectedEntityId = LOADED_RECORD_MAP.get(recordKey);
+                } catch (Exception e) {
+                    fail("Failed to parse entity result JSON: " + testData 
+                         + ", result=[ " + result + " ]", e);
+                }
 
                 // get the entity
                 JsonObject  entity = getJsonObject(jsonObject, "RESOLVED_ENTITY");
 
-                assertNotNull(entity, "No RESOLVED_ENTITY property in entity JSON for record (" 
-                              + recordKey + "): " + result);
+                assertNotNull(entity, "No RESOLVED_ENTITY property in entity JSON: " 
+                              + testData + ", result=[ " + result + " ]");
 
                 // get the entity ID
-                Long entityId = getLong(entity, "ENTITY_ID");
+                Long actualEntityId = getLong(entity, "ENTITY_ID");
 
-                assertNotNull(entity, "No ENTITY_ID property in entity JSON for record (" + recordKey
-                              + "): " + result);
+                assertNotNull(entity, "No ENTITY_ID property in entity JSON: "
+                              + testData + ", result=[ " + result + " ]");
 
+                assertEquals(entityId, actualEntityId, 
+                             "Unexpected entity ID: " + testData);
 
-                if (expectedEntityId != null) {
-                    assertEquals(expectedEntityId, entityId, 
-                        "Unecpeted entity ID for record: " + recordKey);
+            } catch (Exception e) {
+                String description = "";
+                if (e instanceof SzException) {
+                    SzException sze = (SzException) e;
+                    description = "errorCode=[ " + sze.getErrorCode()
+                        + " ], exception=[ " + e.toString() + " ]";
+                } else {
+                    description = "exception=[ " + e.toString() + " ]";
                 }
 
-                // update the loaded record map with an entity ID
-                LOADED_RECORD_MAP.put(recordKey, entityId);
+                if (recordExceptionType == null) {
+                    fail("Unexpectedly failed getting entity by record: "
+                         + description, e);
+
+                } else if (recordExceptionType != e.getClass()) {
+                    assertInstanceOf(
+                        recordExceptionType, e, 
+                        "get-entity-by-record failed with an unexpected exception type: "
+                        + description);
+                }
+            }
+        });
+    }
+
+    @ParameterizedTest
+    @MethodSource("getGetEntityParameters")
+    void testGetEntityByEntityId(String         testDescription,
+                                 SzRecordKey    recordKey,
+                                 long           entityId,
+                                 Set<SzFlag>    flags,
+                                 Class<?>       recordExceptionType,
+                                 Class<?>       entityExceptionType)
+    {
+        String testData = "description=[ " + testDescription
+            + " ], recordKey=[ " + recordKey + " ], entityId=[ "
+            + entityId + " ], flags=[ " + SzFlag.toString(flags)
+            + " ], expectedExceptionType=[ " + entityExceptionType + " ]";
+
+        this.performTest(() -> {
+            try {
+                SzEngine engine = this.env.getEngine();
+
+                String result = engine.getEntity(entityId, flags);
+
+                if (entityExceptionType != null) {
+                    fail("Unexpectedly succeeded in getting an entity: " + testData);
+                }
+                
+                // parse the result
+                JsonObject jsonObject = null;
+                try {
+                    jsonObject = parseJsonObject(result);
+
+                } catch (Exception e) {
+                    fail("Failed to parse entity result JSON: " + testData 
+                         + ", result=[ " + result + " ]", e);
+                }
+
+                // get the entity
+                JsonObject  entity = getJsonObject(jsonObject, "RESOLVED_ENTITY");
+
+                assertNotNull(entity, "No RESOLVED_ENTITY property in entity JSON: " 
+                              + testData + ", result=[ " + result + " ]");
+
+                // get the entity ID
+                Long actualEntityId = getLong(entity, "ENTITY_ID");
+
+                assertNotNull(entity, "No ENTITY_ID property in entity JSON: "
+                              + testData + ", result=[ " + result + " ]");
+
+                assertEquals(entityId, actualEntityId, 
+                             "Unexpected entity ID: " + testData);
+
+            } catch (Exception e) {
+                String description = "";
+                if (e instanceof SzException) {
+                    SzException sze = (SzException) e;
+                    description = "errorCode=[ " + sze.getErrorCode()
+                        + " ], exception=[ " + e.toString() + " ]";
+                } else {
+                    description = "exception=[ " + e.toString() + " ]";
+                }
+
+                if (entityExceptionType == null) {
+                    fail("Unexpectedly failed getting entity by record: "
+                         + description, e);
+
+                } else if (entityExceptionType != e.getClass()) {
+                    assertInstanceOf(
+                        entityExceptionType, e, 
+                        "get-entity-by-id failed with an unexpected exception type: "
+                        + description);
+                }
+            }
+        });
+    }
+
+
+    private List<Arguments> getGetRecordParameters() {
+        List<Arguments>         result      = new LinkedList<>();
+        Iterator<Set<SzFlag>>   flagSetIter = circularIterator(RECORD_FLAG_SETS);
+
+        final Class<?> UNKNOWN_SOURCE = SzUnknownDataSourceException.class;
+        final Class<?> NOT_FOUND = SzNotFoundException.class;
+
+        for (SzRecordKey recordKey : RECORD_KEYS) {
+            long entityId = getEntityId(recordKey);
+            result.add(Arguments.of(
+                "Get record for " + recordKey + " test",
+                recordKey,
+                flagSetIter.next(), 
+                null,
+                null));
+        }
+
+        result.add(Arguments.of(
+            "Get record with bad data source code test",
+            SzRecordKey.of(UNKNOWN_DATA_SOURCE, "ABC123"),
+            flagSetIter.next(),
+            UNKNOWN_SOURCE));
+
+        result.add(Arguments.of(
+            "Get record with not-found record ID test",
+            SzRecordKey.of(PASSENGERS, "XXX000"),
+            flagSetIter.next(),
+            NOT_FOUND));
+
+        return result;
+    }
+
+    @ParameterizedTest
+    @MethodSource("getGetRecordParameters")
+    void testGetRecord(String         testDescription,
+                       SzRecordKey    recordKey,
+                       Set<SzFlag>    flags,
+                       Class<?>       expectedExceptionType)
+    {
+        String testData = "description=[ " + testDescription 
+            + " ], recordKey=[ " + recordKey + " ], flags=[ "
+            + SzFlag.toString(flags) + " ], expectedExceptionType=[ "
+            + expectedExceptionType + " ]";
+
+        this.performTest(() -> {
+            try {
+                SzEngine engine = this.env.getEngine();
+
+                String result = engine.getRecord(recordKey, flags);
+
+                if (expectedExceptionType != null) {
+                    fail("Unexpectedly succeeded in getting a record: " + testData);
+                }
+                
+                // parse the result
+                JsonObject jsonObject = null;
+                try {
+                    jsonObject = parseJsonObject(result);
+
+                } catch (Exception e) {
+                    fail("Failed to parse record result JSON: " + testData 
+                         + ", result=[ " + result + " ]", e);
+                }
+
+                // get the data source code
+                String dataSourceCode = getString(jsonObject, "DATA_SOURCE");
+
+                assertNotNull(dataSourceCode, "No DATA_SOURCE property in record JSON: " 
+                              + testData + ", result=[ " + result + " ]");
+
+                // get the record ID
+                String recordId = getString(jsonObject, "RECORD_ID");
+
+                assertNotNull(recordId, "No RECORD_ID property in record JSON: " 
+                              + testData + ", result=[ " + result + " ]");
+
+                SzRecordKey actualRecordKey = SzRecordKey.of(dataSourceCode, recordId);
+
+                assertEquals(recordKey, actualRecordKey, 
+                    "The data source code and/or record ID are not as expected: "
+                        + testData + ", result=[ " + result + " ]");
                 
             } catch (Exception e) {
                 String description = "";
                 if (e instanceof SzException) {
                     SzException sze = (SzException) e;
                     description = "errorCode=[ " + sze.getErrorCode()
-                        + " ], methodSignature=[ " + sze.getMethodSignature()
-                        + " ], parameters=[ " + sze.getMethodParameters()
                         + " ], exception=[ " + e.toString() + " ]";
                 } else {
-                    description = e.toString();
+                    description = "exception=[ " + e.toString() + " ]";
                 }
 
                 if (expectedExceptionType == null) {
@@ -467,29 +665,302 @@ public class SzCoreEngineReadTest extends AbstractTest {
                 } else if (expectedExceptionType != e.getClass()) {
                     assertInstanceOf(
                         expectedExceptionType, e, 
-                        "get-entity-by-record failed with an unexpected exception type: "
+                        "get-record failed with an unexpected exception type: "
                         + description);
                 }
             }
         });
     }
 
-    //@Test
-    void testGetEntityByEntityId(long         entityId,
-                                 Set<SzFlag>  flags,
-                                 boolean      viaKey,
-                                 Class<?>     expectedExceptionType)
+    private <T extends Comparable<T>> Set<T> sortedSet(Set<T> set) {
+        List<T> list = new ArrayList<>(set.size());
+        list.addAll(set);
+        Collections.sort(list);
+        Set<T> sortedSet = new LinkedHashSet<>();
+        sortedSet.addAll(list);
+        return sortedSet;
+    }
+
+    private <K extends Comparable<K>, V> Map<K, V> sortedMap(Map<K, V> map)
     {
-
+        List<K> list = new ArrayList<>(map.size());
+        list.addAll(map.keySet());
+        Collections.sort(list);
+        Map<K, V> sortedMap = new LinkedHashMap<>();
+        for (K key: list) {
+            sortedMap.put(key, map.get(key));
+        }
+        return sortedMap;
     }
 
-    @Test
-    void testGetRecord() {
 
+    private static class Criterion {
+        private String key;
+        private Set<String> values;
+
+        private Criterion(String key, String... values) {
+            this.key = key;
+            this.values = new LinkedHashSet<>();
+            for (String value : values) {
+            this.values.add(value);
+            }
+        }
     }
 
-    @Test
-    void testSearchByAttributes() {
+    private static Criterion criterion(String key, String... values) {
+        return new Criterion(key, values);
+    }
+
+    private static Map<String, Set<String>> criteria(String key, String... values) {
+        Criterion criterion = criterion(key, values);
+        return criteria(criterion);
+    }
+
+    private static Map<String, Set<String>> criteria(Criterion... criteria) {
+        Map<String, Set<String>> result = new LinkedHashMap<>();
+        for (Criterion criterion : criteria) {
+            Set<String> values = result.get(criterion.key);
+            if (values == null) {
+            result.put(criterion.key, criterion.values);
+            } else {
+            values.addAll(criterion.values);
+            }
+        }
+        return result;
+    }
+
+    public static Set<SzFlag> flags(Set<SzFlag> flagSet, SzFlag... addlFlags) {
+        Set<SzFlag> result = EnumSet.noneOf(SzFlag.class);
+        result.addAll(flagSet);
+        for (SzFlag flag : addlFlags) {
+            result.add(flag);
+        }
+        return result;
+    }
+
+    public List<Arguments> getSearchParameters() {
+        Iterator<Set<SzFlag>> flagSetIter = circularIterator(SEARCH_FLAG_SETS);
+
+        List<Arguments> result = new LinkedList<>();
+
+        Map<Map<String, Set<String>>, Map<SzFlag, Integer>> searchCountMap
+            = new LinkedHashMap<>();
+
+        searchCountMap.put(criteria("PHONE_NUMBER", "702-555-1212"),
+                           sortedMap(Map.of(SZ_SEARCH_INCLUDE_POSSIBLY_RELATED, 1)));
+
+        searchCountMap.put(criteria("PHONE_NUMBER", "212-555-1212"),
+                           sortedMap(Map.of(SZ_SEARCH_INCLUDE_POSSIBLY_RELATED, 1)));
+
+        searchCountMap.put(criteria("PHONE_NUMBER", "818-555-1313"),
+                           sortedMap(Map.of(SZ_SEARCH_INCLUDE_POSSIBLY_RELATED, 1)));
+
+        searchCountMap.put(criteria("PHONE_NUMBER", "818-555-1212"),
+                           sortedMap(Map.of(SZ_SEARCH_INCLUDE_POSSIBLY_RELATED, 1)));
+
+        searchCountMap.put(
+            criteria("PHONE_NUMBER", "818-555-1212", "818-555-1313"),
+            sortedMap(Map.of(SZ_SEARCH_INCLUDE_POSSIBLY_RELATED, 2)));
+
+        searchCountMap.put(
+            criteria(criterion("ADDR_LINE1", "100 MAIN STREET"),
+                     criterion("ADDR_CITY", "LOS ANGELES"),
+                     criterion("ADDR_STATE", "CALIFORNIA"),
+                     criterion("ADDR_POSTAL_CODE", "90012")),
+            sortedMap(Map.of(SZ_SEARCH_INCLUDE_POSSIBLY_RELATED, 2)));
+
+        searchCountMap.put(
+            criteria(criterion("NAME_FULL", "JOHN DOE", "JANE DOE"),
+                     criterion("ADDR_LINE1", "100 MAIN STREET"),
+                     criterion("ADDR_CITY", "LOS ANGELES"),
+                     criterion("ADDR_STATE", "CALIFORNIA"),
+                     criterion("ADDR_POSTAL_CODE", "90012")),
+            sortedMap(Map.of(SZ_SEARCH_INCLUDE_RESOLVED, 2)));
+
+        searchCountMap.put(
+            criteria(criterion("NAME_FULL", "JOHN DOE"),
+                     criterion("ADDR_LINE1", "100 MAIN STREET"),
+                     criterion("ADDR_CITY", "LOS ANGELES"),
+                     criterion("ADDR_STATE", "CALIFORNIA"),
+                     criterion("ADDR_POSTAL_CODE", "90012")),
+            sortedMap(Map.of(SZ_SEARCH_INCLUDE_RESOLVED, 1,
+                             SZ_SEARCH_INCLUDE_POSSIBLY_RELATED, 1)));
+
+        searchCountMap.put(
+            criteria(criterion("NAME_FULL", "Mark Hightower"),
+                     criterion("PHONE_NUMBER", "563-927-2833")),
+            sortedMap(Map.of(SZ_SEARCH_INCLUDE_RESOLVED, 1,
+                             SZ_SEARCH_INCLUDE_POSSIBLY_SAME, 1)));
+
+        searchCountMap.put(
+            criteria(criterion("NAME_FULL", "Mark Hightower"),
+                     criterion("DATE_OF_BIRTH", "1981-03-22")),
+            sortedMap(Map.of(SZ_SEARCH_INCLUDE_POSSIBLY_SAME, 1)));
+
+        searchCountMap.put(
+            criteria(criterion("NAME_FULL", "Mark Hightower"),
+                     criterion("PHONE_NUMBER", "563-927-2833"),
+                     criterion("PHONE_NUMBER", "781-332-2824"),
+                     criterion("DATE_OF_BIRTH", "1981-06-22")),
+            sortedMap(Map.of(SZ_SEARCH_INCLUDE_RESOLVED, 1,
+                             SZ_SEARCH_INCLUDE_POSSIBLY_SAME, 1)));
+
+        for (Set<SzFlag> flagSet : SEARCH_FLAG_SETS) {
+            searchCountMap.forEach((criteria, countsMap) -> {
+                int expectedCount   = 0;
+                int totalCount      = 0;
+                int flagCount       = 0;
+                for (SzFlag flag : SEARCH_INCLUDE_FLAGS) {
+                    if (countsMap.containsKey(flag)) {
+                        totalCount += countsMap.get(flag);
+                    }
+                    if (flagSet == null || !flagSet.contains(flag)) continue;
+                    flagCount++;
+                    if (!countsMap.containsKey(flag)) continue;
+                    expectedCount += countsMap.get(flag);
+                }
+                if (flagCount == 0) expectedCount = totalCount;
+
+                String attributes = criteriaToJson(criteria);
+
+                if (result.size() == 0) {
+                    result.add(Arguments.of(
+                        attributes,
+                        "BAD_SEARCH_PROFILE",
+                        flagSet,
+                        0,
+                        SzBadInputException.class));
+                }
+
+                result.add(Arguments.of(
+                    attributes,
+                    null,
+                    flagSet,
+                    expectedCount,
+                    null));
+
+                result.add(Arguments.of(
+                    attributes,
+                    "SEARCH",
+                    flagSet,
+                    expectedCount,
+                    null));
+
+                result.add(Arguments.of(
+                    attributes,
+                    "INGEST",
+                    flagSet,
+                    expectedCount,
+                    null));
+
+            });
+        }
+        return result;
+    }
+
+    private String criteriaToJson(Map<String, Set<String>> criteria) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        String prefix1 = "";
+        for (Map.Entry<String,Set<String>> entry : criteria.entrySet()) {
+            String      key     = entry.getKey().toUpperCase();
+            Set<String> values  = entry.getValue();
+            if (values.size() == 0) continue;
+            if (values.size() == 1) {
+                sb.append(prefix1);
+                sb.append(jsonEscape(key)).append(":");
+                sb.append(jsonEscape(values.iterator().next()));
+                prefix1 = ",";
+                continue;
+            }
+            String pluralKey = (key.endsWith("S")) 
+                ? (key + "ES") : (key + "S");
+            sb.append(prefix1);
+            sb.append(jsonEscape(pluralKey)).append(": [");
+            String prefix2 = "";
+            for (String value: values) {
+                sb.append(prefix2);
+                sb.append("{").append(jsonEscape(key));
+                sb.append(":").append(jsonEscape(value)).append("}");
+                prefix2 = ",";
+            }
+            sb.append("]");
+            prefix1 = ",";
+        }
+        sb.append("}");
+        return sb.toString();
+    }
+
+    @ParameterizedTest
+    @MethodSource("getSearchParameters")
+    void testSearchByAttributes(String      attributes,
+                                String      searchProfile,
+                                Set<SzFlag> flags,
+                                Integer     expectedCount,
+                                Class<?>    expectedExceptionType)
+    {
+        String testData = "description=[ " + attributes
+            + " ], searchProfile=[ " + searchProfile + " ], flags=[ "
+            + SzFlag.toString(flags) + " ], expectedCount=[ "
+            + expectedCount + " ]";
+
+        this.performTest(() -> {
+            try {
+                SzEngine engine = this.env.getEngine();
+
+                String result = null;
+                if (searchProfile == null) {
+                    result = engine.searchByAttributes(attributes, flags);
+                } else {
+                    result = engine.searchByAttributes(attributes,
+                                                       searchProfile,
+                                                       flags);
+                }
+
+                if (expectedExceptionType != null) {
+                    fail("Unexpectedly succeeded in searching: " + testData);
+                }
+
+                // parse the result
+                JsonObject jsonObject = null;
+                try {
+                    jsonObject = parseJsonObject(result);
+
+                } catch (Exception e) {
+                    fail("Failed to parse search result JSON: " + testData 
+                         + ", result=[ " + result + " ]", e);
+                }
+
+                JsonArray entities = getJsonArray(jsonObject, "RESOLVED_ENTITIES");
+                assertNotNull(entities, "The RESOLVED_ENTITIES property was not found "
+                    + "in the result.  " + testData + ", result=[ " + result + " ]");
+                
+                int actualCount = entities.size();
+                assertEquals(expectedCount, actualCount,
+                    "Unexpected number of search results.  " + testData
+                    + ", entities=[ " + entities + " ]");
+                
+            } catch (Exception e) {
+                String description = "";
+                if (e instanceof SzException) {
+                    SzException sze = (SzException) e;
+                    description = "errorCode=[ " + sze.getErrorCode()
+                        + " ], exception=[ " + e.toString() + " ]";
+                } else {
+                    description = "exception=[ " + e.toString() + " ]";
+                }
+
+                if (expectedExceptionType == null) {
+                    fail("Unexpectedly failed search: " + testData + ", " + description, e);
+
+                } else if (expectedExceptionType != e.getClass()) {
+                    assertInstanceOf(
+                        expectedExceptionType, e, 
+                        "search failed with an unexpected exception type: "
+                        + testData + ", " + description);
+                }
+            }
+        });
 
     }
 

@@ -1,18 +1,10 @@
 package com.senzing.g2.engine;
 
-import static com.senzing.g2.engine.SzException.*;
-
 /**
  * The package-protected implementation of {@link SzConfigManager} that works
  * with the {@link SzCoreEnvironment} class.
  */
-public class SzCoreConfigManager implements SzConfigManager {
-    /**
-     * Gets the class prefix to use for {@link SzException} construction.
-     */
-    private static final String CLASS_PREFIX 
-        = SzCoreConfigManager.class.getSimpleName();
-    
+public class SzCoreConfigManager implements SzConfigManager {    
     /**
      * The {@link SzCoreEnvironment} that constructed this instance.
      */
@@ -44,15 +36,9 @@ public class SzCoreConfigManager implements SzConfigManager {
                                                  this.env.getSettings(),
                                                  this.env.isVerboseLogging());
 
-            if (returnCode != 0) {
-                this.env.handleReturnCode(
-                    returnCode, this.nativeApi,
-                    CLASS_PREFIX + "()",
-                    paramsOf("instanceName", this.env.getInstanceName(),
-                            "settings", redact(this.env.getSettings()),
-                            "verboseLogging", this.env.isVerboseLogging()));
-            }
+            this.env.handleReturnCode(returnCode, this.nativeApi);
 
+            // no return value, so return null
             return null;
         });
     }
@@ -94,13 +80,7 @@ public class SzCoreConfigManager implements SzConfigManager {
                 configDefinition, configComment, result);
 
             // handle any error code if there is one
-            if (returnCode != 0) {
-                this.env.handleReturnCode(
-                    returnCode, this.nativeApi,
-                    CLASS_PREFIX + ".addConfig(String,String)",
-                    paramsOf("configDefinition", configDefinition,
-                            "configComment", configComment));
-            }
+            this.env.handleReturnCode(returnCode, this.nativeApi);
 
             // return the config handle
             return result.getValue();
@@ -118,12 +98,7 @@ public class SzCoreConfigManager implements SzConfigManager {
             int returnCode = this.nativeApi.getConfig(configId, sb);
 
             // handle any error code if there is one
-            if (returnCode != 0) {
-                this.env.handleReturnCode(
-                    returnCode, this.nativeApi,
-                    CLASS_PREFIX + ".getConfig(long)",
-                    paramsOf("configId", configId));
-            }
+            this.env.handleReturnCode(returnCode, this.nativeApi);
 
             // return the config handle
             return sb.toString();
@@ -140,11 +115,7 @@ public class SzCoreConfigManager implements SzConfigManager {
             int returnCode = this.nativeApi.getConfigList(sb);
 
             // handle any error code if there is one
-            if (returnCode != 0) {
-                this.env.handleReturnCode(
-                    returnCode, this.nativeApi,
-                    CLASS_PREFIX + ".getConfigList()");
-            }
+            this.env.handleReturnCode(returnCode, this.nativeApi);
 
             // return the config handle
             return sb.toString();
@@ -161,11 +132,7 @@ public class SzCoreConfigManager implements SzConfigManager {
             int returnCode = this.nativeApi.getDefaultConfigID(result);
 
             // handle any error code if there is one
-            if (returnCode != 0) {
-                this.env.handleReturnCode(
-                    returnCode, this.nativeApi,
-                    CLASS_PREFIX + ".getDefaultConfigId()");
-            }
+            this.env.handleReturnCode(returnCode, this.nativeApi);
 
             // return the config handle
             return result.getValue();
@@ -182,13 +149,7 @@ public class SzCoreConfigManager implements SzConfigManager {
                 currentDefaultConfigId, newDefaultConfigId);
 
             // handle any error code if there is one
-            if (returnCode != 0) {
-                this.env.handleReturnCode(
-                    returnCode, this.nativeApi,
-                    CLASS_PREFIX + ".replaceDefaultConfigId(long,long)",
-                    paramsOf("currentDefaultConfigId", currentDefaultConfigId,
-                             "newDefaultConfigId", newDefaultConfigId));    
-            }
+            this.env.handleReturnCode(returnCode, this.nativeApi);
 
             // return null
             return null;
@@ -202,12 +163,7 @@ public class SzCoreConfigManager implements SzConfigManager {
             int returnCode = this.nativeApi.setDefaultConfigID(configId);
 
             // handle any error code if there is one
-            if (returnCode != 0) {
-                this.env.handleReturnCode(
-                    returnCode, this.nativeApi,
-                    CLASS_PREFIX + ".setDefaultConfigId(long)",
-                    paramsOf("configId", configId));
-            }
+            this.env.handleReturnCode(returnCode, this.nativeApi);
 
             // return null
             return null;

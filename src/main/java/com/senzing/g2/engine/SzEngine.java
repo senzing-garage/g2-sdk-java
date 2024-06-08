@@ -42,59 +42,6 @@ public interface SzEngine {
      * instances will be ignored).  <b>NOTE:</b> {@link java.util.EnumSet}
      * offers an efficient means of constructing a {@link Set} of {@link SzFlag}.
      *
-     * @param dataSourceCode The data source code for the record to be added.
-     * 
-     * @param recordId  The record ID for the record to be added.
-     * 
-     * @param recordDefinition The {@link String} that defines the record, typically
-     *                         in JSON format.
-     * 
-     * @param flags The optional {@link Set} of {@link SzFlag} instances belonging
-     *              to the {@link SzFlagUsageGroup#SZ_MODIFY} group to control how
-     *              the operation is performed and the content of the response, or
-     *              <code>null</code> to default to {@link SzFlag#SZ_NO_FLAGS}.
-     *              Specify {@link SzFlag#SZ_WITH_INFO_FLAGS} for an INFO response.
-     * 
-     * @return The JSON {@link String} result produced by adding the
-     *         record to the repository (depending on the specified flags).
-     * 
-     * @throws SzUnknownDataSourceException If an unrecognized data source
-     *                                      code is specified.
-     * 
-     * @throws SzBadInputException If the specified record definition has a data source
-     *                             or record ID value that conflicts with the specified
-     *                             data source code and/or record ID values.
-     * 
-     * @throws SzException If a failure occurs.
-     * 
-     * @see #addRecord(SzRecordKey, String, Set)
-     * 
-     * @see SzFlag#SZ_WITH_INFO_FLAGS
-     * @see SzFlagUsageGroup#SZ_MODIFY
-     */
-    String addRecord(String         dataSourceCode, 
-                     String         recordId, 
-                     String         recordDefinition,
-                     Set<SzFlag>    flags)
-        throws SzUnknownDataSourceException, SzBadInputException, SzException;
-
-
-    /**
-     * Loads the record described by the specified {@link String} record
-     * definition having the specified data source code and record ID using
-     * the specified {@link Set} of {@link SzFlag} values.  If a record already
-     * exists with the same data source code and record ID, then it will be replaced.
-     * <p>
-     * The specified JSON data may optionally contain the <code>DATA_SOURCE</code>
-     * and <code>RECORD_ID</code> properties, but, if so, they must match the
-     * specified parameters.
-     * <p>
-     * The specified {@link Set} of {@link SzFlag} instances may contain any 
-     * {@link SzFlag} value, but only flags belonging to the {@link
-     * SzFlagUsageGroup#SZ_MODIFY} group will be recognized (other {@link SzFlag}
-     * instances will be ignored).  <b>NOTE:</b> {@link java.util.EnumSet}
-     * offers an efficient means of constructing a {@link Set} of {@link SzFlag}.
-     *
      * @param recordKey The non-null {@link SzRecordKey} that specifies the
      *                  data source code and record ID of the record being added.
      * 
@@ -119,8 +66,6 @@ public interface SzEngine {
      * 
      * @throws SzException If a failure occurs.
      * 
-     * @see #addRecord(String, String, String, Set)
-     * 
      * @see SzFlag#SZ_WITH_INFO_FLAGS
      * @see SzFlagUsageGroup#SZ_MODIFY
      */
@@ -128,46 +73,6 @@ public interface SzEngine {
                      String             recordDefinition,
                      Set<SzFlag>        flags)
         throws SzUnknownDataSourceException, SzBadInputException, SzException;
-
-    /**
-     * Delete a previously loaded record identified by the specified data
-     * source code and record ID.  This method is idempotent, meaning multiple
-     * calls this method with the same method will all succeed regardless of
-     * whether or not the record is found in the repository.
-     * <p>
-     * The specified {@link Set} of {@link SzFlag} instances may contain any 
-     * {@link SzFlag} value, but only flags belonging to the {@link
-     * SzFlagUsageGroup#SZ_MODIFY} group will be recognized (other {@link SzFlag}
-     * instances will be ignored).  <b>NOTE:</b> {@link java.util.EnumSet}
-     * offers an efficient means of constructing a {@link Set} of {@link SzFlag}.
-     *
-     * @param dataSourceCode The data source code of the record to delete.
-     * 
-     * @param recordId The record ID of the record to delete.
-     * 
-     * @param flags The optional {@link Set} of {@link SzFlag} instances belonging
-     *              to the {@link SzFlagUsageGroup#SZ_MODIFY} group to control how
-     *              the operation is performed and the content of the response, or
-     *              <code>null</code> to default to {@link SzFlag#SZ_NO_FLAGS}.
-     *              Specify {@link SzFlag#SZ_WITH_INFO_FLAGS} for an INFO response.
-     *
-     * @return The JSON {@link String} result produced by deleting the
-     *         record from the repository (depending on the specified flags).
-     * 
-     * @throws SzUnknownDataSourceException If an unrecognized data source
-     *                                      code is specified.
-     * 
-     * @throws SzException If a failure occurs.
-     * 
-     * @see #deleteRecord(SzRecordKey, Set)
-     * 
-     * @see SzFlag#SZ_WITH_INFO_FLAGS
-     * @see SzFlagUsageGroup#SZ_MODIFY
-     */
-    String deleteRecord(String          dataSourceCode,
-                        String          recordId,
-                        Set<SzFlag>     flags)
-        throws SzUnknownDataSourceException, SzException;
 
     /**
      * Delete a previously loaded record identified by the data source
@@ -199,50 +104,11 @@ public interface SzEngine {
      * 
      * @throws SzException If a failure occurs.
      * 
-     * @see #deleteRecord(String, String, Set)
-     * 
      * @see SzFlag#SZ_WITH_INFO_FLAGS
      * @see SzFlagUsageGroup#SZ_MODIFY
      */
     String deleteRecord(SzRecordKey recordKey, Set<SzFlag> flags)
         throws SzUnknownDataSourceException, SzException;
-
-    /**
-     * Reevaluate the record identified by the specified data source code and
-     * record ID.  If the record is not found then TODO(bcaceres): complete this
-     * when GDEV-3790 gets resolved and the "not found" behavior is defined.
-     * <p>
-     * The specified {@link Set} of {@link SzFlag} instances may contain any 
-     * {@link SzFlag} value, but only flags belonging to the {@link
-     * SzFlagUsageGroup#SZ_MODIFY} group will be recognized (other {@link SzFlag}
-     * instances will be ignored).  <b>NOTE:</b> {@link java.util.EnumSet}
-     * offers an efficient means of constructing a {@link Set} of {@link SzFlag}.
-     *
-     * @param dataSourceCode The data source of the record to reevaluate.
-     * 
-     * @param recordId The record ID of the record to reevaluate.
-     * 
-     * @param flags The optional {@link Set} of {@link SzFlag} instances belonging
-     *              to the {@link SzFlagUsageGroup#SZ_MODIFY} group to control how
-     *              the operation is performed and the content of the response, or
-     *              <code>null</code> to default to {@link SzFlag#SZ_NO_FLAGS}.
-     *              Specify {@link SzFlag#SZ_WITH_INFO_FLAGS} for an INFO response.
-     *
-     * @return The JSON {@link String} result produced by reevaluating the
-     *         record in the repository (depending on the specified flags).
-     *
-     * @throws SzUnknownDataSourceException If an unrecognized data source
-     *                                      code is specified.
-     * 
-     * @throws SzException If a failure occurs.
-     *  
-     * @see SzFlag#SZ_WITH_INFO_FLAGS
-     * @see SzFlagUsageGroup#SZ_MODIFY
-     */
-    String reevaluateRecord(String      dataSourceCode,
-                            String      recordId,
-                            Set<SzFlag> flags)
-    throws SzUnknownDataSourceException, SzException;
 
     /**
      * Reevaluate the record identified by the data source code and record ID
@@ -272,8 +138,6 @@ public interface SzEngine {
      *                                      code is specified.
      * 
      * @throws SzException If a failure occurs.
-     * 
-     * @see #reevaluateRecord(String, String, Set)
      * 
      * @see SzFlag#SZ_WITH_INFO_FLAGS
      * @see SzFlagUsageGroup#SZ_MODIFY
@@ -440,55 +304,6 @@ public interface SzEngine {
 
     /**
      * This method is used to retrieve information about the resolved entity
-     * that contains a specific record that is identified by the specified
-     * data source code and record ID.  The result is returned as a JSON
-     * document describing the entity.  The level of detail provided for the
-     * entity depends upon the specified {@link Set} of {@link SzFlag}
-     * instances.
-     * <p>
-     * The specified {@link Set} of {@link SzFlag} instances may contain any 
-     * {@link SzFlag} value, but only flags belonging to the {@link
-     * SzFlagUsageGroup#SZ_ENTITY} group are guaranteed to be recognized (other
-     * {@link SzFlag} instances will be ignored unless they have equivalent bit
-     * flags).
-     * <p>
-     * <b>NOTE:</b> {@link java.util.EnumSet} offers an efficient means of
-     * constructing a {@link Set} of {@link SzFlag}.
-     * 
-     * @param dataSourceCode The data source code of the constituent record for 
-     *                       the entity to retrieve.
-     * 
-     * @param recordId The record ID of the constituent record for the entity
-     *                 to retrieve.
-     * 
-     * @param flags The optional {@link Set} of {@link SzFlag} instances belonging
-     *              to the {@link SzFlagUsageGroup#SZ_ENTITY} group to control how
-     *              the operation is performed and the content of the response, or
-     *              <code>null</code> to default to {@link SzFlag#SZ_NO_FLAGS}
-     *              or {@link SzFlag#SZ_ENTITY_DEFAULT_FLAGS} for the default
-     *              recommended flags.
-     * 
-     * @return The JSON {@link String} describing the entity.
-     * 
-     * @throws SzUnknownDataSourceException If an unrecognized data source
-     *                                      code is specified.
-     * 
-     * @throws SzNotFoundException If no enitty could be found with the
-     *                             specified entity ID.
-     * 
-     * @throws SzException If a failure occurs.
-     * 
-     * @see #getEntity(String,String,Set)
-     * 
-     * @see SzFlag#SZ_ENTITY_DEFAULT_FLAGS
-     * @see SzFlag#SZ_ENTITY_BRIEF_DEFAULT_FLAGS
-     * @see SzFlagUsageGroup#SZ_ENTITY
-     */
-    String getEntity(String dataSourceCode, String recordId, Set<SzFlag> flags)
-        throws SzUnknownDataSourceException, SzNotFoundException, SzException;
-
-    /**
-     * This method is used to retrieve information about the resolved entity
      * that contains a specific record that is identified by the data source
      * code and record ID associated with the specified {@link SzRecordKey}.
      * The result is returned as a JSON document describing the entity.  The
@@ -524,8 +339,6 @@ public interface SzEngine {
      *                             specified entity ID.
      * 
      * @throws SzException If a failure occurs.
-     * 
-     * @see #getEntity(String,String,Set)
      * 
      * @see SzFlag#SZ_ENTITY_DEFAULT_FLAGS
      * @see SzFlag#SZ_ENTITY_BRIEF_DEFAULT_FLAGS
@@ -600,101 +413,12 @@ public interface SzEngine {
      * @see SzFlag#SZ_FIND_PATH_DEFAULT_FLAGS
      * @see SzFlagUsageGroup#SZ_FIND_PATH
      * 
-     * @see #findPath(String,String,String,String,int,Set,Set,Set)
      * @see #findPath(SzRecordKey,SzRecordKey,int,Set,Set,Set)
      */
     String findPath(long              startEntityId,
                     long              endEntityId,
                     int               maxDegrees,
                     Set<Long>         avoidances,
-                    Set<String>       requiredDataSources,
-                    Set<SzFlag>       flags)
-        throws SzNotFoundException, SzUnknownDataSourceException, SzException;
-
-    /**
-     * Finds a relationship path between two entities identified by the
-     * data source codes and record ID's of their constituent records.
-     * <p>
-     * Entities to be avoided when finding the path may be optionally specified
-     * as a non-null {@link Set} of {@link SzRecordKey} instances.  If specified
-     * as non-null, then the avoidance {@link Set} contains the non-null
-     * {@link SzRecordKey} instances providing the data source code and record
-     * ID pairs that identify the constituent records of entities to be
-     * avoided.  By default the associated entities will be avoided unless
-     * absolutely neccessary to find the path.  To strictly avoid the associated
-     * entities specify the {@link SzFlag#SZ_FIND_PATH_STRICT_AVOID} flag.
-     * <p>
-     * Further, a JSON required data sources {@link Set} of {@link String} 
-     * data source codes may optionally be specified.  If specified as non-null,
-     * then the required data sources {@link Set} contains non-null {@link String}
-     * data source codes that identify data sources for which a record from
-     * <b>at least one</b> must exist on the path.
-     * <p>
-     * The optionally specified {@link Set} of {@link SzFlag} instances not only
-     * control how the operation is performed but also the level of detail provided
-     * for the path and the entities on the path.  The {@link Set} may contain any
-     * {@link SzFlag} value, but only flags belonging to the {@link 
-     * SzFlagUsageGroup#SZ_FIND_PATH} group will be recognized (other {@link SzFlag}
-     * instance will be ignored unless they have equivalent bit flags).
-     * <p>
-     * <b>NOTE:</b> {@link java.util.EnumSet} offers an efficient means of
-     * constructing a {@link Set} of {@link SzFlag}.
-     *
-     * @param startDataSourceCode The data source code of the record at the start
-     *                            of the path.
-     * 
-     * @param startRecordId The record ID of the record at the start of the path.
-     * 
-     * @param endDataSourceCode The data source code of the record at the end
-     *                          of the path.
-     * 
-     * @param endRecordId The record ID of the record at the end of the path.
-     * 
-     * @param maxDegrees The maximum number of degrees for the path search.
-     * 
-     * @param avoidances The optional {@link Set} of non-null {@link SzRecordKey}
-     *                   instances providing the data source code and record ID
-     *                   pairs of the records whose entities are to be avoided 
-     *                   when finding the path, or <code>null</code> if no entities
-     *                   identified by are to be avoided.
-     * 
-     * @param requiredDataSources The optional {@link Set} of non-null {@link String}
-     *                            data source codes identifying the data sources for
-     *                            which at least one record must be included on the
-     *                            path, or <code>null</code> if none are required.
-     * 
-     * @param flags The optional {@link Set} of {@link SzFlag} instances belonging
-     *              to the {@link SzFlagUsageGroup#SZ_FIND_PATH} group to control
-     *              how the operation is performed and the content of the response,
-     *              or <code>null</code> to default to {@link SzFlag#SZ_NO_FLAGS}
-     *              or {@link SzFlag#SZ_FIND_PATH_DEFAULT_FLAGS} for the default
-     *              recommended flags.
-     * 
-     * @return The JSON {@link String} describing the resultant entity path which
-     *         may be an empty path if no path exists between the two entities
-     *         given the path parameters.
-     * 
-     * @throws SzNotFoundException If either the path-start or path-end records
-     *                             for the specified data source code and record ID
-     *                             pairs cannot be found.
-     * 
-     * @throws SzUnknownDataSourceException If an unrecognized data source
-     *                                      code is specified.
-     * 
-     * @throws SzException If a failure occurs.
-     * 
-     * @see SzFlag#SZ_FIND_PATH_DEFAULT_FLAGS
-     * @see SzFlagUsageGroup#SZ_FIND_PATH
-     * 
-     * @see #findPath(long,long,int,Set,Set,Set)
-     * @see #findPath(SzRecordKey,SzRecordKey,int,Set,Set,Set)
-     */
-    String findPath(String            startDataSourceCode,
-                    String            startRecordId,
-                    String            endDataSourceCode,
-                    String            endRecordId,
-                    int               maxDegrees,
-                    Set<SzRecordKey>  avoidances,
                     Set<String>       requiredDataSources,
                     Set<SzFlag>       flags)
         throws SzNotFoundException, SzUnknownDataSourceException, SzException;
@@ -773,7 +497,6 @@ public interface SzEngine {
      * @see SzFlag#SZ_FIND_PATH_DEFAULT_FLAGS
      * @see SzFlagUsageGroup#SZ_FIND_PATH
      * 
-     * @see #findPath(String,String,String,String,int,Set,Set,Set)
      * @see #findPath(long,long,int,Set,Set,Set)
      */
     String findPath(SzRecordKey       startRecordKey,
@@ -916,57 +639,6 @@ public interface SzEngine {
         throws SzUnknownDataSourceException, SzNotFoundException, SzException;
 
     /**
-     * Determines why the record identified by the specified data source code
-     * and record ID is included in its respective entity.
-     * <p>
-     * The optionally specified {@link Set} of {@link SzFlag} instances that
-     * not only control how the operation is performed but also the level of
-     * detail provided for the entity and record being analyzed.  The
-     * {@link Set} may contain any {@link SzFlag} value, but only flags
-     * belonging to the {@link SzFlagUsageGroup#SZ_WHY} group are guaranteed
-     * to be recognized (other {@link SzFlag} instances will be ignored unless
-     * they have equivalent bit flags).
-     * <p>
-     * <b>NOTE:</b> {@link java.util.EnumSet} offers an efficient means of
-     * constructing a {@link Set} of {@link SzFlag}.
-     *
-     * @param dataSourceCode The data source code for the record.
-     * 
-     * @param recordId The record ID for the record.
-     * 
-     * @param flags The optional {@link Set} of {@link SzFlag} instances belonging
-     *              to the {@link SzFlagUsageGroup#SZ_WHY} group to control how the
-     *              operation is performed and the content of the response, or
-     *              <code>null</code> to default to {@link SzFlag#SZ_NO_FLAGS}
-     *              or {@link SzFlag#SZ_WHY_RECORD_IN_ENTITY_DEFAULT_FLAGS} for the
-     *              default recommended flags.
-     * 
-     * @return The JSON {@link String} describing why the record is included
-     *         in its respective entity.
-     * 
-     * @throws SzUnknownDataSourceException If an unrecognized data source
-     *                                      code is specified.
-     * 
-     * @throws SzNotFoundException If any of the records for the specified
-     *                             data source code and record ID pairs 
-     *                             cannot be found.
-     * 
-     * @throws SzException If a failure occurs.
-     * 
-     * @see SzFlag#SZ_WHY_RECORD_IN_ENTITY_DEFAULT_FLAGS
-     * @see SzFlagUsageGroup#SZ_WHY
-     * 
-     * @see #whyRecordInEntity(SzRecordKey, Set)
-     * @see #whyEntities(long, long, Set)
-     * @see #whyRecords(String, String, String, String, Set)
-     * @see #whyRecords(SzRecordKey, SzRecordKey, Set)
-     */
-    String whyRecordInEntity(String             dataSourceCode,
-                             String             recordId,
-                             Set<SzFlag>        flags)
-        throws SzUnknownDataSourceException, SzNotFoundException, SzException;
-
-    /**
      * Determines why the record identified by the data source code and
      * record ID in the specified in an {@link SzRecordKey} is included
      * in its respective entity.
@@ -1007,69 +679,10 @@ public interface SzEngine {
      * @see SzFlag#SZ_WHY_RECORD_IN_ENTITY_DEFAULT_FLAGS
      * @see SzFlagUsageGroup#SZ_WHY
      * 
-     * @see #whyRecordInEntity(String, String, Set)
      * @see #whyEntities(long, long, Set)
-     * @see #whyRecords(String, String, String, String, Set)
      * @see #whyRecords(SzRecordKey, SzRecordKey, Set)
      */
     String whyRecordInEntity(SzRecordKey recordKey, Set<SzFlag> flags)
-        throws SzUnknownDataSourceException, SzNotFoundException, SzException;
-
-    /**
-     * Determines ways in which two records identified by the specified
-     * data source code and record ID pairs are related to each other.
-     * <p>
-     * The optionally specified {@link Set} of {@link SzFlag} instances that
-     * not only control how the operation is performed but also the level of
-     * detail provided for the entity and record being analyzed.  The
-     * {@link Set} may contain any {@link SzFlag} value, but only flags
-     * belonging to the {@link SzFlagUsageGroup#SZ_WHY} group are guaranteed
-     * to be recognized (other {@link SzFlag} instances will be ignored unless
-     * they have equivalent bit flags).
-     * <p>
-     * <b>NOTE:</b> {@link java.util.EnumSet} offers an efficient means of
-     * constructing a {@link Set} of {@link SzFlag}.
-     *
-     * @param dataSourceCode1 The data source code for the first record.
-     * 
-     * @param recordId1 The record ID for the first record.
-     * 
-     * @param dataSourceCode2 The data source code for the second record.
-     * 
-     * @param recordId2 The record ID for the second record.
-     * 
-     * @param flags The optional {@link Set} of {@link SzFlag} instances belonging
-     *              to the {@link SzFlagUsageGroup#SZ_WHY} group to control how the
-     *              operation is performed and the content of the response, or
-     *              <code>null</code> to default to {@link SzFlag#SZ_NO_FLAGS}
-     *              or {@link SzFlag#SZ_WHY_RECORDS_DEFAULT_FLAGS} for the
-     *              default recommended flags.
-     * 
-     * @return The JSON {@link String} describing the ways in which the records
-     *         are related to one another.
-     * 
-     * @throws SzUnknownDataSourceException If an unrecognized data source
-     *                                      code is specified.
-     * 
-     * @throws SzNotFoundException If any of the records for the specified
-     *                             data source code and record ID pairs 
-     *                             cannot be found.
-     * 
-     * @throws SzException If a failure occurs.
-     * 
-     * @see SzFlag#SZ_WHY_RECORDS_DEFAULT_FLAGS
-     * @see SzFlagUsageGroup#SZ_WHY
-     * 
-     * @see #whyRecords(SzRecordKey, SzRecordKey, Set)
-     * @see #whyRecordInEntity(String, String, Set)
-     * @see #whyRecordInEntity(SzRecordKey, Set)
-     * @see #whyEntities(long, long, Set)
-     */
-    String whyRecords(String            dataSourceCode1,
-                      String            recordId1,
-                      String            dataSourceCode2,
-                      String            recordId2,
-                      Set<SzFlag>       flags)
         throws SzUnknownDataSourceException, SzNotFoundException, SzException;
 
     /**
@@ -1116,8 +729,6 @@ public interface SzEngine {
      * @see SzFlag#SZ_WHY_RECORDS_DEFAULT_FLAGS
      * @see SzFlagUsageGroup#SZ_WHY
      * 
-     * @see #whyRecords(String, String, String, String, Set)
-     * @see #whyRecordInEntity(String, String, Set)
      * @see #whyRecordInEntity(SzRecordKey, Set)
      * @see #whyEntities(long, long, Set)
      */
@@ -1163,9 +774,7 @@ public interface SzEngine {
      * @see SzFlag#SZ_WHY_ENTITIES_DEFAULT_FLAGS
      * @see SzFlagUsageGroup#SZ_WHY
      * 
-     * @see #whyRecords(String, String, String, String, Set)
      * @see #whyRecords(SzRecordKey, SzRecordKey, Set)
-     * @see #whyRecordInEntity(String, String, Set)
      * @see #whyRecordInEntity(SzRecordKey, Set)
     */
     String whyEntities(long entityId1, long entityId2, Set<SzFlag> flags)
@@ -1258,52 +867,6 @@ public interface SzEngine {
         throws SzNotFoundException, SzException;
 
     /**
-     * Retrieves the record identified by the specified data source code
-     * and record ID.
-     * <p>
-     * The optionally specified {@link Set} of {@link SzFlag} instances that
-     * not only control how the operation is performed but also the level of
-     * detail provided for the entity and record being analyzed.  The
-     * {@link Set} may contain any {@link SzFlag} value, but only flags
-     * belonging to the {@link SzFlagUsageGroup#SZ_RECORD} group are
-     * guaranteed to be recognized (other {@link SzFlag} instances will be
-     * ignored unless they have equivalent bit flags).
-     * <p>
-     * <b>NOTE:</b> {@link java.util.EnumSet} offers an efficient means of
-     * constructing a {@link Set} of {@link SzFlag}.
-     * 
-     * @param dataSourceCode The data source of the record to retrieve.
-     * 
-     * @param recordId The record ID of the record to retrieve.
-     * 
-     * @param flags The optional {@link Set} of {@link SzFlag} instances belonging
-     *              to the {@link SzFlagUsageGroup#SZ_RECORD} group to control how
-     *              the operation is performed and the content of the response, or
-     *              <code>null</code> to default to {@link SzFlag#SZ_NO_FLAGS}
-     *              or {@link SzFlag#SZ_RECORD_DEFAULT_FLAGS} for the default 
-     *              recommended flags.
-     *
-     * @return The JSON {@link String} describing the record.
-     * 
-     * @throws SzUnknownDataSourceException If an unrecognized data source
-     *                                      code is specified.
-     * 
-     * @throws SzNotFoundException If the record for the specified data source
-     *                             code and record ID pairs cannot be found.
-     * 
-     * @throws SzException If a failure occurs.
-     * 
-     * @see SzFlag#SZ_RECORD_DEFAULT_FLAGS
-     * @see SzFlagUsageGroup#SZ_RECORD
-     * 
-     * @see #getRecord(SzRecordKey, Set)
-     */
-    String getRecord(String             dataSourceCode,
-                     String             recordId,
-                     Set<SzFlag>        flags)
-        throws SzUnknownDataSourceException, SzNotFoundException, SzException;
-
-    /**
      * Retrieves the record identified by the data source code and record ID
      * from the specified {@link SzRecordKey}.
      * <p>
@@ -1341,8 +904,6 @@ public interface SzEngine {
      * 
      * @see SzFlag#SZ_RECORD_DEFAULT_FLAGS
      * @see SzFlagUsageGroup#SZ_RECORD
-     * 
-     * @see #getRecord(String, String, Set)
      */
     String getRecord(SzRecordKey        recordKey,
                      Set<SzFlag>        flags)

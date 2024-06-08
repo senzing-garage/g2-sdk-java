@@ -227,8 +227,7 @@ public interface SzFlags {
      * the only means by which a path can be found between two entities.
      */
     long SZ_FIND_PATH_STRICT_AVOID 
-        = NativeEngine.G2_FIND_PATH_PREFER_EXCLUDE;
-    // TODO(bcaceres): change G2_FIND_PATH_PREFER_EXCLUDE before release to new name
+        = NativeEngine.G2_FIND_PATH_STRICT_AVOID;
 
     /**
      * The bitwise flag for find-path functionality to include

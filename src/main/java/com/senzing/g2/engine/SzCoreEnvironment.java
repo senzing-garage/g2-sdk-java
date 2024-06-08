@@ -400,27 +400,10 @@ public class SzCoreEnvironment implements SzEnvironment {
      * @param returnCode The return code to handle.
      * @param nativeApi The {@link NativeApi} implementation that produced the
      *                  return code on this current thread.
-     */
-    void handleReturnCode(int returnCode, NativeApi nativeApi, String operation)
-        throws SzException
-    {
-        this.handleReturnCode(returnCode, nativeApi, operation, null);
-    }
-
-    /**
-     * Handles the Senzing JNI return code and coverts it to the proper
-     * {@link SzException} if it is not zero (0).
-     * 
-     * @param returnCode The return code to handle.
-     * @param nativeApi The {@link NativeApi} implementation that produced the
-     *                  return code on this current thread.
      * @param message The additional message to include with the exception
      *                to provide context.
      */
-    void handleReturnCode(int                   returnCode,
-                          NativeApi             nativeApi,
-                          String                operation,
-                          Map<String,Object>    parameters)
+    void handleReturnCode(int returnCode, NativeApi nativeApi)
         throws SzException
     {
         if (returnCode == 0) return;
@@ -431,23 +414,19 @@ public class SzCoreEnvironment implements SzEnvironment {
         switch (errorCode) {
             case 23:
             case 24:
-                throw new SzBadInputException(
-                    errorCode, message, operation, parameters);
+            case 88:
+                throw new SzBadInputException(errorCode, message);
             case 27: // this is going away
             case 2207:
-                throw new SzUnknownDataSourceException(
-                    errorCode, message, operation, parameters);
+                throw new SzUnknownDataSourceException(errorCode, message);
             case 33:
             case 37:
-                throw new SzNotFoundException(
-                    errorCode, message, operation, parameters);
+                throw new SzNotFoundException(errorCode, message);
                     
             case 7245:
-                throw new SzReplaceConflictException(
-                    errorCode, message, operation, parameters);
+                throw new SzReplaceConflictException(errorCode, message);
             default:
-                throw new SzException(
-                    errorCode, message, operation, parameters);
+                throw new SzException(errorCode, message);
         }
     }
 
@@ -617,9 +596,7 @@ public class SzCoreEnvironment implements SzEnvironment {
                 Result<Long> result = new Result<>();
                 NativeEngine nativeEngine = this.coreEngine.nativeApi; 
                 int returnCode = nativeEngine.getActiveConfigID(result);
-                this.handleReturnCode(
-                    returnCode, nativeEngine,
-                    CLASS_PREFIX + ".getActiveConfigId()");
+                this.handleReturnCode(returnCode, nativeEngine);
                 return result.getValue();
             });
 
@@ -649,10 +626,7 @@ public class SzCoreEnvironment implements SzEnvironment {
                     // engine already initialized so we need to reinitalize
                     this.execute(() -> {
                         int returnCode = this.coreEngine.nativeApi.reinit(configId);
-                        this.handleReturnCode(
-                            returnCode, this.coreEngine.nativeApi,
-                            CLASS_PREFIX + ".reinitialize(long)",
-                            paramsOf("configId", configId));
+                        this.handleReturnCode(returnCode, this.coreEngine.nativeApi);
                         return null;
                     });
 
@@ -662,10 +636,7 @@ public class SzCoreEnvironment implements SzEnvironment {
                     // engine since the configuration ID is globally set
                     this.execute(() -> {
                         int returnCode = this.coreDiagnostic.nativeApi.reinit(configId);
-                        this.handleReturnCode(
-                            returnCode, this.coreDiagnostic.nativeApi,
-                            CLASS_PREFIX + ".reinitialize(long)",
-                            paramsOf("configId", configId));
+                        this.handleReturnCode(returnCode, this.coreDiagnostic.nativeApi);
                         return null;
                     });
                 } else {

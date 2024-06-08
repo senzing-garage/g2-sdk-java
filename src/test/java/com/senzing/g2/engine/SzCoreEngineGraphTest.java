@@ -16,8 +16,10 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
@@ -59,8 +61,7 @@ public class SzCoreEngineGraphTest extends AbstractTest {
     static {
         List<Set<SzFlag>> list = new LinkedList<>();
         list.add(null);
-        list.add(EnumSet.noneOf(SzFlag.class));
-        list.add(EnumSet.of(SZ_NO_FLAGS));
+        list.add(SZ_NO_FLAGS);
         list.add(SZ_FIND_PATH_DEFAULT_FLAGS);
         list.add(SZ_FIND_PATH_ALL_FLAGS);
         list.add(Collections.unmodifiableSet(EnumSet.of(
@@ -77,8 +78,7 @@ public class SzCoreEngineGraphTest extends AbstractTest {
     static {
         List<Set<SzFlag>> list = new LinkedList<>();
         list.add(null);
-        list.add(EnumSet.noneOf(SzFlag.class));
-        list.add(EnumSet.of(SZ_NO_FLAGS));
+        list.add(SZ_NO_FLAGS);
         list.add(SZ_FIND_NETWORK_DEFAULT_FLAGS);
         list.add(SZ_FIND_NETWORK_ALL_FLAGS);
         list.add(Collections.unmodifiableSet(EnumSet.of(
@@ -91,9 +91,6 @@ public class SzCoreEngineGraphTest extends AbstractTest {
         FIND_NETWORK_FLAG_SET = Collections.unmodifiableList(list);
     }
 
-    private static final List<Boolean> VIA_KEY_LIST
-        = list(true,false,true);
-    
     private static final Map<SzRecordKey, Long> LOADED_RECORD_MAP
         = Collections.synchronizedMap(new LinkedHashMap<>());
 
@@ -314,7 +311,7 @@ public class SzCoreEngineGraphTest extends AbstractTest {
     }
 
     public static Long getEntityId(SzRecordKey recordKey) {
-        return getEntityId(recordKey);
+        return LOADED_RECORD_MAP.get(recordKey);
     }
 
     public static List<Long> getEntityIds(Collection<SzRecordKey> recordKeys) {
@@ -403,9 +400,8 @@ public class SzCoreEngineGraphTest extends AbstractTest {
 
             }
 
-            // TODO(bcaceres): remove "!" in front of "flags.contains()"
             if (avoidances != null && avoidances.size() > 0
-                && !flags.contains(SZ_FIND_PATH_STRICT_AVOID)) 
+                && ((flags != null) && flags.contains(SZ_FIND_PATH_STRICT_AVOID))) 
             {
                 assertFalse(avoidedIds.contains(entityId), 
                             "Strictly avoided entity ID (" + entityId + ") found "
@@ -512,20 +508,16 @@ public class SzCoreEngineGraphTest extends AbstractTest {
         return set;
     }
 
-
     public static Set<SzFlag> flagsWithStrictAvoid(Set<SzFlag> baseFlags) {
-        // TODO(bcaceres): flip this behavior when flags/default change
-        return flagsWithout(baseFlags, SZ_FIND_PATH_STRICT_AVOID);
+        return flagsWith(baseFlags, SZ_FIND_PATH_STRICT_AVOID);
     }
 
     public static Set<SzFlag> flagsWithDefaultAvoid(Set<SzFlag> baseFlags) {
-        // TODO(bcaceres): flip this behavior when flags/default change
-        return flagsWith(baseFlags, SZ_FIND_PATH_STRICT_AVOID);
+        return flagsWithout(baseFlags, SZ_FIND_PATH_STRICT_AVOID);
     }
 
     public List<Arguments> getEntityPathParameters() {
         Iterator<Set<SzFlag>>   flagSetIter = circularIterator(FIND_PATH_FLAG_SET);
-        Iterator<Boolean>       viaKeyIter  = circularIterator(VIA_KEY_LIST);
 
         List<Arguments> result = new LinkedList<>();
         
@@ -538,28 +530,28 @@ public class SzCoreEngineGraphTest extends AbstractTest {
             "Basic path find at 2 degrees",
             PASSENGER_ABC123, getEntityId(PASSENGER_ABC123),
             EMPLOYEE_DEF890, getEntityId(EMPLOYEE_DEF890), 2, null, 
-            null, null, flagSetIter.next(), viaKeyIter.next(), null, null, 3,
+            null, null, flagSetIter.next(), null, null, 3,
             list(PASSENGER_ABC123, EMPLOYEE_MNO345, EMPLOYEE_DEF890)));
         
         result.add(Arguments.of(
             "Basic path found at 3 degrees",
             PASSENGER_ABC123, getEntityId(PASSENGER_ABC123),
             VIP_JKL456, getEntityId(VIP_JKL456), 3, null, null, null,
-            flagSetIter.next(), viaKeyIter.next(), null, null, 4,
+            flagSetIter.next(), null, null, 4,
             list(PASSENGER_ABC123, EMPLOYEE_MNO345, EMPLOYEE_DEF890, VIP_JKL456)));
 
         result.add(Arguments.of(
             "Path not found due to max degrees",
             PASSENGER_ABC123, getEntityId(PASSENGER_ABC123),
             VIP_JKL456, getEntityId(VIP_JKL456), 2, null, null, null,
-            flagSetIter.next(), viaKeyIter.next(), null, null, 0, EMPTY_PATH));
+            flagSetIter.next(), null, null, 0, EMPTY_PATH));
         
         result.add(Arguments.of(
             "Diverted path found with avoidance",
             PASSENGER_ABC123, getEntityId(PASSENGER_ABC123),
             VIP_JKL456, getEntityId(VIP_JKL456), 4, set(EMPLOYEE_DEF890),
             set(getEntityId(EMPLOYEE_DEF890)), null,
-            flagsWithDefaultAvoid(flagSetIter.next()), viaKeyIter.next(), null, null,
+            flagsWithDefaultAvoid(flagSetIter.next()), null, null,
             4, list(PASSENGER_ABC123, EMPLOYEE_MNO345, EMPLOYEE_DEF890, VIP_JKL456)));
 
         result.add(Arguments.of(
@@ -567,7 +559,7 @@ public class SzCoreEngineGraphTest extends AbstractTest {
             PASSENGER_ABC123, getEntityId(PASSENGER_ABC123),
             VIP_JKL456, getEntityId(VIP_JKL456), 3, set(EMPLOYEE_DEF890),
             set(getEntityId(EMPLOYEE_DEF890)), null,
-            flagsWithStrictAvoid(flagSetIter.next()), viaKeyIter.next(), null, null, 0,
+            flagsWithStrictAvoid(flagSetIter.next()), null, null, 0,
             EMPTY_PATH));
         
         result.add(Arguments.of(
@@ -575,7 +567,7 @@ public class SzCoreEngineGraphTest extends AbstractTest {
             PASSENGER_ABC123, getEntityId(PASSENGER_ABC123),
             VIP_JKL456, getEntityId(VIP_JKL456), 10, set(EMPLOYEE_DEF890),
             set(getEntityId(EMPLOYEE_DEF890)), null,
-            flagsWithStrictAvoid(flagSetIter.next()), viaKeyIter.next(), null, null, 6,
+            flagsWithStrictAvoid(flagSetIter.next()),  null, null, 6,
             list(PASSENGER_ABC123, PASSENGER_DEF456, PASSENGER_GHI789,
                     PASSENGER_JKL012, VIP_XYZ234, VIP_JKL456)));
         
@@ -584,16 +576,15 @@ public class SzCoreEngineGraphTest extends AbstractTest {
             PASSENGER_ABC123, getEntityId(PASSENGER_ABC123),
             PASSENGER_JKL012, getEntityId(PASSENGER_JKL012), 10, null, null,
             set(EMPLOYEES_DATA_SOURCE), flagsWithDefaultAvoid(flagSetIter.next()),
-            viaKeyIter.next(), null, null, 6,
-            list(PASSENGER_ABC123, EMPLOYEE_MNO345, EMPLOYEE_DEF890,
-                    VIP_JKL456, VIP_XYZ234, PASSENGER_JKL012)));
+            null, null, 6, list(PASSENGER_ABC123, EMPLOYEE_MNO345, EMPLOYEE_DEF890,
+                                VIP_JKL456, VIP_XYZ234, PASSENGER_JKL012)));
         
         result.add(Arguments.of(
             "Diverted path at 5 degrees due to required VIP source",
             PASSENGER_ABC123, getEntityId(PASSENGER_ABC123),
             PASSENGER_JKL012, getEntityId(PASSENGER_JKL012), 
             10, null, null, set(VIPS_DATA_SOURCE),
-            flagsWithDefaultAvoid(flagSetIter.next()), viaKeyIter.next(), null, null, 6,
+            flagsWithDefaultAvoid(flagSetIter.next()), null, null, 6,
             list(PASSENGER_ABC123, EMPLOYEE_MNO345, EMPLOYEE_DEF890,
                     VIP_JKL456, VIP_XYZ234, PASSENGER_JKL012)));
         
@@ -602,7 +593,7 @@ public class SzCoreEngineGraphTest extends AbstractTest {
             PASSENGER_ABC123, getEntityId(PASSENGER_ABC123),
             PASSENGER_JKL012, getEntityId(PASSENGER_JKL012), 
             10, null, null, set(EMPLOYEES_DATA_SOURCE, VIPS_DATA_SOURCE),
-            flagsWithDefaultAvoid(flagSetIter.next()), viaKeyIter.next(), null, null, 6,
+            flagsWithDefaultAvoid(flagSetIter.next()), null, null, 6,
             list(PASSENGER_ABC123, EMPLOYEE_MNO345, EMPLOYEE_DEF890,
                     VIP_JKL456, VIP_XYZ234, PASSENGER_JKL012)));
 
@@ -612,7 +603,7 @@ public class SzCoreEngineGraphTest extends AbstractTest {
             PASSENGER_JKL012, getEntityId(PASSENGER_JKL012), 
             10, set(VIP_STU901), set(getEntityId(VIP_STU901)),
             set(EMPLOYEES_DATA_SOURCE, VIPS_DATA_SOURCE),
-            flagsWithDefaultAvoid(flagSetIter.next()), viaKeyIter.next(), null, null, 6,
+            flagsWithDefaultAvoid(flagSetIter.next()), null, null, 6,
             list(PASSENGER_ABC123, EMPLOYEE_MNO345, EMPLOYEE_DEF890,
                     VIP_JKL456, VIP_XYZ234, PASSENGER_JKL012)));
 
@@ -620,7 +611,7 @@ public class SzCoreEngineGraphTest extends AbstractTest {
             "Unknown required data source",
             PASSENGER_ABC123, getEntityId(PASSENGER_ABC123),
             EMPLOYEE_DEF890, getEntityId(EMPLOYEE_DEF890), 10, null, 
-            null, set(UNKNOWN_DATA_SOURCE), flagSetIter.next(), viaKeyIter.next(), 
+            null, set(UNKNOWN_DATA_SOURCE), flagSetIter.next(), 
             UNKNOWN_SOURCE, UNKNOWN_SOURCE, 0, EMPTY_PATH));
         
         result.add(Arguments.of(
@@ -629,8 +620,8 @@ public class SzCoreEngineGraphTest extends AbstractTest {
             VIP_JKL456, getEntityId(VIP_JKL456), 4,
             set(SzRecordKey.of(UNKNOWN_DATA_SOURCE, "DEF890")),
             set(-300L), null, flagsWithDefaultAvoid(flagSetIter.next()),
-            viaKeyIter.next(), UNKNOWN_SOURCE, null, 4,
-            list(PASSENGER_ABC123, EMPLOYEE_MNO345, EMPLOYEE_DEF890, VIP_JKL456)));
+            UNKNOWN_SOURCE, null, 4, list(PASSENGER_ABC123, EMPLOYEE_MNO345,
+                                          EMPLOYEE_DEF890, VIP_JKL456)));
 
         result.add(Arguments.of(
             "Not found record ID for avoidance record",
@@ -638,63 +629,35 @@ public class SzCoreEngineGraphTest extends AbstractTest {
             VIP_JKL456, getEntityId(VIP_JKL456), 4,
             set(SzRecordKey.of(PASSENGERS_DATA_SOURCE, "XXX000")),
             set(300000000L), null, flagsWithDefaultAvoid(flagSetIter.next()),
-            viaKeyIter.next(), null, null, 4,
-            list(PASSENGER_ABC123, EMPLOYEE_MNO345, EMPLOYEE_DEF890, VIP_JKL456)));
+            null, null, 4, list(PASSENGER_ABC123, EMPLOYEE_MNO345,
+                                EMPLOYEE_DEF890, VIP_JKL456)));
                 
         result.add(Arguments.of(
                 "Unknown start data source in find path via key",
                 SzRecordKey.of(UNKNOWN_DATA_SOURCE, "ABC123"), -100L,
                 PASSENGER_JKL012, getEntityId(PASSENGER_JKL012),
-                10, null, null, null, flagSetIter.next(), true, 
-                UNKNOWN_SOURCE, NOT_FOUND, 0, EMPTY_PATH));
-                
-        result.add(Arguments.of(
-                "Unknown start data source in find path via ID",
-                SzRecordKey.of(UNKNOWN_DATA_SOURCE, "ABC123"), -100L,
-                PASSENGER_JKL012, getEntityId(PASSENGER_JKL012),
-                10, null, null, null, flagSetIter.next(), false, 
+                10, null, null, null, flagSetIter.next(), 
                 UNKNOWN_SOURCE, NOT_FOUND, 0, EMPTY_PATH));
                 
         result.add(Arguments.of(
                 "Unknown end data source in find path via key",
                 PASSENGER_ABC123, getEntityId(PASSENGER_ABC123),
                 SzRecordKey.of(UNKNOWN_DATA_SOURCE, "JKL012"), -200L,
-                10, null, null, null, flagSetIter.next(), true, 
+                10, null, null, null, flagSetIter.next(), 
                 UNKNOWN_SOURCE, NOT_FOUND, 0, EMPTY_PATH));
         
         result.add(Arguments.of(
-                "Unknown end data source in find path via ID",
-                PASSENGER_ABC123, getEntityId(PASSENGER_ABC123),
-                SzRecordKey.of(UNKNOWN_DATA_SOURCE, "JKL012"), -200L,
-                10, null, null, null, flagSetIter.next(), false, 
-                UNKNOWN_SOURCE, NOT_FOUND, 0, EMPTY_PATH));
-
-        result.add(Arguments.of(
                 "Unknown start record ID in find path via key",
-                SzRecordKey.of(PASSENGERS_DATA_SOURCE, "XXX000"), 100000000L,
-                PASSENGER_JKL012, getEntityId(PASSENGER_JKL012),
-                10, null, null, null, flagSetIter.next(), true, 
-                NOT_FOUND, NOT_FOUND, 0, EMPTY_PATH));
-
-        result.add(Arguments.of(
-                "Unknown start record ID in find path via ID",
-                SzRecordKey.of(PASSENGERS_DATA_SOURCE, "XXX000"), 100000000L,
-                PASSENGER_JKL012, getEntityId(PASSENGER_JKL012),
-                10, null, null, null, flagSetIter.next(), false, 
+                SzRecordKey.of(PASSENGERS_DATA_SOURCE, "XXX000"),
+                100000000L, PASSENGER_JKL012, getEntityId(PASSENGER_JKL012),
+                10, null, null, null, flagSetIter.next(), 
                 NOT_FOUND, NOT_FOUND, 0, EMPTY_PATH));
 
         result.add(Arguments.of(
                 "Unknown end record ID in find path via key",
                 PASSENGER_ABC123, getEntityId(PASSENGER_ABC123),
-                SzRecordKey.of(PASSENGERS_DATA_SOURCE, "XXX000"), 200000000L,
-                10, null, null, null, flagSetIter.next(), true, 
-                NOT_FOUND, NOT_FOUND, 0, EMPTY_PATH));
-
-        result.add(Arguments.of(
-                "Unknown end record ID in find path via ID",
-                PASSENGER_ABC123, getEntityId(PASSENGER_ABC123),
-                SzRecordKey.of(PASSENGERS_DATA_SOURCE, "XXX000"), 200000000L,
-                10, null, null, null, flagSetIter.next(), false, 
+                SzRecordKey.of(PASSENGERS_DATA_SOURCE, "XXX000"),
+                200000000L, 10, null, null, null, flagSetIter.next(), 
                 NOT_FOUND, NOT_FOUND, 0, EMPTY_PATH));
         
         return result;
@@ -712,7 +675,6 @@ public class SzCoreEngineGraphTest extends AbstractTest {
                                 Set<Long>           avoidanceIds,
                                 Set<String>         requiredSources,
                                 Set<SzFlag>         flags,
-                                boolean             viaKey,
                                 Class<?>            recordExceptionType,
                                 Class<?>            entityExceptionType,
                                 Integer             expectedPathLength,
@@ -725,10 +687,10 @@ public class SzCoreEngineGraphTest extends AbstractTest {
             + endEntityId + " ], maxDegrees=[ " + maxDegrees + " ], avoidances=[ "
             + avoidances + " ], avoidanceIds=[ " + avoidanceIds 
             + " ] requiredSources=[ " + requiredSources + " ], flags=[ "
-            + SzFlag.toString(flags) + " ], viaKey=[ " + viaKey 
-            + " ], expectedException=[ " + recordExceptionType + " ]"
-            + " ], expectedPathLength=[ " + expectedPathLength
-            + " ], expectedPath=[ ");
+            + SzFlag.toString(flags) + " ], expectedException=[ "
+            + recordExceptionType + " ], expectedPathLength=[ "
+            + expectedPathLength + " ], expectedPath=[ ");
+
         String prefix = "";
         for (SzRecordKey key : expectedPath) {
             sb.append(prefix).append(key).append(" (");
@@ -742,27 +704,13 @@ public class SzCoreEngineGraphTest extends AbstractTest {
             try {
                 SzEngine engine = this.env.getEngine();
 
-                String result = null;
-                if (viaKey) {
-                    result = engine.findPath(
+                String result = engine.findPath(
                         startRecordKey, 
                         endRecordKey, 
                         maxDegrees,
                         avoidances,
                         requiredSources,
                         flags);
-
-                } else {
-                    result = engine.findPath(
-                        startRecordKey.dataSourceCode(),
-                        startRecordKey.recordId(),
-                        endRecordKey.dataSourceCode(),
-                        endRecordKey.recordId(),
-                        maxDegrees,
-                        avoidances,
-                        requiredSources,
-                        flags);
-                }
 
                 if (recordExceptionType != null) {
                     fail("Unexpectedly succeeded in finding a path: " + testData);
@@ -785,11 +733,9 @@ public class SzCoreEngineGraphTest extends AbstractTest {
                 if (e instanceof SzException) {
                     SzException sze = (SzException) e;
                     description = "errorCode=[ " + sze.getErrorCode()
-                        + " ], methodSignature=[ " + sze.getMethodSignature()
-                        + " ], parameters=[ " + sze.getMethodParameters()
                         + " ], exception=[ " + e.toString() + " ]";
                 } else {
-                    description = e.toString();
+                    description = "exception=[ " + e.toString() + " ]";
                 }
 
                 if (recordExceptionType == null) {
@@ -819,7 +765,6 @@ public class SzCoreEngineGraphTest extends AbstractTest {
                                 Set<Long>           avoidanceIds,
                                 Set<String>         requiredSources,
                                 Set<SzFlag>         flags,
-                                boolean             viaKey,
                                 Class<?>            recordExceptionType,
                                 Class<?>            entityExceptionType,
                                 int                 expectedPathLength,
@@ -832,10 +777,10 @@ public class SzCoreEngineGraphTest extends AbstractTest {
             + endEntityId + " ], maxDegrees=[ " + maxDegrees + " ], avoidances=[ "
             + avoidances + " ], avoidanceIds=[ " + avoidanceIds 
             + " ] requiredSources=[ " + requiredSources + " ], flags=[ "
-            + SzFlag.toString(flags) + " ], viaKey=[ " + viaKey 
-            + " ], expectedException=[ " + entityExceptionType + " ]"
-            + " ], expectedPathLength=[ " + expectedPathLength
-            + " ], expectedPath=[ ");
+            + SzFlag.toString(flags) + " ], expectedException=[ "
+            + entityExceptionType + " ], expectedPathLength=[ "
+            + expectedPathLength + " ], expectedPath=[ ");
+
         String prefix = "";
         for (SzRecordKey key : expectedPath) {
             sb.append(prefix).append(key).append(" (");
@@ -878,11 +823,9 @@ public class SzCoreEngineGraphTest extends AbstractTest {
                 if (e instanceof SzException) {
                     SzException sze = (SzException) e;
                     description = "errorCode=[ " + sze.getErrorCode()
-                        + " ], methodSignature=[ " + sze.getMethodSignature()
-                        + " ], parameters=[ " + sze.getMethodParameters()
                         + " ], exception=[ " + e.toString() + " ]";
                 } else {
-                    description = e.toString();
+                    description = "exception=[ " + e.toString() + " ]";
                 }
 
                 if (entityExceptionType == null) {
@@ -900,12 +843,10 @@ public class SzCoreEngineGraphTest extends AbstractTest {
     }
 
     public List<Arguments> getEntityNetworkParameters() {
-        Iterator<Set<SzFlag>>   flagSetIter = circularIterator(FIND_NETWORK_FLAG_SET);
-        Iterator<Boolean>       viaKeyIter  = circularIterator(VIA_KEY_LIST);
+        Iterator<Set<SzFlag>> flagSetIter = circularIterator(FIND_NETWORK_FLAG_SET);
 
         List<Arguments> result = new LinkedList<>();
         
-        final List<SzRecordKey>         EMPTY_PATH  = Collections.emptyList();
         final List<List<SzRecordKey>>   NO_PATHS    = Collections.emptyList();
         final Set<SzRecordKey>          NO_ENTITIES = Collections.emptySet();
 
@@ -915,26 +856,26 @@ public class SzCoreEngineGraphTest extends AbstractTest {
         result.add(Arguments.of(
             "Single entity network",
             set(PASSENGER_ABC123), set(getEntityId(PASSENGER_ABC123)),
-            1, 0, 10, flagSetIter.next(), viaKeyIter.next(), null, null, 0,
+            1, 0, 10, flagSetIter.next(), null, null, 0,
             NO_PATHS, set(PASSENGER_ABC123)));
 
         result.add(Arguments.of(
             "Single entity with one-degree build-out",
             set(PASSENGER_ABC123), entityIdSet(set(PASSENGER_ABC123)),
-            1, 1, 1000, flagSetIter.next(), viaKeyIter.next(), null, null, 0, 
+            1, 1, 1000, flagSetIter.next(), null, null, 0, 
             NO_PATHS, set(PASSENGER_ABC123, PASSENGER_DEF456, EMPLOYEE_MNO345)));
 
         result.add(Arguments.of(
             "Two entities with no path",
             set(PASSENGER_ABC123,VIP_JKL456), entityIdSet(set(PASSENGER_ABC123,VIP_JKL456)),
-            1, 0, 10, flagSetIter.next(), viaKeyIter.next(), null, null, 1, 
+            1, 0, 10, flagSetIter.next(), null, null, 1, 
             list(list(null, PASSENGER_ABC123, VIP_JKL456)), 
             set(PASSENGER_ABC123, VIP_JKL456)));
             
         result.add(Arguments.of(
             "Two entities at three degrees",
             set(PASSENGER_ABC123,VIP_JKL456), entityIdSet(set(PASSENGER_ABC123,VIP_JKL456)),
-            3, 0, 10, flagSetIter.next(), viaKeyIter.next(), null, null, 1, 
+            3, 0, 10, flagSetIter.next(), null, null, 1, 
             list(list(PASSENGER_ABC123, EMPLOYEE_MNO345, EMPLOYEE_DEF890, VIP_JKL456)), 
             set(PASSENGER_ABC123, EMPLOYEE_MNO345, EMPLOYEE_DEF890, VIP_JKL456)));
 
@@ -942,7 +883,7 @@ public class SzCoreEngineGraphTest extends AbstractTest {
             "Three entities at three degrees with no build-out",
             set(PASSENGER_ABC123,EMPLOYEE_ABC567,VIP_JKL456),
             entityIdSet(set(PASSENGER_ABC123,EMPLOYEE_ABC567,VIP_JKL456)),
-            3, 0, 10, flagSetIter.next(), viaKeyIter.next(), null, null, 3,
+            3, 0, 10, flagSetIter.next(), null, null, 3,
             list(list(PASSENGER_ABC123,EMPLOYEE_MNO345,EMPLOYEE_DEF890,VIP_JKL456),
                  list(PASSENGER_ABC123,PASSENGER_DEF456,EMPLOYEE_PQR678,EMPLOYEE_ABC567),
                  list(null, EMPLOYEE_ABC567, VIP_JKL456)),
@@ -953,7 +894,7 @@ public class SzCoreEngineGraphTest extends AbstractTest {
             "Three entities at zero degrees with single buid-out",
             set(EMPLOYEE_ABC567,VIP_GHI123,EMPLOYEE_MNO345),
             entityIdSet(set(EMPLOYEE_ABC567,VIP_GHI123,EMPLOYEE_MNO345)),
-            0, 1, 10, flagSetIter.next(), viaKeyIter.next(), null, null, 3,
+            0, 1, 10, flagSetIter.next(), null, null, 3,
             list(list(null, EMPLOYEE_ABC567, VIP_GHI123),
                  list(null, EMPLOYEE_ABC567, EMPLOYEE_MNO345),
                  list(null, VIP_GHI123, EMPLOYEE_MNO345)),
@@ -964,7 +905,7 @@ public class SzCoreEngineGraphTest extends AbstractTest {
             "Two entities at zero degrees with single build-out",
             set(PASSENGER_ABC123, PASSENGER_DEF456),
             entityIdSet(set(PASSENGER_ABC123, PASSENGER_DEF456)), 0, 1, 10,
-            flagSetIter.next(), viaKeyIter.next(), null, null, 1,
+            flagSetIter.next(), null, null, 1,
             list(list(null, PASSENGER_ABC123, PASSENGER_DEF456)),
             set(PASSENGER_ABC123,PASSENGER_DEF456,EMPLOYEE_MNO345,
                 PASSENGER_GHI789,EMPLOYEE_PQR678)));
@@ -973,14 +914,14 @@ public class SzCoreEngineGraphTest extends AbstractTest {
             "Unknown data source for network entity",
             set(SzRecordKey.of(UNKNOWN_DATA_SOURCE,"ABC123"), VIP_XYZ234),
             set(100000000L, getEntityId(VIP_XYZ234)),
-            3, 0, 10, flagSetIter.next(), viaKeyIter.next(),
+            3, 0, 10, flagSetIter.next(),
             UNKNOWN_SOURCE, NOT_FOUND, 0, NO_PATHS, NO_ENTITIES));
 
         result.add(Arguments.of(
             "Not-found record ID for network entity",
             set(VIP_XYZ234, SzRecordKey.of(PASSENGERS_DATA_SOURCE,"XXX000")),
             set(getEntityId(VIP_XYZ234), -100L),
-            3, 0, 10, flagSetIter.next(), viaKeyIter.next(),
+            3, 0, 10, flagSetIter.next(),
             NOT_FOUND, NOT_FOUND, 0, NO_PATHS, NO_ENTITIES));
     
         return result;
@@ -1168,7 +1109,6 @@ public class SzCoreEngineGraphTest extends AbstractTest {
                                    int                      buildOutDegrees,
                                    int                      buildOutMaxEntities,
                                    Set<SzFlag>              flags,
-                                   boolean                  viaKey,
                                    Class<?>                 recordExceptionType,
                                    Class<?>                 entityExceptionType,
                                    int                      expectedPathCount,
@@ -1181,9 +1121,9 @@ public class SzCoreEngineGraphTest extends AbstractTest {
             + " ], maxDegrees=[ " + maxDegrees + " ], buildOutDegrees=[ "
             + buildOutDegrees + " ], buildOutMaxEntities=[ " 
             + buildOutMaxEntities + " ], flags=[ " + SzFlag.toString(flags)
-            + " ], viaKey=[ " + viaKey + " ], expectedException=[ " 
-            + entityExceptionType + " ], expectedPathCount=[ "
-            + expectedPathCount + " ], expectedPaths=[ ");
+            + " ], expectedException=[ " + entityExceptionType
+            + " ], expectedPathCount=[ " + expectedPathCount
+            + " ], expectedPaths=[ ");
 
         String prefix1 = "";
         for(List<SzRecordKey> expectedPath: expectedPaths) {
@@ -1239,11 +1179,9 @@ public class SzCoreEngineGraphTest extends AbstractTest {
                 if (e instanceof SzException) {
                     SzException sze = (SzException) e;
                     description = "errorCode=[ " + sze.getErrorCode()
-                        + " ], methodSignature=[ " + sze.getMethodSignature()
-                        + " ], parameters=[ " + sze.getMethodParameters()
                         + " ], exception=[ " + e.toString() + " ]";
                 } else {
-                    description = e.toString();
+                    description = "exception=[ " + e.toString() + " ]";
                 }
 
                 if (entityExceptionType == null) {
@@ -1269,14 +1207,92 @@ public class SzCoreEngineGraphTest extends AbstractTest {
                                    int                      buildOutDegrees,
                                    int                      buildOutMaxEntities,
                                    Set<SzFlag>              flags,
-                                   boolean                  viaKey,
                                    Class<?>                 recordExceptionType,
                                    Class<?>                 entityExceptionType,
                                    int                      expectedPathCount,
                                    List<List<SzRecordKey>>  expectedPaths,
                                    Set<SzRecordKey>         expectedEntities)
-{
+    {
+        StringBuilder sb = new StringBuilder(
+            "description=[ " + testDescription + " ], recordKeys=[ "
+            + recordKeys + " ], entityIds=[ " + entityIds 
+            + " ], maxDegrees=[ " + maxDegrees + " ], buildOutDegrees=[ "
+            + buildOutDegrees + " ], buildOutMaxEntities=[ " 
+            + buildOutMaxEntities + " ], flags=[ " + SzFlag.toString(flags)
+            + " ], expectedException=[ " + recordExceptionType
+            + " ], expectedPathCount=[ " + expectedPathCount
+            + " ], expectedPaths=[ ");
 
-}
+        String prefix1 = "";
+        for(List<SzRecordKey> expectedPath: expectedPaths) {
+            sb.append(prefix1);
+            if (expectedPath.get(0) == null) {
+                SzRecordKey startKey = expectedPath.get(1);
+                SzRecordKey endKey = expectedPath.get(2);
+                sb.append("{ NO PATH BETWEEN ").append(startKey).append(" (");
+                sb.append(getEntityId(startKey)).append(") AND ");
+                sb.append(endKey).append(" (").append(getEntityId(endKey)).append(") }");
+            } else {
+                String prefix2 = "";
+                sb.append("{ ");
+                for (SzRecordKey key : expectedPath) {
+                    sb.append(prefix2).append(key).append(" (");
+                    sb.append(getEntityId(key)).append(")");
+                    prefix2 = ", ";
+                }
+                sb.append("}");
+            }
+            prefix1 = ", ";
+        }
+        sb.append(" ], recordMap=[ ").append(LOADED_RECORD_MAP).append(" ]");
+        String testData = sb.toString();
 
+        this.performTest(() -> {
+            try {
+                SzEngine engine = this.env.getEngine();
+
+                String result = engine.findNetworkByRecordId(
+                    recordKeys, 
+                    maxDegrees,
+                    buildOutDegrees,
+                    buildOutMaxEntities,
+                    flags);
+
+                if (recordExceptionType != null) {
+                    fail("Unexpectedly succeeded in finding a path: " + testData);
+                }
+
+                validateNetwork(result,
+                                testData,
+                                recordKeys,
+                                maxDegrees,
+                                buildOutDegrees,
+                                buildOutMaxEntities,
+                                flags,
+                                expectedPathCount,
+                                expectedPaths);
+
+            } catch (Exception e) {
+                String description = "";
+                if (e instanceof SzException) {
+                    SzException sze = (SzException) e;
+                    description = "errorCode=[ " + sze.getErrorCode()
+                        + " ], exception=[ " + e.toString() + " ]";
+                } else {
+                    description = "exception=[ " + e.toString() + " ]";
+                }
+
+                if (entityExceptionType == null) {
+                    fail("Unexpectedly failed finding an entity network: "
+                         + testData + ", " + description, e);
+
+                } else if (recordExceptionType != e.getClass()) {
+                    assertInstanceOf(
+                        entityExceptionType, e, 
+                        "findNetwork() failed with an unexpected exception type: "
+                        + testData + ", " + description);
+                }
+            }
+        });
+    }
 }

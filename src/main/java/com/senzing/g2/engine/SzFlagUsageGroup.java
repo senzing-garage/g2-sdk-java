@@ -20,7 +20,6 @@ public enum SzFlagUsageGroup {
      * <p>
      * The {@link SzFlag} instances included in this usage group are:
      * <ul>
-     *      <li>{@link SzFlag#SZ_NO_FLAGS}
      *      <li>{@link SzFlag#SZ_WITH_INFO}
      * </ul>
      */
@@ -32,7 +31,6 @@ public enum SzFlagUsageGroup {
      * <p>
      * The {@link SzFlag} instances included in this usage group are:
      * <ul>
-     *      <li>{@link SzFlag#SZ_NO_FLAGS}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RECORD_TYPES}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RECORD_MATCHING_INFO}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_RECORD_JSON_DATA}
@@ -53,7 +51,6 @@ public enum SzFlagUsageGroup {
      * <p>
      * The {@link SzFlag} instances included in this usage group are:
      * <ul>
-     *      <li>{@link SzFlag#SZ_NO_FLAGS}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_POSSIBLY_SAME_RELATIONS}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_POSSIBLY_RELATED_RELATIONS}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_NAME_ONLY_RELATIONS}
@@ -103,7 +100,6 @@ public enum SzFlagUsageGroup {
      * <p>
      * The {@link SzFlag} instances included in this usage group are:
      * <ul>
-     *      <li>{@link SzFlag#SZ_NO_FLAGS}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_POSSIBLY_SAME_RELATIONS}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_POSSIBLY_RELATED_RELATIONS}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_NAME_ONLY_RELATIONS}
@@ -157,7 +153,6 @@ public enum SzFlagUsageGroup {
      * <p>
      * The {@link SzFlag} instances included in this usage group are:
      * <ul>
-     *      <li>{@link SzFlag#SZ_NO_FLAGS}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_POSSIBLY_SAME_RELATIONS}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_POSSIBLY_RELATED_RELATIONS}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_NAME_ONLY_RELATIONS}
@@ -210,7 +205,6 @@ public enum SzFlagUsageGroup {
      * <p>
      * The {@link SzFlag} instances included in this usage group are:
      * <ul>
-     *      <li>{@link SzFlag#SZ_NO_FLAGS}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_POSSIBLY_SAME_RELATIONS}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_POSSIBLY_RELATED_RELATIONS}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_NAME_ONLY_RELATIONS}
@@ -273,7 +267,6 @@ public enum SzFlagUsageGroup {
      * <p>
      * The {@link SzFlag} instances included in this usage group are:
      * <ul>
-     *      <li>{@link SzFlag#SZ_NO_FLAGS}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_POSSIBLY_SAME_RELATIONS}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_POSSIBLY_RELATED_RELATIONS}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_NAME_ONLY_RELATIONS}
@@ -331,7 +324,6 @@ public enum SzFlagUsageGroup {
      * <p>
      * The {@link SzFlag} instances included in this usage group are:
      * <ul>
-     *      <li>{@link SzFlag#SZ_NO_FLAGS}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_POSSIBLY_SAME_RELATIONS}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_POSSIBLY_RELATED_RELATIONS}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_NAME_ONLY_RELATIONS}
@@ -390,7 +382,6 @@ public enum SzFlagUsageGroup {
      * <p>
      * The {@link SzFlag} instances included in this usage group are:
      * <ul>
-     *      <li>{@link SzFlag#SZ_NO_FLAGS}
      *      <li>{@link SzFlag#SZ_INCLUDE_MATCH_KEY_DETAILS}
      *      <li>{@link SzFlag#SZ_INCLUDE_FEATURE_SCORES}
      * </ul>
@@ -420,7 +411,6 @@ public enum SzFlagUsageGroup {
      * <p>
      * The {@link SzFlag} instances included in this usage group are:
      * <ul>
-     *      <li>{@link SzFlag#SZ_NO_FLAGS}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_ALL_FEATURES}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_REPRESENTATIVE_FEATURES}
      *      <li>{@link SzFlag#SZ_ENTITY_INCLUDE_ENTITY_NAME}

@@ -13,9 +13,11 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.parallel.Execution;
@@ -250,14 +252,10 @@ public class SzCoreEngineWriteTest extends AbstractTest {
     static {
         List<Set<SzFlag>> list = new ArrayList<>(4);
         list.add(null);
-        list.add(EnumSet.noneOf(SzFlag.class));
-        list.add(EnumSet.of(SZ_NO_FLAGS));
+        list.add(SZ_NO_FLAGS);
         list.add(SZ_WITH_INFO_FLAGS);
         WRITE_FLAG_SETS = Collections.unmodifiableList(list);
     }
-
-    private static final List<Boolean> VIA_KEY_LIST
-        = List.of(true,false,true);
     
     private static final Map<SzRecordKey, Long> LOADED_RECORD_MAP
         = Collections.synchronizedMap(new LinkedHashMap<>());
@@ -485,7 +483,6 @@ public class SzCoreEngineWriteTest extends AbstractTest {
         Iterator<SzRecord>      recordIter  = NEW_RECORDS.iterator();
 
         Iterator<Set<SzFlag>> flagSetIter = circularIterator(WRITE_FLAG_SETS);
-        Iterator<Boolean> viaKeyIter = circularIterator(VIA_KEY_LIST);
 
         int errorCase = 0;
         for (int index = 0; index < count; index++) {
@@ -493,7 +490,6 @@ public class SzCoreEngineWriteTest extends AbstractTest {
             SzRecord    record          = recordIter.next();
             Class<?>    exceptionType   = null;
             Set<SzFlag> flagSet         = flagSetIter.next();
-            boolean     viaKey          = viaKeyIter.next();
 
             switch (errorCase) {
                 case 1:
@@ -534,8 +530,7 @@ public class SzCoreEngineWriteTest extends AbstractTest {
                 }
             }
             
-            result.add(Arguments.of(
-                key, record, flagSet, viaKey, exceptionType));
+            result.add(Arguments.of(key, record, flagSet, exceptionType));
         }
 
         return result;
@@ -547,32 +542,20 @@ public class SzCoreEngineWriteTest extends AbstractTest {
     void testAddRecord(SzRecordKey  recordKey, 
                        SzRecord     record,
                        Set<SzFlag>  flags,
-                       boolean      viaKey,
                        Class<?>     expectedExceptionType)
     {
         String testData = "recordKey=[ " + recordKey 
-        + " ], record=[ " + record + " ], withFlags=[ " 
-        + SzFlag.toString(flags) + " ], viaKey=[ " + viaKey
-        + " ], expectedException=[ " + expectedExceptionType + " ]";
+            + " ], record=[ " + record + " ], withFlags=[ " 
+            + SzFlag.toString(flags) + " ], expectedException=[ "
+            + expectedExceptionType + " ]";
 
         this.performTest(() -> {
             try {
                 SzEngine engine = this.env.getEngine();
 
-                String result = null;
-                if (viaKey) {
-                    result = engine.addRecord(
-                        recordKey,
-                        record.toString(),
-                        flags);
-
-                } else {
-                    result = engine.addRecord(
-                        recordKey.dataSourceCode(),
-                        recordKey.recordId(),
-                        record.toString(),
-                        flags);
-                }
+                String result = engine.addRecord(recordKey,
+                                                 record.toString(),
+                                                 flags);
 
                 if (expectedExceptionType != null) {
                     fail("Unexpectedly succeeded in adding record: " + testData);
@@ -603,11 +586,9 @@ public class SzCoreEngineWriteTest extends AbstractTest {
                 if (e instanceof SzException) {
                     SzException sze = (SzException) e;
                     description = "errorCode=[ " + sze.getErrorCode()
-                        + " ], methodSignature=[ " + sze.getMethodSignature()
-                        + " ], parameters=[ " + sze.getMethodParameters()
                         + " ], exception=[ " + e.toString() + " ]";
                 } else {
-                    description = e.toString();
+                    description = "exception=[ " + e.toString() + " ]";
                 }
 
                 if (expectedExceptionType == null) {
@@ -654,12 +635,10 @@ public class SzCoreEngineWriteTest extends AbstractTest {
         int errorCase = 0;
 
         Iterator<Set<SzFlag>> flagSetIter = circularIterator(WRITE_FLAG_SETS);
-        Iterator<Boolean> viaKeyIter = circularIterator(VIA_KEY_LIST);
 
         for (SzRecordKey key : LOADED_RECORD_MAP.keySet()) {
             Class<?>    exceptionType   = null;
             Set<SzFlag> flagSet         = flagSetIter.next();
-            boolean     viaKey          = viaKeyIter.next();
             
             switch (errorCase) {
                 case 0:
@@ -680,7 +659,7 @@ public class SzCoreEngineWriteTest extends AbstractTest {
                 // do nothing
             }
             errorCase++;
-            result.add(Arguments.of(key, flagSet, viaKey, exceptionType));
+            result.add(Arguments.of(key, flagSet, exceptionType));
         };
         
         return result;
@@ -691,28 +670,17 @@ public class SzCoreEngineWriteTest extends AbstractTest {
     @Order(40)
     void testReevaluateRecord(SzRecordKey   recordKey, 
                               Set<SzFlag>   flags,
-                              boolean       viaKey,
                               Class<?>      expectedExceptionType)
     {
         String testData = "recordKey=[ " + recordKey 
             + " ], withFlags=[ " + SzFlag.toString(flags) 
-            + " ], viaKey=[ " + viaKey + " ], expectedException=[ "
-            + expectedExceptionType + " ]";
+            + " ], expectedException=[ " + expectedExceptionType + " ]";
 
         this.performTest(() -> {
             try {
                 SzEngine engine = this.env.getEngine();
 
-                String result = null;
-                if (viaKey) {
-                    result = engine.reevaluateRecord(recordKey, flags);
-
-                } else {
-                    result = engine.reevaluateRecord(
-                        recordKey.dataSourceCode(),
-                        recordKey.recordId(),
-                        flags);
-                }
+                String result = engine.reevaluateRecord(recordKey, flags);
 
                 if (expectedExceptionType != null) {
                     fail("Unexpectedly succeeded in reevaluating record: "
@@ -740,11 +708,9 @@ public class SzCoreEngineWriteTest extends AbstractTest {
                 if (e instanceof SzException) {
                     SzException sze = (SzException) e;
                     description = "errorCode=[ " + sze.getErrorCode()
-                        + " ], methodSignature=[ " + sze.getMethodSignature()
-                        + " ], parameters=[ " + sze.getMethodParameters()
                         + " ], exception=[ " + e.toString() + " ]";
                 } else {
-                    description = e.toString();
+                    description = "exception=[ " + e.toString() + " ]";
                 }
 
                 if (expectedExceptionType == null) {
@@ -841,11 +807,10 @@ public class SzCoreEngineWriteTest extends AbstractTest {
                 if (e instanceof SzException) {
                     SzException sze = (SzException) e;
                     description = "errorCode=[ " + sze.getErrorCode()
-                        + " ], methodSignature=[ " + sze.getMethodSignature()
-                        + " ], parameters=[ " + sze.getMethodParameters()
                         + " ], exception=[ " + e.toString() + " ]";
+                
                 } else {
-                    description = e.toString();
+                    description = "exception=[ " + e.toString() + " ]";
                 }
 
                 if (expectedExceptionType == null) {
@@ -869,12 +834,10 @@ public class SzCoreEngineWriteTest extends AbstractTest {
         int errorCase = 0;
 
         Iterator<Set<SzFlag>> flagSetIter = circularIterator(WRITE_FLAG_SETS);
-        Iterator<Boolean> viaKeyIter = circularIterator(VIA_KEY_LIST);
 
         for (SzRecordKey key : LOADED_RECORD_MAP.keySet()) {
             Class<?>    exceptionType   = null;
             Set<SzFlag> flagSet         = flagSetIter.next();
-            boolean     viaKey          = viaKeyIter.next();
             
             switch (errorCase) {
                 case 0:
@@ -894,7 +857,7 @@ public class SzCoreEngineWriteTest extends AbstractTest {
                 // do nothing
             }
             errorCase++;
-            result.add(Arguments.of(key, flagSet, viaKey, exceptionType));
+            result.add(Arguments.of(key, flagSet, exceptionType));
         };
         
         return result;
@@ -905,33 +868,21 @@ public class SzCoreEngineWriteTest extends AbstractTest {
     @Order(100)
     void testDeleteRecord(SzRecordKey  recordKey, 
                           Set<SzFlag>  flags,
-                          boolean      viaKey,
                           Class<?>     expectedExceptionType)
     {
         String testData = "recordKey=[ " + recordKey 
-        + " ], withFlags=[ " + SzFlag.toString(flags) 
-        + " ], viaKey=[ " + viaKey + " ], expectedException=[ "
-        + expectedExceptionType + " ]";
+            + " ], withFlags=[ " + SzFlag.toString(flags) 
+            + " ], expectedException=[ " + expectedExceptionType + " ]";
 
         this.performTest(() -> {
             try {
                 SzEngine engine = this.env.getEngine();
 
-                String result = null;
-                if (viaKey) {
-                    result = engine.deleteRecord(recordKey, flags);
-
-                } else {
-                    result = engine.deleteRecord(
-                        recordKey.dataSourceCode(),
-                        recordKey.recordId(),
-                        flags);
-                }
+                String result = engine.deleteRecord(recordKey, flags);
 
                 if (expectedExceptionType != null) {
                     fail("Unexpectedly succeeded in deleting record: "
-                         + testData);
-                    
+                         + testData);                    
                 }
                 
                 // check if we are expecting info
@@ -959,11 +910,10 @@ public class SzCoreEngineWriteTest extends AbstractTest {
                 if (e instanceof SzException) {
                     SzException sze = (SzException) e;
                     description = "errorCode=[ " + sze.getErrorCode()
-                        + " ], methodSignature=[ " + sze.getMethodSignature()
-                        + " ], parameters=[ " + sze.getMethodParameters()
                         + " ], exception=[ " + e.toString() + " ]";
+                
                 } else {
-                    description = e.toString();
+                    description = "exception=[ " + e.toString() + " ]";
                 }
 
                 if (expectedExceptionType == null) {
