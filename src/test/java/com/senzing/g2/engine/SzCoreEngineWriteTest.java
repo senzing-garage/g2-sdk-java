@@ -661,7 +661,17 @@ public class SzCoreEngineWriteTest extends AbstractTest {
             errorCase++;
             result.add(Arguments.of(key, flagSet, exceptionType));
         };
-        
+
+        result.add(Arguments.of(
+            SzRecordKey.of(PASSENGERS_DATA_SOURCE, "XXX000"), 
+            SZ_NO_FLAGS,
+            null));
+
+        result.add(Arguments.of(
+            SzRecordKey.of(PASSENGERS_DATA_SOURCE, "XXX000"), 
+            SZ_WITH_INFO_FLAGS,
+            null));
+                
         return result;
     }
 
@@ -692,12 +702,14 @@ public class SzCoreEngineWriteTest extends AbstractTest {
                     // parse the result as JSON and check that it parses
                     JsonObject jsonObject = parseJsonObject(result);
 
-                    assertTrue(jsonObject.containsKey("DATA_SOURCE"),
-                               "Info message lacking DATA_SOURCE key: " + testData);
-                    assertTrue(jsonObject.containsKey("RECORD_ID"),
-                                "Info message lacking RECORD_ID key: " + testData);
-                    assertTrue(jsonObject.containsKey("AFFECTED_ENTITIES"),
-                                "Info message lacking AFFECTED_ENTITIES key: " + testData);
+                    if (jsonObject.size() > 0) {
+                        assertTrue(jsonObject.containsKey("DATA_SOURCE"),
+                                "Info message lacking DATA_SOURCE key: " + testData);
+                        assertTrue(jsonObject.containsKey("RECORD_ID"),
+                                    "Info message lacking RECORD_ID key: " + testData);
+                        assertTrue(jsonObject.containsKey("AFFECTED_ENTITIES"),
+                                    "Info message lacking AFFECTED_ENTITIES key: " + testData);
+                    }
                 } else {
                     assertEquals(SzCoreEngine.NO_INFO, result,
                                 "No INFO requested, but non-empty response received");
@@ -759,6 +771,9 @@ public class SzCoreEngineWriteTest extends AbstractTest {
             errorCase++;
             result.add(Arguments.of(entityId, flagSet, exceptionType));
         };
+
+        result.add(Arguments.of(100000000L, SZ_NO_FLAGS, null));
+        result.add(Arguments.of(100000000L, SZ_WITH_INFO_FLAGS, null));
         
         return result;
     }
@@ -790,12 +805,14 @@ public class SzCoreEngineWriteTest extends AbstractTest {
                     // parse the result as JSON and check that it parses
                     JsonObject jsonObject = parseJsonObject(result);
 
-                    assertTrue(jsonObject.containsKey("DATA_SOURCE"),
-                               "Info message lacking DATA_SOURCE key: " + testData);
-                    assertTrue(jsonObject.containsKey("RECORD_ID"),
-                                "Info message lacking RECORD_ID key: " + testData);
-                    assertTrue(jsonObject.containsKey("AFFECTED_ENTITIES"),
-                                "Info message lacking AFFECTED_ENTITIES key: " + testData);
+                    if (jsonObject.size() > 0) {
+                        assertTrue(jsonObject.containsKey("DATA_SOURCE"),
+                                "Info message lacking DATA_SOURCE key: " + testData);
+                        assertTrue(jsonObject.containsKey("RECORD_ID"),
+                                    "Info message lacking RECORD_ID key: " + testData);
+                        assertTrue(jsonObject.containsKey("AFFECTED_ENTITIES"),
+                                    "Info message lacking AFFECTED_ENTITIES key: " + testData);
+                    }
                 } else {
                     assertEquals(SzCoreEngine.NO_INFO, result,
                                 "No INFO requested, but non-empty response received: "

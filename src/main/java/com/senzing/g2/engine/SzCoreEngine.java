@@ -385,11 +385,11 @@ public class SzCoreEngine implements SzEngine {
     }
 
     @Override
-    public String findNetworkByEntityId(Set<Long>   entityIds, 
-                                        int         maxDegrees,
-                                        int         buildOutDegrees,
-                                        int         buildOutMaxEntities,
-                                        Set<SzFlag> flags)
+    public String findNetwork(SzEntityIds   entityIds, 
+                              int           maxDegrees,
+                              int           buildOutDegrees,
+                              int           buildOutMaxEntities,
+                              Set<SzFlag>   flags)
             throws SzNotFoundException, SzException 
     {        
         // clear out the SDK-specific flags
@@ -417,11 +417,11 @@ public class SzCoreEngine implements SzEngine {
     }
 
     @Override
-    public String findNetworkByRecordId(Set<SzRecordKey>    recordKeys,
-                                        int                 maxDegrees,
-                                        int                 buildOutDegrees,
-                                        int                 buildOutMaxEntities,
-                                        Set<SzFlag>         flags)
+    public String findNetwork(SzRecordKeys  recordKeys,
+                              int           maxDegrees,
+                              int           buildOutDegrees,
+                              int           buildOutMaxEntities,
+                              Set<SzFlag>   flags)
         throws SzUnknownDataSourceException, SzNotFoundException, SzException
     {        
         // clear out the SDK-specific flags
@@ -451,7 +451,7 @@ public class SzCoreEngine implements SzEngine {
     public String findPath(long         startEntityId, 
                            long         endEntityId,
                            int          maxDegrees,
-                           Set<Long>    avoidances,
+                           SzEntityIds  avoidEntityIds,
                            Set<String>  requiredDataSources,
                            Set<SzFlag>  flags)
         throws SzNotFoundException,
@@ -466,7 +466,7 @@ public class SzCoreEngine implements SzEngine {
 
             int returnCode = 0;
             
-            if ((avoidances == null || avoidances.isEmpty())
+            if ((avoidEntityIds == null || avoidEntityIds.isEmpty())
                 && (requiredDataSources == null || requiredDataSources.isEmpty()))
             {
                 // call the base function
@@ -475,7 +475,7 @@ public class SzCoreEngine implements SzEngine {
 
             } else if (requiredDataSources == null || requiredDataSources.isEmpty()) {
                 // encode the entity ID's
-                String avoidanceJson = encodeEntityIds(avoidances);
+                String avoidanceJson = encodeEntityIds(avoidEntityIds);
 
                 // call the variant with avoidances, but without required data sources
                 returnCode = this.nativeApi.findPathByEntityIDWithAvoids(
@@ -484,7 +484,7 @@ public class SzCoreEngine implements SzEngine {
 
             } else {
                 // encode the entity ID's
-                String avoidanceJson = encodeEntityIds(avoidances);
+                String avoidanceJson = encodeEntityIds(avoidEntityIds);
 
                 // encode the data sources
                 String dataSourceJson = encodeDataSources(requiredDataSources);
@@ -504,12 +504,12 @@ public class SzCoreEngine implements SzEngine {
     }
 
     @Override
-    public String findPath(SzRecordKey        startRecordKey,
-                           SzRecordKey        endRecordKey,
-                           int                maxDegrees,
-                           Set<SzRecordKey>   avoidances,
-                           Set<String>        requiredDataSources,
-                           Set<SzFlag>        flags)
+    public String findPath(SzRecordKey  startRecordKey,
+                           SzRecordKey  endRecordKey,
+                           int          maxDegrees,
+                           SzRecordKeys avoidRecordKeys,
+                           Set<String>  requiredDataSources,
+                           Set<SzFlag>  flags)
             throws SzNotFoundException,
                    SzUnknownDataSourceException,
                    SzException
@@ -521,7 +521,7 @@ public class SzCoreEngine implements SzEngine {
             StringBuffer sb = new StringBuffer();
 
             int returnCode = 0;
-            if ((avoidances == null || avoidances.isEmpty())
+            if ((avoidRecordKeys == null || avoidRecordKeys.isEmpty())
                 && (requiredDataSources == null || requiredDataSources.isEmpty()))
             {
                 // call the base function
@@ -536,7 +536,7 @@ public class SzCoreEngine implements SzEngine {
 
             } else if (requiredDataSources == null || requiredDataSources.isEmpty()) {
                 // encode the entity ID's
-                String avoidanceJson = encodeRecordKeys(avoidances);
+                String avoidanceJson = encodeRecordKeys(avoidRecordKeys);
 
                 // call the variant with avoidances, but without required data sources
                 returnCode = this.nativeApi.findPathByRecordIDWithAvoids(
@@ -551,7 +551,7 @@ public class SzCoreEngine implements SzEngine {
             
             } else {
                 // encode the entity ID's
-                String avoidanceJson = encodeRecordKeys(avoidances);
+                String avoidanceJson = encodeRecordKeys(avoidRecordKeys);
 
                 // encode the data sources
                 String dataSourceJson = encodeDataSources(requiredDataSources);
@@ -782,6 +782,9 @@ public class SzCoreEngine implements SzEngine {
                     
                 // set the info result if requested
                 result = sb.toString();
+
+                // check if record not found yields empty INFO
+                if (result.length() == 0) result = NO_INFO;
             }
 
             // check the return code
@@ -822,6 +825,10 @@ public class SzCoreEngine implements SzEngine {
                     
                 // set the info result
                 result = sb.toString();
+
+                // TODO(bcaceres): remove this if not-found records produce an error
+                // check if record not found yields empty INFO
+                if (result.length() == 0) result = NO_INFO;
             }
 
             // check the return code

@@ -15,11 +15,8 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
@@ -42,11 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 import static com.senzing.util.JsonUtilities.*;
-import static com.senzing.g2.engine.NativeEngine.*;
-import static org.junit.jupiter.params.provider.Arguments.*;
 import static com.senzing.g2.engine.SzFlag.*;
-import static com.senzing.g2.engine.Utilities.*;
-import static com.senzing.g2.engine.SzRecord.*;
 import static com.senzing.util.CollectionUtilities.*;
 
 /**

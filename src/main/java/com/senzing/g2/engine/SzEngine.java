@@ -112,9 +112,7 @@ public interface SzEngine {
 
     /**
      * Reevaluate the record identified by the data source code and record ID
-     * from the specified {@link SzRecordKey}.  If the record is not found then
-     * TODO(bcaceres): complete this when GDEV-3790 gets resolved and the
-     * "not found" behavior is defined.
+     * from the specified {@link SzRecordKey}.
      * <p>
      * The specified {@link Set} of {@link SzFlag} instances may contain any 
      * {@link SzFlag} value, but only flags belonging to the {@link
@@ -137,6 +135,8 @@ public interface SzEngine {
      * @throws SzUnknownDataSourceException If an unrecognized data source
      *                                      code is specified.
      * 
+     * @throws SzNotFoundException If the record ID is not found.
+     * 
      * @throws SzException If a failure occurs.
      * 
      * @see SzFlag#SZ_WITH_INFO_FLAGS
@@ -147,8 +147,7 @@ public interface SzEngine {
 
     /**
      * Reevaluate a resolved entity identified by the specified entity ID.
-     * If the entity is not found then TODO(bcaceres): complete this when
-     * GDEV-3790 gets resolved and the "not found" behavior is defined.
+     * If the entity is not found then this method does nothing.
      * <p>
      * The specified {@link Set} of {@link SzFlag} instances may contain any 
      * {@link SzFlag} value, but only flags belonging to the {@link
@@ -352,11 +351,12 @@ public interface SzEngine {
      * entity ID's.
      * <p>
      * Entities to be avoided when finding the path may optionally be specified
-     * as a non-null {@link Set} of {@link Long} entity ID's.  If specified as
-     * non-null, then the avoidance {@link Set} contains non-null {@link Long}
-     * entity ID's that identify entities to be avoided.  By default the
-     * specified entities will be avoided unless absolutely neccessary to find
-     * the path.  To strictly avoid the specified entities specify the {@link
+     * as a non-null {@link SzEntityIds} instance describing a {@link Set} of
+     * {@link Long} entity ID's.  If specified as non-null, then the avoidance
+     * {@link SzEntityIds} contains the non-null {@link Long} entity ID's that
+     * identify entities to be avoided.  By default the specified entities will
+     * be avoided unless absolutely neccessary to find the path.  To strictly
+     * avoid the specified entities specify the {@link
      * SzFlag#SZ_FIND_PATH_STRICT_AVOID} flag. 
      * <p>
      * Further, a JSON required data sources {@link Set} of {@link String} 
@@ -381,10 +381,11 @@ public interface SzEngine {
      * 
      * @param maxDegrees The maximum number of degrees for the path search.
      * 
-     * @param avoidances The optional {@link Set} of non-null {@link Long}
-     *                   entity ID's identifying entities to be avoided when 
-     *                   finding the path, or <code>null</code> if no entities
-     *                   identified by are to be avoided.
+     * @param avoidEntityIds The optional {@link SzEntityIds} describing the
+     *                       {@link Set} of non-null {@link Long} entity ID's
+     *                       identifying entities to be avoided when finding
+     *                       the path, or <code>null</code> if no entities
+     *                       identified by are to be avoided.
      * 
      * @param requiredDataSources The optional {@link Set} of non-null {@link String}
      *                            data source codes identifying the data sources for
@@ -413,14 +414,14 @@ public interface SzEngine {
      * @see SzFlag#SZ_FIND_PATH_DEFAULT_FLAGS
      * @see SzFlagUsageGroup#SZ_FIND_PATH
      * 
-     * @see #findPath(SzRecordKey,SzRecordKey,int,Set,Set,Set)
+     * @see #findPath(SzRecordKey,SzRecordKey,int,SzRecordKeys,Set,Set)
      */
-    String findPath(long              startEntityId,
-                    long              endEntityId,
-                    int               maxDegrees,
-                    Set<Long>         avoidances,
-                    Set<String>       requiredDataSources,
-                    Set<SzFlag>       flags)
+    String findPath(long        startEntityId,
+                    long        endEntityId,
+                    int         maxDegrees,
+                    SzEntityIds avoidEntityIds,
+                    Set<String> requiredDataSources,
+                    Set<SzFlag> flags)
         throws SzNotFoundException, SzUnknownDataSourceException, SzException;
 
     /**
@@ -429,13 +430,14 @@ public interface SzEngine {
      * given by the specified start and end {@link SzRecordKey} instances.
      * <p>
      * Entities to be avoided when finding the path may be optionally specified
-     * as a non-null {@link Set} of {@link SzRecordKey} instances.  If specified
-     * as non-null, then the avoidance {@link Set} contains the non-null
-     * {@link SzRecordKey} instances providing the data source code and record
-     * ID pairs that identify the constituent records of entities to be
-     * avoided.  By default the associated entities will be avoided unless
-     * absolutely neccessary to find the path.  To strictly avoid the associated
-     * entities specify the {@link SzFlag#SZ_FIND_PATH_STRICT_AVOID} flag.
+     * as a non-null {@link SzRecordKeys} describing a {@link Set} of 
+     * {@link SzRecordKey} instances.  If specified as non-null, then the
+     * avoidance {@link SzRecordKeys} contains the non-null {@link SzRecordKey}
+     * instances providing the data source code and record ID pairs that
+     * identify the constituent records of entities to be avoided.  By default
+     * the associated entities will be avoided unless absolutely neccessary to
+     * find the path.  To strictly avoid the associated entities specify the
+     * {@link SzFlag#SZ_FIND_PATH_STRICT_AVOID} flag.
      * <p>
      * Further, a JSON required data sources {@link Set} of {@link String} 
      * data source codes may optionally be specified.  If specified as non-null,
@@ -463,11 +465,12 @@ public interface SzEngine {
      * 
      * @param maxDegrees The maximum number of degrees for the path search.
      * 
-     * @param avoidances The optional {@link Set} of non-null {@link SzRecordKey}
-     *                   instances providing the data source code and record ID
-     *                   pairs of the records whose entities are to be avoided 
-     *                   when finding the path, or <code>null</code> if no entities
-     *                   identified by are to be avoided.
+     * @param avoidRecordKeys The optional {@link SzRecordKeys} describing the 
+     *                        {@link Set} of non-null {@link SzRecordKey} instances
+     *                        providing the data source code and record ID pairs of
+     *                        the records whose entities are to be avoided when
+     *                        finding the path, or <code>null</code> if no entities
+     *                        identified by are to be avoided.
      * 
      * @param requiredDataSources The optional {@link Set} of non-null {@link String}
      *                            data source codes identifying the data sources for
@@ -497,12 +500,12 @@ public interface SzEngine {
      * @see SzFlag#SZ_FIND_PATH_DEFAULT_FLAGS
      * @see SzFlagUsageGroup#SZ_FIND_PATH
      * 
-     * @see #findPath(long,long,int,Set,Set,Set)
+     * @see #findPath(long,long,int,SzEntityIds,Set,Set)
      */
     String findPath(SzRecordKey       startRecordKey,
                     SzRecordKey       endRecordKey,
                     int               maxDegrees,
-                    Set<SzRecordKey>  avoidances,
+                    SzRecordKeys      avoidRecordKeys,
                     Set<String>       requiredDataSources,
                     Set<SzFlag>       flags)
         throws SzNotFoundException, SzUnknownDataSourceException, SzException;
@@ -510,7 +513,8 @@ public interface SzEngine {
     /**
      * Finds a network of entity relationships surrounding the paths between
      * a set of entities identified by one or more entity ID's specified in
-     * a {@link Set} of non-null {@link Long} entity ID's.
+     * an instance of {@link SzEntityIds} -- which is a {@link Set} of non-null
+     * {@link Long} entity ID's.
      * <p>
      * Additionally, the maximum degrees of separation for the paths between entities
      * must be specified so as to prevent the network growing beyond the desired size.
@@ -529,8 +533,9 @@ public interface SzEngine {
      * constructing a {@link Set} of {@link SzFlag}.
      * 
      *
-     * @param entityIds The {@link Set} of non-null {@link Long} entity ID's 
-     *                  identifying the entities for which to build the network.
+     * @param entityIds The {@link SzEntityIds} describing the {@link Set} of non-null
+     *                  {@link Long} entity ID's identifying the entities for which to
+     *                  build the network.
      * 
      * @param maxDegrees The maximum number of degrees for the path search
      *                   between the specified entities.
@@ -560,20 +565,21 @@ public interface SzEngine {
      * @see SzFlag#SZ_FIND_NETWORK_DEFAULT_FLAGS
      * @see SzFlagUsageGroup#SZ_FIND_NETWORK
      * 
-     * @see #findNetworkByRecordId(Set,int,int,int,Set)
+     * @see #findNetwork(SzRecordKeys,int,int,int,Set)
      */
-    String findNetworkByEntityId(Set<Long>      entityIds,
-                                 int            maxDegrees,
-                                 int            buildOutDegrees,
-                                 int            buildOutMaxEntities,
-                                 Set<SzFlag>    flags)
+    String findNetwork(SzEntityIds  entityIds,
+                       int          maxDegrees,
+                       int          buildOutDegrees,
+                       int          buildOutMaxEntities,
+                       Set<SzFlag>  flags)
         throws SzNotFoundException, SzException;
 
     /**
      * Finds a network of entity relationships surrounding the paths between
      * a set of entities having the constituent records identified by the
      * data source code and record ID pairs contained in the specified
-     * {@link Set} of one or more non-null {@link SzRecordKey} instances.
+     * instance of {@link SzRecordKeys} -- which is a {@link Set} of one or
+     * more non-null {@link SzRecordKey} instances.
      * <p>
      * Additionally, the maximum degrees of separation for the paths between entities
      * must be specified so as to prevent the network growing beyond the desired size.
@@ -592,10 +598,10 @@ public interface SzEngine {
      * constructing a {@link Set} of {@link SzFlag}.
      * 
      *
-     * @param recordKeys The {@link Set} of non-null {@link SzRecordKey}
-     *                   instances providiung the data source code and
-     *                   record ID pairs for the consituent records of the
-     *                   entities for which to build the network.
+     * @param recordKeys The {@link SzRecordKeys} describing the {@link Set} of
+     *                   non-null {@link SzRecordKey} instances providing the
+     *                   data source code and record ID pairs for the consituent
+     *                   records of the entities for which to build the network.
      * 
      * @param maxDegrees The maximum number of degrees for the path search
      *                   between the specified entities.
@@ -629,13 +635,13 @@ public interface SzEngine {
      * @see SzFlag#SZ_FIND_NETWORK_DEFAULT_FLAGS
      * @see SzFlagUsageGroup#SZ_FIND_NETWORK
      * 
-     * @see #findNetworkByEntityId(Set,int,int,int,Set)
+     * @see #findNetwork(SzEntityIds,int,int,int,Set)
      */
-    String findNetworkByRecordId(Set<SzRecordKey>       recordKeys,
-                                 int                    maxDegrees,
-                                 int                    buildOutDegrees,
-                                 int                    buildOutMaxEntities,
-                                 Set<SzFlag>            flags)
+    String findNetwork(SzRecordKeys recordKeys,
+                       int          maxDegrees,
+                       int          buildOutDegrees,
+                       int          buildOutMaxEntities,
+                       Set<SzFlag>  flags)
         throws SzUnknownDataSourceException, SzNotFoundException, SzException;
 
     /**

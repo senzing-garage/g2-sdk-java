@@ -739,8 +739,6 @@ public class SzCoreEngineReadTest extends AbstractTest {
     }
 
     public List<Arguments> getSearchParameters() {
-        Iterator<Set<SzFlag>> flagSetIter = circularIterator(SEARCH_FLAG_SETS);
-
         List<Arguments> result = new LinkedList<>();
 
         Map<Map<String, Set<String>>, Map<SzFlag, Integer>> searchCountMap

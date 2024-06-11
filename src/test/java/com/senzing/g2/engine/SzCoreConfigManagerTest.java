@@ -229,20 +229,17 @@ public class SzCoreConfigManagerTest extends AbstractTest {
                 String  comments2 = getString(configs.getJsonObject(1), "CONFIG_COMMENTS");
 
                 Set<Long> configIds = new TreeSet<>();
-                configIds.add(configId1);
-                configIds.add(configId2);
+                configIds.add(defaultConfigId);
+                configIds.add(modifiedConfigId);
                 Set<String> comments = new TreeSet<>();
                 comments.add(DEFAULT_COMMENT);
                 comments.add(MODIFIED_COMMENT);
 
                 assertTrue(configIds.contains(configId1), "First config ID not as expected");
-                assertTrue(comments.contains(DEFAULT_COMMENT), "First config comment not as expected");
+                assertTrue(comments.contains(comments1), "First config comment not as expected");
                 
-                configIds.remove(configId1);
-                comments.remove(DEFAULT_COMMENT);
-
                 assertTrue(configIds.contains(configId2), "Second config ID not as expected");
-                assertTrue(comments.contains(MODIFIED_COMMENT), "Second config comment not as expected");
+                assertTrue(comments.contains(comments2), "Second config comment not as expected");
 
             } catch (Exception e) {
                 fail("Failed testGetConfigs test with exception", e);

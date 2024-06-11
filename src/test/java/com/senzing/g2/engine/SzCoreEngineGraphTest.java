@@ -708,7 +708,7 @@ public class SzCoreEngineGraphTest extends AbstractTest {
                         startRecordKey, 
                         endRecordKey, 
                         maxDegrees,
-                        avoidances,
+                        SzRecordKeys.of(avoidances),
                         requiredSources,
                         flags);
 
@@ -798,7 +798,7 @@ public class SzCoreEngineGraphTest extends AbstractTest {
                         startEntityId, 
                         endEntityId, 
                         maxDegrees,
-                        avoidanceIds,
+                        SzEntityIds.of(avoidanceIds),
                         requiredSources,
                         flags);
 
@@ -842,6 +842,7 @@ public class SzCoreEngineGraphTest extends AbstractTest {
         });
     }
 
+    @SuppressWarnings("unchecked")
     public List<Arguments> getEntityNetworkParameters() {
         Iterator<Set<SzFlag>> flagSetIter = circularIterator(FIND_NETWORK_FLAG_SET);
 
@@ -868,7 +869,8 @@ public class SzCoreEngineGraphTest extends AbstractTest {
         result.add(Arguments.of(
             "Two entities with no path",
             set(PASSENGER_ABC123,VIP_JKL456), entityIdSet(set(PASSENGER_ABC123,VIP_JKL456)),
-            1, 0, 10, flagSetIter.next(), null, null, 1, 
+  
+              1, 0, 10, flagSetIter.next(), null, null, 1, 
             list(list(null, PASSENGER_ABC123, VIP_JKL456)), 
             set(PASSENGER_ABC123, VIP_JKL456)));
             
@@ -1153,8 +1155,8 @@ public class SzCoreEngineGraphTest extends AbstractTest {
             try {
                 SzEngine engine = this.env.getEngine();
 
-                String result = engine.findNetworkByEntityId(
-                    entityIds, 
+                String result = engine.findNetwork(
+                    SzEntityIds.of(entityIds), 
                     maxDegrees,
                     buildOutDegrees,
                     buildOutMaxEntities,
@@ -1251,8 +1253,8 @@ public class SzCoreEngineGraphTest extends AbstractTest {
             try {
                 SzEngine engine = this.env.getEngine();
 
-                String result = engine.findNetworkByRecordId(
-                    recordKeys, 
+                String result = engine.findNetwork(
+                    SzRecordKeys.of(recordKeys), 
                     maxDegrees,
                     buildOutDegrees,
                     buildOutMaxEntities,
