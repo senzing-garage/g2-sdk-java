@@ -1,7 +1,5 @@
 package com.senzing.g2.engine;
 
-import com.senzing.g2.engine.NativeApi;
-
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;

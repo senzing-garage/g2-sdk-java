@@ -73,8 +73,11 @@ enum RepoManagerOption
   private boolean primary;
   private int minParamCount;
   private int maxParamCount;
+  @SuppressWarnings("rawtypes")
   private Set<CommandLineOption> conflicts;
+  @SuppressWarnings("rawtypes")
   private Set<Set<CommandLineOption>> dependencies;
+  @SuppressWarnings("unused")
   private List<String> defaultParameters;
 
   @Override
@@ -102,11 +105,13 @@ enum RepoManagerOption
     return false;
   }
 
+  @SuppressWarnings("rawtypes")
   @Override
   public Set<CommandLineOption> getConflicts() {
     return this.conflicts;
   }
 
+  @SuppressWarnings("rawtypes")
   @Override
   public Set<Set<CommandLineOption>> getDependencies() {
     return this.dependencies;
@@ -178,6 +183,7 @@ enum RepoManagerOption
      *                                  of {@link RepoManagerOption} or is
      *                                  otherwise unrecognized.
      */
+    @SuppressWarnings("rawtypes")
     public Object process(CommandLineOption option,
                           List<String>      params) {
       if (!(option instanceof RepoManagerOption)) {

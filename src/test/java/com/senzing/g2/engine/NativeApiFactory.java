@@ -88,6 +88,7 @@ public class NativeApiFactory {
    *                                  token that was returned when the provider
    *                                  was installed.
    */
+  @SuppressWarnings("unused")
   private synchronized static void uninstallProvider(AccessToken token) {
     if (current_token == null) {
       return;

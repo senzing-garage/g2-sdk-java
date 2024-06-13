@@ -22,7 +22,6 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
-import com.senzing.g2.engine.RepositoryManager.Configuration;
 import com.senzing.util.JsonUtilities;
 
 import static com.senzing.io.IOUtilities.*;
@@ -483,8 +482,10 @@ public abstract class AbstractTest {
         RepositoryManager.setThreadModuleName(moduleName);
         boolean concluded = false;
         try {
-            Configuration config = RepositoryManager.createRepo(
-                    this.getRepositoryDirectory(), excludeConfig, true);
+            RepositoryManager.createRepo(this.getRepositoryDirectory(),
+                                         excludeConfig,
+                                         true);
+            
             this.repoCreated = true;
 
             this.prepareRepository();
@@ -881,7 +882,7 @@ public abstract class AbstractTest {
      *
      * @param variants
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected static List<List<?>> generateCombinations(List<?>... variants) {
         // determine the total number of combinations
         int comboCount = 1;
@@ -908,7 +909,7 @@ public abstract class AbstractTest {
 
         ArrayList<List<?>> optionCombos = new ArrayList<>(comboCount);
         for (int comboIndex = 0; comboIndex < comboCount; comboIndex++) {
-            List optionCombo = new ArrayList<>(variants.length);
+            List optionCombo = new ArrayList(variants.length);
 
             for (int index = 0; index < variants.length; index++) {
                 int interval = intervals.get(index);

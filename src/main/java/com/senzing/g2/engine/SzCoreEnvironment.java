@@ -1,13 +1,10 @@
 package com.senzing.g2.engine;
 
 import java.util.Objects;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.Lock;
-
-import static com.senzing.g2.engine.SzException.*;
 
 /**
  * Provides the core implementation of {@link SzEnvironment} that directly
@@ -17,12 +14,6 @@ import static com.senzing.g2.engine.SzException.*;
  * {@link SzCoreEnvironment}.
  */
 public class SzCoreEnvironment implements SzEnvironment {
-    /**
-     * Gets the class prefix to use for {@link SzException} construction.
-     */
-    private static final String CLASS_PREFIX 
-        = SzCoreEnvironment.class.getSimpleName();
-
     /**
      * The environment variable for obtaining the initialization settings
      * from the system environment.  If a value is set in the system environment
