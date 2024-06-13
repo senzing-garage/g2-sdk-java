@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.LinkedList;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.EnumSet;
@@ -13,45 +12,27 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
-import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Parsed;
-import org.junit.jupiter.params.shadow.com.univocity.parsers.common.processor.CustomMatcher;
-
-import com.senzing.g2.engine.SzRecord.SzRecordId;
-
-import static org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import static org.junit.jupiter.api.TestInstance.Lifecycle;
 
-import javax.json.Json;
-import javax.json.JsonObjectBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonArray;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 import static com.senzing.util.CollectionUtilities.list;
 import static com.senzing.util.CollectionUtilities.set;
 import static com.senzing.util.JsonUtilities.*;
-import static com.senzing.g2.engine.NativeEngine.*;
-import static org.junit.jupiter.params.provider.Arguments.*;
 import static com.senzing.g2.engine.SzFlag.*;
-import static com.senzing.g2.engine.Utilities.*;
-import static com.senzing.g2.engine.SzRecord.*;
 
 /**
  * Unit tests for {@link SzCoreEngine} how & virtual entity operations.

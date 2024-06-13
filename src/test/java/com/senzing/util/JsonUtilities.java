@@ -1621,7 +1621,7 @@ public class JsonUtilities {
    *
    * @return The normalized version of the {@link JsonValue}.
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked","rawtypes"})
   public static Object normalizeJsonValue(JsonValue jsonValue)
   {
     if (jsonValue == null) return null;
@@ -1695,7 +1695,7 @@ public class JsonUtilities {
    *
    * @return The specified {@link JsonObjectBuilder}.
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked","rawtypes"})
   public static JsonObjectBuilder addProperty(JsonObjectBuilder builder,
                                               String            property,
                                               Object            value)
@@ -1792,7 +1792,7 @@ public class JsonUtilities {
    *
    * @return The specified {@link JsonObjectBuilder}.
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked","rawtypes"})
   public static JsonArrayBuilder addElement(JsonArrayBuilder builder,
                                             Object           value)
   {

@@ -574,7 +574,6 @@ public class SzCoreEngineReadTest extends AbstractTest {
         final Class<?> NOT_FOUND = SzNotFoundException.class;
 
         for (SzRecordKey recordKey : RECORD_KEYS) {
-            long entityId = getEntityId(recordKey);
             result.add(Arguments.of(
                 "Get record for " + recordKey + " test",
                 recordKey,
@@ -670,15 +669,6 @@ public class SzCoreEngineReadTest extends AbstractTest {
                 }
             }
         });
-    }
-
-    private <T extends Comparable<T>> Set<T> sortedSet(Set<T> set) {
-        List<T> list = new ArrayList<>(set.size());
-        list.addAll(set);
-        Collections.sort(list);
-        Set<T> sortedSet = new LinkedHashSet<>();
-        sortedSet.addAll(list);
-        return sortedSet;
     }
 
     private <K extends Comparable<K>, V> Map<K, V> sortedMap(Map<K, V> map)

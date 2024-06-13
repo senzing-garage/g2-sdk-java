@@ -1,7 +1,6 @@
 package com.senzing.g2.engine;
 
 import com.senzing.cmdline.*;
-import com.senzing.g2.engine.*;
 import com.senzing.nativeapi.InstallLocations;
 import com.senzing.io.RecordReader;
 import com.senzing.util.JsonUtilities;
@@ -22,8 +21,6 @@ import static com.senzing.io.RecordReader.Format.*;
 
 public class RepositoryManager {
   private static final File INSTALL_DIR;
-
-  private static final File CONFIG_DIR;
 
   private static final File RESOURCE_DIR;
 
@@ -68,13 +65,11 @@ public class RepositoryManager {
 
       if (locations != null) {
         INSTALL_DIR   = locations.getInstallDirectory();
-        CONFIG_DIR    = locations.getConfigDirectory();
         SUPPORT_DIR   = locations.getSupportDirectory();
         RESOURCE_DIR  = locations.getResourceDirectory();
         TEMPLATES_DIR = locations.getTemplatesDirectory();
       } else {
         INSTALL_DIR   = null;
-        CONFIG_DIR    = null;
         SUPPORT_DIR   = null;
         RESOURCE_DIR  = null;
         TEMPLATES_DIR = null;
@@ -134,10 +129,6 @@ public class RepositoryManager {
 
   private static final String JAR_FILE_NAME;
 
-  private static final String JAR_BASE_URL;
-
-  // private static final String PATH_TO_JAR;
-
   static {
     String jarBaseUrl   = null;
     String jarFileName  = null;
@@ -173,7 +164,6 @@ public class RepositoryManager {
       throw new ExceptionInInitializerError(e);
 
     } finally {
-      JAR_BASE_URL  = jarBaseUrl;
       JAR_FILE_NAME = jarFileName;
     }
   }
@@ -249,6 +239,7 @@ public class RepositoryManager {
    * @return The {@link Map} of options to their values.
    * @throws CommandLineException If command line arguments are invalid.
    */
+  @SuppressWarnings("rawtypes")
   private static Map<CommandLineOption, Object> parseCommandLine(
       String[]                      args,
       List<DeprecatedOptionWarning> deprecationWarnings)
@@ -269,14 +260,6 @@ public class RepositoryManager {
 
     // return the result
     return result;
-  }
-
-  /**
-   * Exits and prints the message associated with the specified exception.
-   */
-  private static void exitOnError(Throwable t) {
-    System.err.println(t.getMessage());
-    System.exit(1);
   }
 
   /**
@@ -370,7 +353,7 @@ public class RepositoryManager {
    * @param args
    * @throws Exception
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public static void main(String[] args) throws Exception {
     Map<CommandLineOption, Object> options = null;
     List<DeprecatedOptionWarning> warnings = new LinkedList<>();
@@ -555,11 +538,7 @@ public class RepositoryManager {
       if (RESOURCE_DIR != null) {
         subBuilder.add("RESOURCEPATH", RESOURCE_DIR.toString());
       }
-      if (repoConfigDir != null) {
-        subBuilder.add("CONFIGPATH", repoConfigDir.toString());
-      } else if (CONFIG_DIR != null) {
-        subBuilder.add("CONFIGPATH", CONFIG_DIR.toString());
-      }
+      subBuilder.add("CONFIGPATH", repoConfigDir.toString());
       builder.add("PIPELINE", subBuilder);
 
       subBuilder = Json.createObjectBuilder();
@@ -1158,9 +1137,7 @@ public class RepositoryManager {
           dataSources.add(recordSource);
         }
 
-        StringBuffer sb = new StringBuffer();
         String jsonRecord = JsonUtilities.toJsonText(record);
-
 
         int returnCode = ENGINE_API.addRecord(dataSource, recordId, jsonRecord);
 
@@ -1564,7 +1541,6 @@ public class RepositoryManager {
     Long        resultConfigId  = null;
     JsonObject  resultConfig    = null;
 
-    Result<Long> configId = new Result<>();
     int returnCode = 0;
     String configJsonText = JsonUtilities.toJsonText(configJson);
     Result<Long> result = new Result<>();

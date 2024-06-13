@@ -747,7 +747,7 @@ public class RecordReader {
           }
         }
 
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({ "unchecked", "rawtypes" })
         Map<String,Object> map = (Map) recordMap;
 
         JsonObject jsonObj = Json.createObjectBuilder(map).build();
