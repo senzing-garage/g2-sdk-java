@@ -68,7 +68,7 @@ import static org.junit.jupiter.params.provider.Arguments.*;
         
         String instanceName = this.getClass().getSimpleName();
 
-        NativeEngine nativeEngine = new G2JNI();
+        NativeEngine nativeEngine = new NativeEngineJni();
         try {
             // initialize the native engine
             int returnCode = nativeEngine.init(instanceName, settings, false);

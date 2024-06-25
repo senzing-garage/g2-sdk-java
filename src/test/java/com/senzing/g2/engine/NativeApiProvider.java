@@ -23,12 +23,12 @@ public interface NativeApiProvider {
   NativeProduct createProductApi();
 
   /**
-   * Provides a new instance of {@link NativeConfigMgr} to use.
+   * Provides a new instance of {@link NativeConfigManager} to use.
    *
-   * @return A new instance of {@link NativeConfigMgr} to use.
+   * @return A new instance of {@link NativeConfigManager} to use.
    *
    */
-  NativeConfigMgr createConfigMgrApi();
+  NativeConfigManager createConfigMgrApi();
 
   /**
    * Provides a new instance of {@link NativeDiagnostic} to use.

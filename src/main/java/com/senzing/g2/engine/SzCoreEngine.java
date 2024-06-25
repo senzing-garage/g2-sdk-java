@@ -27,9 +27,9 @@ public class SzCoreEngine implements SzEngine {
     private SzCoreEnvironment env = null;
 
     /**
-     * The underlying {@link G2G2JNI} instance.
+     * The underlying {@link NativeEngineJni} instance.
      */
-    G2JNI nativeApi = null;
+    NativeEngineJni nativeApi = null;
 
     /**
      * Constructs with the specified {@link SzCoreEnvironment}.
@@ -48,7 +48,7 @@ public class SzCoreEngine implements SzEngine {
             throws IllegalStateException, SzException {
         this.env = environment;
         this.env.execute(() -> {
-            this.nativeApi = new G2JNI();
+            this.nativeApi = new NativeEngineJni();
 
             // check if we are initializing with a config ID
             if (this.env.getConfigId() == null) {

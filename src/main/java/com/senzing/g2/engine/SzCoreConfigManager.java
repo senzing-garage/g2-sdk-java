@@ -11,9 +11,9 @@ public class SzCoreConfigManager implements SzConfigManager {
     private SzCoreEnvironment env = null;
 
     /**
-     * The underlying {@link G2ConfigMgrJNI} instance.
+     * The underlying {@link NativeConfigManagerJni} instance.
      */
-    G2ConfigMgrJNI nativeApi = null;
+    NativeConfigManagerJni nativeApi = null;
 
     /**
      * Constructs with the specified {@link SzCoreEnvironment}.
@@ -30,7 +30,7 @@ public class SzCoreConfigManager implements SzConfigManager {
     {
         this.env = environment;
         this.env.execute(() -> {
-            this.nativeApi = new G2ConfigMgrJNI();
+            this.nativeApi = new NativeConfigManagerJni();
 
             int returnCode = this.nativeApi.init(this.env.getInstanceName(),
                                                  this.env.getSettings(),

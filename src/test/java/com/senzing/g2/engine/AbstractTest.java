@@ -109,14 +109,14 @@ public abstract class AbstractTest {
     }
 
     /**
-     * Initializes the specified {@link NativeConfigMgr} with the specified
+     * Initializes the specified {@link NativeConfigManager} with the specified
      * parameters.
      * 
-     * @param config       The {@link NativeConfigMgr} to initialize.
+     * @param config       The {@link NativeConfigManager} to initialize.
      * @param instanceName The instance name to use for initialization.
      * @param settings     The settings to use for initialization.
      */
-    protected void init(NativeConfigMgr configMgr, String instanceName, String settings) {
+    protected void init(NativeConfigManager configMgr, String instanceName, String settings) {
         int returnCode = configMgr.init(instanceName, settings, false);
         if (returnCode != 0) {
             throw new RuntimeException(configMgr.getLastException());
@@ -138,13 +138,13 @@ public abstract class AbstractTest {
     }
 
     /**
-     * Destroys the specified {@link NativeConfigMgr} instance.
+     * Destroys the specified {@link NativeConfigManager} instance.
      * 
-     * @param config The {@link NativeConfigMgr} instance to destroy.
+     * @param config The {@link NativeConfigManager} instance to destroy.
      * 
      * @return Always returns <code>null</code>.
      */
-    protected NativeConfigMgr destroy(NativeConfigMgr configMgr) {
+    protected NativeConfigManager destroy(NativeConfigManager configMgr) {
         if (configMgr == null)
             return null;
         configMgr.destroy();
@@ -173,7 +173,7 @@ public abstract class AbstractTest {
      * {@link NativeConfigMgr].
      * }
      * 
-     * @param configMgr The {@link NativeConfigMgr} to use.
+     * @param configMgr The {@link NativeConfigManager} to use.
      * 
      * @param config    The {@link String} config to be added.
      * 
@@ -181,7 +181,7 @@ public abstract class AbstractTest {
      * 
      * @return The configuration ID for the added config.
      */
-    protected long addConfig(NativeConfigMgr configMgr, String config, String comment) {
+    protected long addConfig(NativeConfigManager configMgr, String config, String comment) {
         Result<Long> result = new Result<>();
         int returnCode = configMgr.addConfig(config, comment, result);
         if (returnCode != 0) {
@@ -191,13 +191,13 @@ public abstract class AbstractTest {
     }
 
     /**
-     * Gets the default config ID using the specified {@link NativeConfigMgr}.
+     * Gets the default config ID using the specified {@link NativeConfigManager}.
      * 
-     * @param configMgr The {@link NativeConfigMgr} to use
+     * @param configMgr The {@link NativeConfigManager} to use
      * 
      * @return The configuration ID for the default config ID.
      */
-    protected long getDefaultConfigId(NativeConfigMgr configMgr) {
+    protected long getDefaultConfigId(NativeConfigManager configMgr) {
         Result<Long> result = new Result<>();
         int returnCode = configMgr.getDefaultConfigID(result);
         if (returnCode != 0) {

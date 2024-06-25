@@ -8,10 +8,11 @@
 package com.senzing.g2.engine;
 
 /**
- * Implements the {@link NativeConfig} interface to call the native implementations
- * of the functions.
+ * Implements the {@link NativeProduct} interface to call the native
+ * implementations of each function.
  */
-public class G2ConfigMgrJNI implements NativeConfigMgr {
+public class NativeProductJni implements NativeProduct
+{
 	static {
 		System.loadLibrary("G2");
 	}
@@ -20,9 +21,9 @@ public class G2ConfigMgrJNI implements NativeConfigMgr {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public native int init(String		moduleName,
-	                       String		iniParams,
-				           boolean	verboseLogging);
+	public native int init(String 	moduleName,
+												 String 	iniParams,
+												 boolean 	verboseLogging);
 
 	/**
 	 * {@inheritDoc}
@@ -34,39 +35,27 @@ public class G2ConfigMgrJNI implements NativeConfigMgr {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public native int addConfig(String 				configStr,
-															String				configComments,
-															Result<Long>	configID);
+	public native String license();
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public native int getConfig(long configID, StringBuffer response);
+	public native int validateLicenseFile(String 				licenseFile,
+																				StringBuffer 	errorResponse);
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public native int getConfigList(StringBuffer response);
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public native int setDefaultConfigID(long configID);
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public native int getDefaultConfigID(Result<Long> configID);
+	public native int validateLicenseStringBase64(String 				licenseData,
+																								StringBuffer 	errorResponse);
 	
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public native int replaceDefaultConfigID(long oldConfigID, long newConfigID);
+	public native String version();
 
 	/**
 	 * {@inheritDoc}

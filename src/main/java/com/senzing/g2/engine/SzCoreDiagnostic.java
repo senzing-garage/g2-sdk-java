@@ -11,9 +11,9 @@ public class SzCoreDiagnostic implements SzDiagnostic {
     private SzCoreEnvironment env = null;
 
     /**
-     * The underlying {@link G2DiagnosticJNI} instance.
+     * The underlying {@link NativeDiagnosticJni} instance.
      */
-    G2DiagnosticJNI nativeApi = null;
+    NativeDiagnosticJni nativeApi = null;
 
     /**
      * Constructs with the specified {@link SzCoreEnvironment}.
@@ -31,7 +31,7 @@ public class SzCoreDiagnostic implements SzDiagnostic {
     {
         this.env = environment;
         this.env.execute(() -> {
-            this.nativeApi = new G2DiagnosticJNI();
+            this.nativeApi = new NativeDiagnosticJni();
 
             // check if we are initializing with a config ID
             if (this.env.getConfigId() == null) {

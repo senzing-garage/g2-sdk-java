@@ -14,9 +14,9 @@ class SzCoreConfig implements SzConfig {
     private SzCoreEnvironment env = null;
 
     /**
-     * The underlying {@link G2ConfigJNI} instance.
+     * The underlying {@link NativeConfigJni} instance.
      */
-    G2ConfigJNI nativeApi = null;
+    NativeConfigJni nativeApi = null;
 
     /**
      * Constructs with the specified {@link SzCoreEnvironment}.
@@ -31,7 +31,7 @@ class SzCoreConfig implements SzConfig {
     SzCoreConfig(SzCoreEnvironment environment) throws IllegalStateException, SzException {
         this.env = environment;
         this.env.execute(() -> {
-            this.nativeApi = new G2ConfigJNI();
+            this.nativeApi = new NativeConfigJni();
 
             int returnCode = this.nativeApi.init(this.env.getInstanceName(),
                                                  this.env.getSettings(),
@@ -155,10 +155,10 @@ class SzCoreConfig implements SzConfig {
         throws SzException 
     {
         return this.env.execute(() -> {
-            // format the JSON for the JNI call
+            // format the JSON for the native call
             String inputJson = "{\"DSRC_CODE\":" + jsonEscape(dataSourceCode) + "}";
 
-            // create a StringBuffer for calling the JNI call
+            // create a StringBuffer for calling the native call
             StringBuffer sb = new StringBuffer();
 
             // call the underlying C function

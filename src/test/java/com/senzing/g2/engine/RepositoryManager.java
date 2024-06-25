@@ -34,7 +34,7 @@ public class RepositoryManager {
 
   private static final NativeConfig CONFIG_API;
 
-  private static final NativeConfigMgr CONFIG_MGR_API;
+  private static final NativeConfigManager CONFIG_MGR_API;
 
   private static final Set<String> EXCLUDED_TEMPLATE_FILES;
 
@@ -78,7 +78,7 @@ public class RepositoryManager {
       NativeDiagnostic  diagnosticApi = null;
       NativeEngine      engineApi     = null;
       NativeConfig      configApi     = null;
-      NativeConfigMgr   configMgrApi  = null;
+      NativeConfigManager   configMgrApi  = null;
       try {
         engineApi       = NativeApiFactory.createEngineApi();
         diagnosticApi   = NativeApiFactory.createDiagnosticApi();

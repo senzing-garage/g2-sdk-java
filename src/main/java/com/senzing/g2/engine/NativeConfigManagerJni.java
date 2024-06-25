@@ -8,11 +8,10 @@
 package com.senzing.g2.engine;
 
 /**
- * Implements the {@link NativeProduct} interface to call the native
- * implementations of each function.
+ * Implements the {@link NativeConfig} interface to call the native implementations
+ * of the functions.
  */
-public class G2ProductJNI implements NativeProduct
-{
+public class NativeConfigManagerJni implements NativeConfigManager {
 	static {
 		System.loadLibrary("G2");
 	}
@@ -21,9 +20,9 @@ public class G2ProductJNI implements NativeProduct
 	 * {@inheritDoc}
 	 */
 	@Override
-	public native int init(String 	moduleName,
-												 String 	iniParams,
-												 boolean 	verboseLogging);
+	public native int init(String		moduleName,
+	                       String		iniParams,
+				           boolean	verboseLogging);
 
 	/**
 	 * {@inheritDoc}
@@ -35,27 +34,39 @@ public class G2ProductJNI implements NativeProduct
 	 * {@inheritDoc}
 	 */
 	@Override
-	public native String license();
+	public native int addConfig(String 				configStr,
+															String				configComments,
+															Result<Long>	configID);
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public native int validateLicenseFile(String 				licenseFile,
-																				StringBuffer 	errorResponse);
+	public native int getConfig(long configID, StringBuffer response);
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public native int validateLicenseStringBase64(String 				licenseData,
-																								StringBuffer 	errorResponse);
+	public native int getConfigList(StringBuffer response);
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public native int setDefaultConfigID(long configID);
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public native int getDefaultConfigID(Result<Long> configID);
 	
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public native String version();
+	public native int replaceDefaultConfigID(long oldConfigID, long newConfigID);
 
 	/**
 	 * {@inheritDoc}

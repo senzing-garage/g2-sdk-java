@@ -11,7 +11,7 @@ package com.senzing.g2.engine;
  * Implements the {@link NativeConfig} interface to call the native implementations
  * of the functions.
  */
-class G2ConfigJNI implements NativeConfig {
+class NativeConfigJni implements NativeConfig {
   static {
     System.loadLibrary("G2");
   }

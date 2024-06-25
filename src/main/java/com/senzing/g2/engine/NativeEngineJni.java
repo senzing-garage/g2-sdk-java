@@ -11,7 +11,7 @@ package com.senzing.g2.engine;
  * Implements the {@link NativeEngine} interface to call the native implementations
  * of each function.
  */
-public class G2JNI implements NativeEngine {
+public class NativeEngineJni implements NativeEngine {
   static {
     System.loadLibrary("G2");
   }

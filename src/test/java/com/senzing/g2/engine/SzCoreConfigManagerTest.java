@@ -50,7 +50,7 @@ public class SzCoreConfigManagerTest extends AbstractTest {
         
         String instanceName = this.getClass().getSimpleName();
 
-        NativeConfig nativeConfig = new G2ConfigJNI();
+        NativeConfig nativeConfig = new NativeConfigJni();
         long configHandle = 0L;
         try {
             // initialize the native config

@@ -385,7 +385,7 @@ public class SzCoreEnvironment implements SzEnvironment {
     }
 
     /**
-     * Handles the Senzing JNI return code and coverts it to the proper
+     * Handles the Senzing native return code and coverts it to the proper
      * {@link SzException} if it is not zero (0).
      * 
      * @param returnCode The return code to handle.

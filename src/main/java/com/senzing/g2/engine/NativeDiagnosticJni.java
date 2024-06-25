@@ -11,7 +11,7 @@ package com.senzing.g2.engine;
  * Implements the {@link NativeDiagnostic} to call the native implementations of
  * each function.
  */
-public class G2DiagnosticJNI implements NativeDiagnostic {
+public class NativeDiagnosticJni implements NativeDiagnostic {
   static {
     System.loadLibrary("G2");
   }

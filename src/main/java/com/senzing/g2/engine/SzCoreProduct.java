@@ -11,9 +11,9 @@ public class SzCoreProduct implements SzProduct {
     private SzCoreEnvironment env = null;
 
     /**
-     * The underlying {@link G2ProductJNI} instance.
+     * The underlying {@link NativeProductJni} instance.
      */
-    G2ProductJNI nativeApi = null;
+    NativeProductJni nativeApi = null;
 
     /**
      * Default constructor.
@@ -25,7 +25,7 @@ public class SzCoreProduct implements SzProduct {
     SzCoreProduct(SzCoreEnvironment environment) throws IllegalStateException, SzException {
         this.env = environment;
         this.env.execute(() -> {
-            this.nativeApi = new G2ProductJNI();
+            this.nativeApi = new NativeProductJni();
 
             int returnCode = this.nativeApi.init(this.env.getInstanceName(),
                                                  this.env.getSettings(),

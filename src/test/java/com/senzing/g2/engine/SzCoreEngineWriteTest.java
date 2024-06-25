@@ -325,7 +325,7 @@ public class SzCoreEngineWriteTest extends AbstractTest {
         String instanceName = this.getClass().getSimpleName();
         
         // now we just need the entity ID's for the loaded records to use later
-        NativeEngine nativeEngine = new G2JNI();
+        NativeEngine nativeEngine = new NativeEngineJni();
         try {
             int returnCode = nativeEngine.init(instanceName, settings, false);
             if (returnCode != 0) {

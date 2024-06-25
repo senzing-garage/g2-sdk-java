@@ -60,8 +60,8 @@ public class SzCoreEnvironmentTest extends AbstractTest {
         String settings     = this.getRepoSettings();
         String instanceName = this.getInstanceName();
         
-        NativeConfig    nativeConfig    = new G2ConfigJNI();
-        NativeConfigMgr nativeConfigMgr = new G2ConfigMgrJNI();
+        NativeConfig    nativeConfig    = new NativeConfigJni();
+        NativeConfigManager nativeConfigMgr = new NativeConfigManagerJni();
         try {
             // initialize the native config
             init(nativeConfig, instanceName, settings);

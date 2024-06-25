@@ -116,7 +116,7 @@ public class NativeApiFactory {
   /**
    * Creates a new instance of {@link NativeEngine} to use.  If a
    * {@link NativeApiProvider} is installed then it is used to create
-   * the instance, otherwise a new instance of {@link G2JNI} is
+   * the instance, otherwise a new instance of {@link NativeEngineJni} is
    * constructed and returned.
    *
    * @return A new instance of {@link NativeEngine} to use.
@@ -131,14 +131,14 @@ public class NativeApiFactory {
           "Unable to find Senzing native installation.");
 
     } else {
-      return new G2JNI();
+      return new NativeEngineJni();
     }
   }
 
   /**
    * Provides a new instance of {@link NativeConfig} to use.  If a
    * {@link NativeApiProvider} is installed then it is used to create
-   * the instance, otherwise a new instance of {@link G2ConfigJNI} is
+   * the instance, otherwise a new instance of {@link NativeConfigJni} is
    * constructed and returned.
    *
    * @return A new instance of {@link NativeConfig} to use.
@@ -153,14 +153,14 @@ public class NativeApiFactory {
           "Unable to find Senzing native installation.");
 
     } else {
-      return new G2ConfigJNI();
+      return new NativeConfigJni();
     }
   }
 
   /**
    * Provides a new instance of {@link NativeProduct} to use.  If a
    * {@link NativeApiProvider} is installed then it is used to create
-   * the instance, otherwise a new instance of {@link G2ProductJNI} is
+   * the instance, otherwise a new instance of {@link NativeProductJni} is
    * constructed and returned.
    *
    * @return A new instance of {@link NativeProduct} to use.
@@ -175,20 +175,20 @@ public class NativeApiFactory {
           "Unable to find Senzing native installation.");
 
     } else {
-      return new G2ProductJNI();
+      return new NativeProductJni();
     }
   }
 
   /**
-   * Provides a new instance of {@link NativeConfigMgr} to use.  If a
+   * Provides a new instance of {@link NativeConfigManager} to use.  If a
    * {@link NativeApiProvider} is installed then it is used to create
-   * the instance, otherwise a new instance of {@link G2ConfigMgrJNI} is
+   * the instance, otherwise a new instance of {@link NativeConfigManagerJni} is
    * constructed and returned.
    *
-   * @return A new instance of {@link NativeConfigMgr} to use.
+   * @return A new instance of {@link NativeConfigManager} to use.
    *
    */
-  public static NativeConfigMgr createConfigMgrApi() {
+  public static NativeConfigManager createConfigMgrApi() {
     NativeApiProvider provider = getInstalledProvider();
     if (provider != null) {
       return provider.createConfigMgrApi();
@@ -198,14 +198,14 @@ public class NativeApiFactory {
           "Unable to find Senzing native installation.");
 
     } else {
-      return new G2ConfigMgrJNI();
+      return new NativeConfigManagerJni();
     }
   }
 
   /**
    * Provides a new instance of {@link NativeDiagnostic} to use.  If a
    * {@link NativeApiProvider} is installed then it is used to create
-   * the instance, otherwise a new instance of {@link G2DiagnosticJNI} is
+   * the instance, otherwise a new instance of {@link NativeDiagnosticJni} is
    * constructed and returned.
    *
    * @return A new instance of {@link NativeDiagnostic} to use.
@@ -221,7 +221,7 @@ public class NativeApiFactory {
           "Unable to find Senzing native installation.");
 
     } else {
-      return new G2DiagnosticJNI();
+      return new NativeDiagnosticJni();
     }
   }
 
