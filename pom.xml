@@ -99,6 +99,12 @@
       <version>1.10.0</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.xerial</groupId>
+      <artifactId>sqlite-jdbc</artifactId>
+      <version>3.42.0.1</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <properties>
     <gpg.skip>true</gpg.skip> <!-- skip GPG unless release profile -->
@@ -138,12 +144,19 @@
                            else="">
                   <isset property="env.SENZING_DIR"/>
                 </condition>
+                <condition property="senzing.dev.lib.path"
+                           value="${env.SENZING_DEV_LIBRARY_PATH}"
+                           else="">
+                  <isset property="env.SENZING_DEV_LIBRARY_PATH"/>
+                </condition>
                 <java classname="com.senzing.test.GenerateTestJVMScript">
                   <classpath>
                     <pathelement path="${maven.classpath}"></pathelement>
                     <pathelement location="${project.build.directory}/test-classes/"/>
                     <pathelement location="${project.build.directory}/classes/"/>
                   </classpath>
+                  <sysproperty key="senzing.dev.lib.path"
+                               value="${senzing.dev.lib.path}"/>
                   <sysproperty key="senzing.install.dir"
                                value="${senzing.install.dir}"/>
                   <arg value="${project.build.directory}/java-wrapper/bin/java-wrapper.bat"/>

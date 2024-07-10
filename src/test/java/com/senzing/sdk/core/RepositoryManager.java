@@ -6,10 +6,17 @@ import com.senzing.io.RecordReader;
 import com.senzing.util.JsonUtilities;
 
 import javax.json.*;
+
+import org.glassfish.json.JsonUtil;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.sql.SQLException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
 
 import static com.senzing.util.OperatingSystemFamily.*;
 import static java.nio.file.StandardCopyOption.*;
@@ -38,6 +45,8 @@ public class RepositoryManager {
 
   private static final Set<String> EXCLUDED_TEMPLATE_FILES;
 
+  private static final InstallLocations INSTALL_LOCATIONS;
+
   private static final ThreadLocal<String> THREAD_MODULE_NAME
       = new ThreadLocal<>();
 
@@ -61,13 +70,13 @@ public class RepositoryManager {
 
   static {
     try {
-      InstallLocations locations = InstallLocations.findLocations();
+      INSTALL_LOCATIONS = InstallLocations.findLocations();
 
-      if (locations != null) {
-        INSTALL_DIR   = locations.getInstallDirectory();
-        SUPPORT_DIR   = locations.getSupportDirectory();
-        RESOURCE_DIR  = locations.getResourceDirectory();
-        TEMPLATES_DIR = locations.getTemplatesDirectory();
+      if (INSTALL_LOCATIONS != null) {
+        INSTALL_DIR   = INSTALL_LOCATIONS.getInstallDirectory();
+        SUPPORT_DIR   = INSTALL_LOCATIONS.getSupportDirectory();
+        RESOURCE_DIR  = INSTALL_LOCATIONS.getResourceDirectory();
+        TEMPLATES_DIR = INSTALL_LOCATIONS.getTemplatesDirectory();
       } else {
         INSTALL_DIR   = null;
         SUPPORT_DIR   = null;
@@ -491,11 +500,41 @@ public class RepositoryManager {
       copyConfigFiles(TEMPLATES_DIR, repoConfigDir);
 
       // find the template DB file
-      File templateDB = (TEMPLATES_DIR != null)
+      File templateDB = null;
+      if (INSTALL_LOCATIONS.isDevelopmentBuild()) {
+        File    installDir  = INSTALL_LOCATIONS.getInstallDirectory();
+        File    parentDir   = installDir.getParentFile();
+        File    sqlDir      = new File(parentDir, "sql");
+        File    sqliteFile  = new File(sqlDir, "g2core-schema-sqlite-create.sql");
+        File    tmp         = File.createTempFile("G2C-", ".db");
+        String  jdbcUrl     = "jdbc:sqlite:" + tmp.getCanonicalPath();
+
+        try (FileReader     rdr   = new FileReader(sqliteFile, UTF_8_CHARSET);
+             BufferedReader br    = new BufferedReader(rdr);
+             Connection     conn  = DriverManager.getConnection(jdbcUrl);
+             Statement      stmt  = conn.createStatement()) 
+        {
+          for (String sql = br.readLine(); sql != null; sql = br.readLine()) {
+            sql = sql.trim();
+            if (sql.length() == 0) continue;
+            stmt.execute(sql);
+          }
+
+        } catch (SQLException|IOException e) {
+          e.printStackTrace();
+          throw new RuntimeException(e);
+        }
+
+        // set the template DB to the temp file
+        templateDB = tmp;
+
+      } else {
+        templateDB = (TEMPLATES_DIR != null)
           ? new File(TEMPLATES_DIR, "G2C.db")
           : new File(SUPPORT_DIR, "G2C.db");
-      if (!templateDB.exists()) {
-        templateDB = new File(SUPPORT_DIR, "G2C.db");
+        if (!templateDB.exists()) {
+          templateDB = new File(SUPPORT_DIR, "G2C.db");
+        }
       }
 
       if (templateDB.exists()) {
@@ -514,9 +553,8 @@ public class RepositoryManager {
       File licensePath = null;
 
       // check if there is a license file in the installation
-      InstallLocations installLocations = InstallLocations.findLocations();
-      if (installLocations != null) {
-        File installDir = installLocations.getInstallDirectory();
+      if (INSTALL_LOCATIONS != null) {
+        File installDir = INSTALL_LOCATIONS.getInstallDirectory();
         File etcDir = new File(installDir, "etc");
         licensePath = new File(etcDir, "g2.lic");
       }
@@ -669,13 +707,15 @@ public class RepositoryManager {
         int returnCode = CONFIG_API.init(moduleName, initJsonText, verbose);
         if (returnCode != 0) {
           logError("NativeConfig.init()", CONFIG_API);
-          return;
+          throw new RuntimeException(initJsonText);
+          //return;
         }
         returnCode = CONFIG_MGR_API.init(moduleName, initJsonText, verbose);
         if (returnCode != 0) {
           CONFIG_API.destroy();
           logError("NativeConfigMgr.init()", CONFIG_MGR_API);
-          return;
+          throw new RuntimeException(initJsonText);
+          //return;
         }
         baseInitializedWith = initializer;
       }
@@ -705,7 +745,8 @@ public class RepositoryManager {
         if (returnCode != 0) {
           destroyBaseApis();
           logError("NativeEngine.init()", ENGINE_API);
-          return;
+          throw new RuntimeException(initJsonText);
+          //return;
         }
         engineInitializedWith = initializer;
       }

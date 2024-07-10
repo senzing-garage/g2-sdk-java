@@ -4,11 +4,12 @@ import com.senzing.util.JsonUtilities;
 
 import javax.json.JsonObject;
 import java.io.File;
+import java.io.StringWriter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.senzing.io.IOUtilities.readTextFileAsString;
-import static com.senzing.util.OperatingSystemFamily.MAC_OS;
 import static com.senzing.util.OperatingSystemFamily.RUNTIME_OS_FAMILY;
 
 /**
@@ -42,6 +43,11 @@ public class InstallLocations {
   private File templatesDir;
 
   /**
+   * Indicates if the installation direction is from a development build.
+   */
+  private boolean devBuild = false;
+
+  /**
    * Default constructor.
    */
   private InstallLocations() {
@@ -50,6 +56,7 @@ public class InstallLocations {
     this.resourceDir  = null;
     this.supportDir   = null;
     this.templatesDir = null;
+    this.devBuild     = false;
   }
 
   /**
@@ -96,6 +103,38 @@ public class InstallLocations {
   public File getTemplatesDirectory() {
     return this.templatesDir;
   }
+
+  /**
+   * Checks if the installation is actually a development build.
+   * 
+   * @return <code>true</code> if this installation represents a
+   *         development build, otherwise <code>false</code>.
+   */
+  public boolean isDevelopmentBuild() {
+    return this.devBuild;
+  }
+
+  /**
+   * Produces a {@link String} describing this instance.
+   * 
+   * @return A {@link String} describing this instance.
+   */
+  public String toString() {
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
+
+    pw.println();
+    pw.println("--------------------------------------------------");
+    pw.println("installDirectory   : " + this.getInstallDirectory());
+    pw.println("configDirectory    : " + this.getConfigDirectory());
+    pw.println("supportDirectory   : " + this.getSupportDirectory());
+    pw.println("resourceDirectory  : " + this.getResourceDirectory());
+    pw.println("templatesDirectory : " + this.getTemplatesDirectory());
+    pw.println("developmentBuild   : " + this.isDevelopmentBuild());
+
+    return sw.toString();
+  }
+
 
   /**
    * Finds the install directories and returns the {@link InstallLocations}
@@ -309,10 +348,18 @@ public class InstallLocations {
       if (configPath != null) {
         configDir = new File(configPath);
       }
+
+      // check for a dev build installation
+      if (configDir == null && installDir != null && "dist".equals(installDir.getName())) {
+        configDir = new File(installDir, "data");
+      }
+
+      // if still null and there is a default, then use it
       if (configDir == null && defaultConfigPath != null) {
         configDir = new File(defaultConfigPath);
         if (!configDir.exists()) configDir = null;
       }
+
       if (configPath != null && !configDir.exists()) {
         System.err.println(
             "The -Dsenzing.config.dir=[path] option specifies a path that does not exist:");
@@ -359,11 +406,21 @@ public class InstallLocations {
       resourceDir = (resourcePath == null) ? null : new File(resourcePath);
       if (resourceDir == null) {
         resourceDir = new File(installDir, "resources");
+        if (!resourceDir.exists()) resourceDir = null;
       }
+
+      if (resourceDir == null && "dist".equals(installDir.getName())) {
+        resourceDir = new File(installDir, "data");
+      }
+
       if (resourceDir != null && resourceDir.exists()
           && resourceDir.isDirectory())
       {
-        templatesDir = new File(resourceDir, "templates");
+        if ("dist".equals(installDir.getName())) {
+          templatesDir = resourceDir;
+        } else {
+          templatesDir = new File(resourceDir, "templates");
+        }
       }
 
       if (resourcePath != null) {
@@ -404,6 +461,7 @@ public class InstallLocations {
       result.supportDir       = supportDir;
       result.resourceDir      = resourceDir;
       result.templatesDir     = templatesDir;
+      result.devBuild         = ("dist".equals(installDir.getName()));
 
       // return the result
       return result;
