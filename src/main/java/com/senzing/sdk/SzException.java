@@ -1,16 +1,21 @@
-package com.senzing.sdk.core;
+package com.senzing.sdk;
 
 /**
- * Extends {@link SzBadInputException} to define an exceptional condition
- * where a specified data source code is not confifgured in the current
- * active configuration and therefore the data source could not be found.
+ * Defines the base exception for Senzing errors.  This adds a property
+ * for the numeric Senzing error code which can optionally be set.
  */
-public class SzUnknownDataSourceException extends SzBadInputException {
+public class SzException extends Exception {
+    /**
+     * The underlying senzing error code.
+     */
+    private Integer errorCode = null;
+    
     /**
      * Default constructor.
      */
-    public SzUnknownDataSourceException() {
+    public SzException() {
         super();
+        this.errorCode = null;
     }
 
     /**
@@ -18,8 +23,9 @@ public class SzUnknownDataSourceException extends SzBadInputException {
      * 
      * @param message The message explaining the reason for the exception.
      */
-    public SzUnknownDataSourceException(String message) {
+    public SzException(String message) {
         super(message);
+        this.errorCode = null;
     }
 
     /**
@@ -29,8 +35,9 @@ public class SzUnknownDataSourceException extends SzBadInputException {
      * 
      * @param message The message explaining the reason for the exception.
      */
-    public SzUnknownDataSourceException(int errorCode, String message) {
-        super(errorCode, message);
+    public SzException(int errorCode, String message) {
+        super(message);
+        this.errorCode = errorCode;
     }
 
     /**
@@ -39,8 +46,9 @@ public class SzUnknownDataSourceException extends SzBadInputException {
      * 
      * @param cause The message The message explaining the reason for the exception.
      */
-    public SzUnknownDataSourceException(Throwable cause) {
+    public SzException(Throwable cause) {
         super(cause);
+        this.errorCode = null;
     }
 
     /**
@@ -52,8 +60,9 @@ public class SzUnknownDataSourceException extends SzBadInputException {
      *
      * @param cause The message The message explaining the reason for the exception.
      */
-    public SzUnknownDataSourceException(String message, Throwable cause) {
+    public SzException(String message, Throwable cause) {
         super(message, cause);
+        this.errorCode = null;
     }
 
     /**
@@ -67,7 +76,20 @@ public class SzUnknownDataSourceException extends SzBadInputException {
      *
      * @param cause The message The message explaining the reason for the exception.
      */
-    public SzUnknownDataSourceException(int errorCode, String message, Throwable cause) {
-        super(errorCode, message, cause);
+    public SzException(int errorCode, String message, Throwable cause) {
+        super(message, cause);
+        this.errorCode = errorCode;
+    }
+
+    /**
+     * Gets the underlying Senzing error code associated with the
+     * exception.  This returns <code>null</code> if no error code was 
+     * associated with the exception.
+     * 
+     * @return The underlying Senzing error code associated with the
+     *         exception, or <code>null</code> if none was associated.
+     */
+    public Integer getErrorCode() {
+        return this.errorCode;
     }
 }

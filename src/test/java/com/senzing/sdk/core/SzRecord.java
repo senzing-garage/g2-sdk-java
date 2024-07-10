@@ -3,6 +3,7 @@ package com.senzing.sdk.core;
 import java.util.Map;
 
 import com.senzing.util.JsonUtilities;
+import com.senzing.sdk.SzRecordKey;
 
 import java.util.List;
 import java.util.LinkedList;

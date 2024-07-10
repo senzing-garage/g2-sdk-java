@@ -14,6 +14,9 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
+import com.senzing.sdk.SzConfigManager;
+import com.senzing.sdk.SzReplaceConflictException;
+
 import static org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import static org.junit.jupiter.api.TestInstance.Lifecycle;
 import static org.junit.jupiter.api.Assertions.assertTrue;

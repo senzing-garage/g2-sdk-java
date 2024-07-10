@@ -1,5 +1,8 @@
 package com.senzing.sdk.core;
 
+import com.senzing.sdk.SzProduct;
+import com.senzing.sdk.SzException;
+
 /**
  * The package-protected implementation of {@link SzProduct} that works
  * with the {@link SzCoreEnvironment} class.
@@ -51,7 +54,7 @@ public class SzCoreProduct implements SzProduct {
 
     /**
      * Checks if this instance has been destroyed by the associated
-     * {@link SzEnvironment}.
+     * {@link SzCoreEnvironment}.
      * 
      * @return <code>true</code> if this instance has been destroyed,
      *         otherwise <code>false</code>.

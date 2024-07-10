@@ -25,12 +25,21 @@ import static org.junit.jupiter.api.TestInstance.Lifecycle;
 import javax.json.JsonObject;
 import javax.json.JsonArray;
 
+import com.senzing.sdk.SzEngine;
+import com.senzing.sdk.SzFlag;
+import com.senzing.sdk.SzRecordKey;
+import com.senzing.sdk.SzException;
+import com.senzing.sdk.SzUnknownDataSourceException;
+import com.senzing.sdk.SzNotFoundException;
+import com.senzing.sdk.SzBadInputException;
+
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 import static com.senzing.util.JsonUtilities.*;
-import static com.senzing.sdk.core.SzFlag.*;
+import static com.senzing.sdk.SzFlag.*;
 import static com.senzing.sdk.core.Utilities.*;
 
 /**

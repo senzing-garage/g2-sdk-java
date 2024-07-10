@@ -10,6 +10,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
+import com.senzing.sdk.SzFlag;
+import com.senzing.sdk.SzFlagUsageGroup;
+
 import static org.junit.jupiter.api.TestInstance.Lifecycle;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

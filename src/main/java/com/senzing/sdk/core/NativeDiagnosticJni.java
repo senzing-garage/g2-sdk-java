@@ -11,7 +11,7 @@ package com.senzing.sdk.core;
  * Implements the {@link NativeDiagnostic} to call the native implementations of
  * each function.
  */
-public class NativeDiagnosticJni implements NativeDiagnostic {
+class NativeDiagnosticJni implements NativeDiagnostic {
   static {
     System.loadLibrary("G2");
   }

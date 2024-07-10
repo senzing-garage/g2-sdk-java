@@ -1,13 +1,13 @@
-package com.senzing.sdk.core;
+package com.senzing.sdk;
 
 import java.util.EnumSet;
 import java.util.Set;
 
 import java.util.Collections;
 
-import static com.senzing.sdk.core.SzFlagHelpers.*;
-import static com.senzing.sdk.core.SzFlagUsageGroup.SZ_GROUP_SET_LOOKUP;
-import static com.senzing.sdk.core.Utilities.*;
+import static com.senzing.sdk.SzFlagHelpers.*;
+import static com.senzing.sdk.SzFlagUsageGroup.SZ_GROUP_SET_LOOKUP;
+import static com.senzing.sdk.Utilities.*;
 
 /**
  * Enumerates the Senzing flag values from {@link SzFlags} so they can be

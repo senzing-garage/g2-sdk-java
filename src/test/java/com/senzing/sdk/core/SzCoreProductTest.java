@@ -10,6 +10,8 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
+import com.senzing.sdk.SzProduct;
+
 import static com.senzing.util.JsonUtilities.normalizeJsonText;
 
 @TestInstance(Lifecycle.PER_CLASS)

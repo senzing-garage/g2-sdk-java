@@ -1,5 +1,8 @@
 package com.senzing.sdk.core;
 
+import com.senzing.sdk.SzDiagnostic;
+import com.senzing.sdk.SzException;
+
 /**
  * The package-protected implementation of {@link SzDiagnostic} that works
  * with the {@link SzCoreEnvironment} class.
@@ -74,7 +77,7 @@ public class SzCoreDiagnostic implements SzDiagnostic {
 
     /**
      * Checks if this instance has been destroyed by the associated
-     * {@link SzEnvironment}.
+     * {@link SzCoreEnvironment}.
      * 
      * @return <code>true</code> if this instance has been destroyed,
      *         otherwise <code>false</code>.

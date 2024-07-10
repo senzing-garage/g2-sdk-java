@@ -11,7 +11,7 @@ package com.senzing.sdk.core;
  * Implements the {@link NativeEngine} interface to call the native implementations
  * of each function.
  */
-public class NativeEngineJni implements NativeEngine {
+class NativeEngineJni implements NativeEngine {
   static {
     System.loadLibrary("G2");
   }

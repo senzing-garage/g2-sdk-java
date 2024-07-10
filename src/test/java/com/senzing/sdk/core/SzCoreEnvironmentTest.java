@@ -36,8 +36,14 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 import org.junit.jupiter.api.Test;
 
+import com.senzing.sdk.SzConfig;
+import com.senzing.sdk.SzProduct;
+import com.senzing.sdk.SzConfigManager;
+import com.senzing.sdk.SzEngine;
+import com.senzing.sdk.SzDiagnostic;
+import com.senzing.sdk.SzException;
+
 import static com.senzing.sdk.core.SzCoreEnvironment.*;
-import static com.senzing.sdk.core.SzException.*;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @Execution(ExecutionMode.SAME_THREAD)

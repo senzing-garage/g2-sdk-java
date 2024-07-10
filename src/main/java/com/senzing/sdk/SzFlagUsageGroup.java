@@ -1,4 +1,4 @@
-package com.senzing.sdk.core;
+package com.senzing.sdk;
 
 import java.util.Map;
 import java.util.IdentityHashMap;
@@ -6,7 +6,7 @@ import java.util.EnumSet;
 import java.util.Set;
 import java.util.Collections;
 
-import static com.senzing.sdk.core.Utilities.*;
+import static com.senzing.sdk.Utilities.*;
 
 /**
  * Enumerates the various classifications of usage groups for the

@@ -1,21 +1,16 @@
-package com.senzing.sdk.core;
+package com.senzing.sdk;
 
 /**
- * Defines the base exception for Senzing errors.  This adds a property
- * for the numeric Senzing error code which can optionally be set.
+ * Extends {@link SzBadInputException} to define an exceptional condition
+ * where a specified data source code is not confifgured in the current
+ * active configuration and therefore the data source could not be found.
  */
-public class SzException extends Exception {
-    /**
-     * The underlying senzing error code.
-     */
-    private Integer errorCode = null;
-    
+public class SzUnknownDataSourceException extends SzBadInputException {
     /**
      * Default constructor.
      */
-    public SzException() {
+    public SzUnknownDataSourceException() {
         super();
-        this.errorCode = null;
     }
 
     /**
@@ -23,9 +18,8 @@ public class SzException extends Exception {
      * 
      * @param message The message explaining the reason for the exception.
      */
-    public SzException(String message) {
+    public SzUnknownDataSourceException(String message) {
         super(message);
-        this.errorCode = null;
     }
 
     /**
@@ -35,9 +29,8 @@ public class SzException extends Exception {
      * 
      * @param message The message explaining the reason for the exception.
      */
-    public SzException(int errorCode, String message) {
-        super(message);
-        this.errorCode = errorCode;
+    public SzUnknownDataSourceException(int errorCode, String message) {
+        super(errorCode, message);
     }
 
     /**
@@ -46,9 +39,8 @@ public class SzException extends Exception {
      * 
      * @param cause The message The message explaining the reason for the exception.
      */
-    public SzException(Throwable cause) {
+    public SzUnknownDataSourceException(Throwable cause) {
         super(cause);
-        this.errorCode = null;
     }
 
     /**
@@ -60,9 +52,8 @@ public class SzException extends Exception {
      *
      * @param cause The message The message explaining the reason for the exception.
      */
-    public SzException(String message, Throwable cause) {
+    public SzUnknownDataSourceException(String message, Throwable cause) {
         super(message, cause);
-        this.errorCode = null;
     }
 
     /**
@@ -76,20 +67,7 @@ public class SzException extends Exception {
      *
      * @param cause The message The message explaining the reason for the exception.
      */
-    public SzException(int errorCode, String message, Throwable cause) {
-        super(message, cause);
-        this.errorCode = errorCode;
-    }
-
-    /**
-     * Gets the underlying Senzing error code associated with the
-     * exception.  This returns <code>null</code> if no error code was 
-     * associated with the exception.
-     * 
-     * @return The underlying Senzing error code associated with the
-     *         exception, or <code>null</code> if none was associated.
-     */
-    public Integer getErrorCode() {
-        return this.errorCode;
+    public SzUnknownDataSourceException(int errorCode, String message, Throwable cause) {
+        super(errorCode, message, cause);
     }
 }

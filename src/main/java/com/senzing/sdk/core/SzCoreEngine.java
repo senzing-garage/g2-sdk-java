@@ -2,8 +2,19 @@ package com.senzing.sdk.core;
 
 import java.util.Set;
 
+import com.senzing.sdk.SzEngine;
+import com.senzing.sdk.SzFlag;
+import com.senzing.sdk.SzFlags;
+import com.senzing.sdk.SzRecordKey;
+import com.senzing.sdk.SzRecordKeys;
+import com.senzing.sdk.SzEntityIds;
+import com.senzing.sdk.SzException;
+import com.senzing.sdk.SzUnknownDataSourceException;
+import com.senzing.sdk.SzBadInputException;
+import com.senzing.sdk.SzNotFoundException;
+
 import static com.senzing.sdk.core.Utilities.*;
-import static com.senzing.sdk.core.SzFlag.*;
+import static com.senzing.sdk.SzFlag.*;
 
 /**
  * The package-protected implementation of {@link SzEngine} that works
@@ -91,7 +102,7 @@ public class SzCoreEngine implements SzEngine {
 
     /**
      * Checks if this instance has been destroyed by the associated
-     * {@link SzEnvironment}.
+     * {@link SzCoreEnvironment}.
      * 
      * @return <code>true</code> if this instance has been destroyed,
      *         otherwise <code>false</code>.

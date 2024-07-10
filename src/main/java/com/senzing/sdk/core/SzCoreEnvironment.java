@@ -6,6 +6,18 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.Lock;
 
+import com.senzing.sdk.SzEnvironment;
+import com.senzing.sdk.SzException;
+import com.senzing.sdk.SzConfig;
+import com.senzing.sdk.SzProduct;
+import com.senzing.sdk.SzConfigManager;
+import com.senzing.sdk.SzEngine;
+import com.senzing.sdk.SzDiagnostic;
+import com.senzing.sdk.SzUnknownDataSourceException;
+import com.senzing.sdk.SzReplaceConflictException;
+import com.senzing.sdk.SzNotFoundException;
+import com.senzing.sdk.SzBadInputException;
+
 /**
  * Provides the core implementation of {@link SzEnvironment} that directly
  * initializes the Senzing SDK modules and provides management of the Senzing

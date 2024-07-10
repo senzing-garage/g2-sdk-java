@@ -1,4 +1,4 @@
-package com.senzing.sdk.core;
+package com.senzing.sdk;
 
 /**
  * Defines an exceptional condition when an invalid input value is

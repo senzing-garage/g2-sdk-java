@@ -11,7 +11,7 @@ package com.senzing.sdk.core;
  * Implements the {@link NativeConfig} interface to call the native implementations
  * of the functions.
  */
-public class NativeConfigManagerJni implements NativeConfigManager {
+class NativeConfigManagerJni implements NativeConfigManager {
 	static {
 		System.loadLibrary("G2");
 	}

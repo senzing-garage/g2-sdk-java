@@ -1,7 +1,9 @@
 package com.senzing.sdk.core;
 
+import com.senzing.sdk.SzConfig;
+import com.senzing.sdk.SzException;
+
 import static com.senzing.sdk.core.Utilities.*;
-import static com.senzing.sdk.core.SzException.*;
 
 /**
  * The package-protected implementation of {@link SzConfig} that works
@@ -28,7 +30,9 @@ class SzCoreConfig implements SzConfig {
      *                               has already been destroyed.
      * @throws SzException If a Senzing failure occurs during initialization.
      */
-    SzCoreConfig(SzCoreEnvironment environment) throws IllegalStateException, SzException {
+    SzCoreConfig(SzCoreEnvironment environment)
+        throws IllegalStateException, SzException 
+    {
         this.env = environment;
         this.env.execute(() -> {
             this.nativeApi = new NativeConfigJni();

@@ -1,4 +1,4 @@
-package com.senzing.sdk.core;
+package com.senzing.sdk;
 
 /**
  * Provides a factory interface for obtaining the references to the Senzing SDK 

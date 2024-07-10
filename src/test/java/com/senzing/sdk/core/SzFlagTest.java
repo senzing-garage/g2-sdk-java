@@ -18,13 +18,17 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
+import com.senzing.sdk.SzFlag;
+import com.senzing.sdk.SzFlags;
+import com.senzing.sdk.SzFlagUsageGroup;
+
 import static org.junit.jupiter.api.TestInstance.Lifecycle;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import static com.senzing.sdk.core.SzFlag.*;
+import static com.senzing.sdk.SzFlag.*;
 import static com.senzing.sdk.core.Utilities.*;
 
 @TestInstance(Lifecycle.PER_CLASS)

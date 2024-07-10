@@ -1,16 +1,16 @@
-package com.senzing.sdk.core;
+package com.senzing.sdk;
 
 /**
- * Extends {@link SzBadInputException} to define an exceptional condition
- * where the provided bad input to a Senzing operation is an identifier
- * that could not be used to successfully locate required data for that
- * operation.
+ * Describes an exceptional condition when an attempt is made to replace
+ * a Senzing value with a new value providing it has not not already been
+ * changed, however, the current value is no longer the expected value and
+ * has therefore already been changed.
  */
-public class SzNotFoundException extends SzBadInputException {
+public class SzReplaceConflictException extends SzException {
     /**
      * Default constructor.
      */
-    public SzNotFoundException() {
+    public SzReplaceConflictException() {
         super();
     }
 
@@ -19,7 +19,7 @@ public class SzNotFoundException extends SzBadInputException {
      * 
      * @param message The message explaining the reason for the exception.
      */
-    public SzNotFoundException(String message) {
+    public SzReplaceConflictException(String message) {
         super(message);
     }
 
@@ -30,7 +30,7 @@ public class SzNotFoundException extends SzBadInputException {
      * 
      * @param message The message explaining the reason for the exception.
      */
-    public SzNotFoundException(int errorCode, String message) {
+    public SzReplaceConflictException(int errorCode, String message) {
         super(errorCode, message);
     }
 
@@ -40,7 +40,7 @@ public class SzNotFoundException extends SzBadInputException {
      * 
      * @param cause The message The message explaining the reason for the exception.
      */
-    public SzNotFoundException(Throwable cause) {
+    public SzReplaceConflictException(Throwable cause) {
         super(cause);
     }
 
@@ -53,7 +53,7 @@ public class SzNotFoundException extends SzBadInputException {
      *
      * @param cause The message The message explaining the reason for the exception.
      */
-    public SzNotFoundException(String message, Throwable cause) {
+    public SzReplaceConflictException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -68,7 +68,7 @@ public class SzNotFoundException extends SzBadInputException {
      *
      * @param cause The message The message explaining the reason for the exception.
      */
-    public SzNotFoundException(int errorCode, String message, Throwable cause) {
+    public SzReplaceConflictException(int errorCode, String message, Throwable cause) {
         super(errorCode, message, cause);
     }
 }

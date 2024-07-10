@@ -1,4 +1,4 @@
-package com.senzing.sdk.core;
+package com.senzing.sdk;
 
 /**
  * Defines the Java interface to the Senzing configuration management functions.

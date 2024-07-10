@@ -19,11 +19,18 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import static org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import javax.json.JsonObject;
 import javax.json.JsonArray;
 
+import com.senzing.sdk.SzEngine;
+import com.senzing.sdk.SzFlag;
+import com.senzing.sdk.SzRecordKey;
+import com.senzing.sdk.SzException;
+import com.senzing.sdk.SzUnknownDataSourceException;
+import com.senzing.sdk.SzNotFoundException;
+
+import static org.junit.jupiter.api.TestInstance.Lifecycle;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -32,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static com.senzing.util.CollectionUtilities.list;
 import static com.senzing.util.CollectionUtilities.set;
 import static com.senzing.util.JsonUtilities.*;
-import static com.senzing.sdk.core.SzFlag.*;
+import static com.senzing.sdk.SzFlag.*;
 
 /**
  * Unit tests for {@link SzCoreEngine} how & virtual entity operations.

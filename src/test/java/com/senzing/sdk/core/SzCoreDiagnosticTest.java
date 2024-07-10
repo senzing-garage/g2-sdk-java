@@ -17,14 +17,15 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import static org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import static org.junit.jupiter.api.TestInstance.Lifecycle;
-
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonArray;
 
+import com.senzing.sdk.SzDiagnostic;
+
+import static org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import static org.junit.jupiter.api.TestInstance.Lifecycle;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static com.senzing.util.JsonUtilities.*;

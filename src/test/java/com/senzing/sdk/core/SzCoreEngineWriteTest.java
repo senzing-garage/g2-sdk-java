@@ -7,17 +7,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.parallel.Execution;
@@ -40,6 +37,13 @@ import static org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import javax.json.JsonObject;
 
+import com.senzing.sdk.SzEngine;
+import com.senzing.sdk.SzFlag;
+import com.senzing.sdk.SzRecordKey;
+import com.senzing.sdk.SzException;
+import com.senzing.sdk.SzBadInputException;
+import com.senzing.sdk.SzUnknownDataSourceException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -48,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 import static com.senzing.util.JsonUtilities.*;
-import static com.senzing.sdk.core.SzFlag.*;
+import static com.senzing.sdk.SzFlag.*;
 
 /**
  * Unit tests for {@link SzCoreDiagnostic}.

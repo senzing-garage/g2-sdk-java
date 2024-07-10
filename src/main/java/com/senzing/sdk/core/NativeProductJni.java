@@ -11,7 +11,7 @@ package com.senzing.sdk.core;
  * Implements the {@link NativeProduct} interface to call the native
  * implementations of each function.
  */
-public class NativeProductJni implements NativeProduct
+class NativeProductJni implements NativeProduct
 {
 	static {
 		System.loadLibrary("G2");
