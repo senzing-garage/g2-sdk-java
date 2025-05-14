@@ -19,7 +19,7 @@ only ("GPL2"), with the following clarification and special exception.
     provided that the Designated Exception Modules continue to be
     governed by the licenses under which they were offered by Oracle.
 
-As such, it allows licensees and sublicensees of Oracle's GPL2 OpenJDK Code
+As such, it allows licensees and sublicenses of Oracle's GPL2 OpenJDK Code
 to build an executable that includes those portions of necessary code that
 Oracle could not provide under GPL2 (or that Oracle has provided under GPL2
 with the Classpath exception).  If you modify or add to the OpenJDK code,

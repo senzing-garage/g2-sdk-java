@@ -20,7 +20,7 @@ public class Pair<T1, T2> {
 	private T2 second = null;
 	
 	/**
-	 * Defaut constructor.
+	 * Default constructor.
 	 */
 	public Pair() {
 		this.first 	= null;

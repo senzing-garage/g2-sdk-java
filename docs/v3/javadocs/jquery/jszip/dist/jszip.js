@@ -2855,7 +2855,7 @@ var utf8border = function(buf, max) {
     // return max, because we should return something anyway.
     if (pos < 0) { return max; }
 
-    // If we came to start of buffer - that means vuffer is too small,
+    // If we came to start of buffer - that means buffer is too small,
     // return max too.
     if (pos === 0) { return max; }
 
@@ -3013,7 +3013,7 @@ Utf8DecodeWorker.prototype.flush = function () {
 exports.Utf8DecodeWorker = Utf8DecodeWorker;
 
 /**
- * A worker to endcode string chunks into utf8 encoded binary chunks.
+ * A worker to encode string chunks into utf8 encoded binary chunks.
  * @constructor
  */
 function Utf8EncodeWorker() {
@@ -4418,7 +4418,7 @@ function getThen(obj) {
   // Make sure we only access the accessor once as required by the spec
   var then = obj && obj.then;
   if (obj && (typeof obj === 'object' || typeof obj === 'function') && typeof then === 'function') {
-    return function appyThen() {
+    return function applyThen() {
       then.apply(obj, arguments);
     };
   }
@@ -4611,7 +4611,7 @@ var Z_DEFLATED  = 8;
 /* internal
  * Deflate.chunks -> Array
  *
- * Chunks of output data, if [[Deflate#onData]] not overriden.
+ * Chunks of output data, if [[Deflate#onData]] not overridden.
  **/
 
 /**
@@ -4764,7 +4764,7 @@ function Deflate(options) {
  * - data (Uint8Array|Array|ArrayBuffer|String): input data. Strings will be
  *   converted to utf8 byte sequence.
  * - mode (Number|Boolean): 0..6 for corresponding Z_NO_FLUSH..Z_TREE modes.
- *   See constants. Skipped or `false` means Z_NO_FLUSH, `true` meansh Z_FINISH.
+ *   See constants. Skipped or `false` means Z_NO_FLUSH, `true` means Z_FINISH.
  *
  * Sends input data to deflate pipe, generating [[Deflate#onData]] calls with
  * new compressed chunks. Returns `true` on success. The last data block must have
@@ -4853,7 +4853,7 @@ Deflate.prototype.push = function (data, mode) {
 
 /**
  * Deflate#onData(chunk) -> Void
- * - chunk (Uint8Array|Array|String): ouput data. Type of array depends
+ * - chunk (Uint8Array|Array|String): output data. Type of array depends
  *   on js engine support. When string output requested, each chunk
  *   will be string.
  *
@@ -4996,7 +4996,7 @@ var toString = Object.prototype.toString;
 /* internal
  * inflate.chunks -> Array
  *
- * Chunks of output data, if [[Inflate#onData]] not overriden.
+ * Chunks of output data, if [[Inflate#onData]] not overridden.
  **/
 
 /**
@@ -5124,7 +5124,7 @@ function Inflate(options) {
  * Inflate#push(data[, mode]) -> Boolean
  * - data (Uint8Array|Array|ArrayBuffer|String): input data
  * - mode (Number|Boolean): 0..6 for corresponding Z_NO_FLUSH..Z_TREE modes.
- *   See constants. Skipped or `false` means Z_NO_FLUSH, `true` meansh Z_FINISH.
+ *   See constants. Skipped or `false` means Z_NO_FLUSH, `true` means Z_FINISH.
  *
  * Sends input data to inflate pipe, generating [[Inflate#onData]] calls with
  * new output chunks. Returns `true` on success. The last data block must have
@@ -5271,7 +5271,7 @@ Inflate.prototype.push = function (data, mode) {
 
 /**
  * Inflate#onData(chunk) -> Void
- * - chunk (Uint8Array|Array|String): ouput data. Type of array depends
+ * - chunk (Uint8Array|Array|String): output data. Type of array depends
  *   on js engine support. When string output requested, each chunk
  *   will be string.
  *
@@ -5298,7 +5298,7 @@ Inflate.prototype.onEnd = function (status) {
   if (status === c.Z_OK) {
     if (this.options.to === 'string') {
       // Glue & convert here, until we teach pako to send
-      // utf8 alligned strings to onData
+      // utf8 aligned strings to onData
       this.result = this.chunks.join('');
     } else {
       this.result = utils.flattenChunks(this.chunks);
@@ -5675,7 +5675,7 @@ exports.utf8border = function (buf, max) {
   // return max, because we should return something anyway.
   if (pos < 0) { return max; }
 
-  // If we came to start of buffer - that means vuffer is too small,
+  // If we came to start of buffer - that means buffer is too small,
   // return max too.
   if (pos === 0) { return max; }
 
@@ -5686,7 +5686,7 @@ exports.utf8border = function (buf, max) {
 'use strict';
 
 // Note: adler32 takes 12% for level 0 and 2% for level 6.
-// It doesn't worth to make additional optimizationa as in original.
+// It doesn't worth to make additional optimization as in original.
 // Small size is preferable.
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
@@ -8006,7 +8006,7 @@ module.exports = function inflate_fast(strm, start) {
                   break top;
                 }
 
-// (!) This block is disabled in zlib defailts,
+// (!) This block is disabled in zlib defaults,
 // don't enable it for binary compatibility
 //#ifdef INFLATE_ALLOW_INVALID_DISTANCE_TOOFAR_ARRR
 //                if (len <= op - whave) {
@@ -8543,9 +8543,9 @@ function inflate(strm, flush) {
   var from;                   /* where to copy match bytes from */
   var from_source;
   var here = 0;               /* current decoding table entry */
-  var here_bits, here_op, here_val; // paked "here" denormalized (JS specific)
+  var here_bits, here_op, here_val; // packed "here" denormalized (JS specific)
   //var last;                   /* parent table entry */
-  var last_bits, last_op, last_val; // paked "last" denormalized (JS specific)
+  var last_bits, last_op, last_val; // packed "last" denormalized (JS specific)
   var len;                    /* length to copy for repeats, bits to drop */
   var ret;                    /* return code */
   var hbuf = new utils.Buf8(4);    /* buffer for gzip header crc calculation */
@@ -8777,7 +8777,7 @@ function inflate(strm, flush) {
           if (state.head) {
             len = state.head.extra_len - state.length;
             if (!state.head.extra) {
-              // Use untyped array for more conveniend processing later
+              // Use untyped array for more convenient processing later
               state.head.extra = new Array(state.head.extra_len);
             }
             utils.arraySet(
@@ -9461,7 +9461,7 @@ function inflate(strm, flush) {
             state.mode = BAD;
             break;
           }
-// (!) This block is disabled in zlib defailts,
+// (!) This block is disabled in zlib defaults,
 // don't enable it for binary compatibility
 //#ifdef INFLATE_ALLOW_INVALID_DISTANCE_TOOFAR_ARRR
 //          Trace((stderr, "inflate.c too far\n"));
@@ -9512,7 +9512,7 @@ function inflate(strm, flush) {
         while (bits < 32) {
           if (have === 0) { break inf_leave; }
           have--;
-          // Use '|' insdead of '+' to make sure that result is signed
+          // Use '|' instead of '+' to make sure that result is signed
           hold |= input[next++] << bits;
           bits += 8;
         }
@@ -10217,7 +10217,7 @@ var bl_order =
 
 var DIST_CODE_LEN = 512; /* see definition of array dist_code below */
 
-// !!!! Use flat array insdead of structure, Freq = i*2, Len = i*2+1
+// !!!! Use flat array instead of structure, Freq = i*2, Len = i*2+1
 var static_ltree  = new Array((L_CODES + 2) * 2);
 zero(static_ltree);
 /* The static literal tree. Since the bit lengths are imposed, there is no
@@ -11272,7 +11272,7 @@ function _tr_tally(s, dist, lc)
     s.dyn_dtree[d_code(dist) * 2]/*.Freq*/++;
   }
 
-// (!) This block is disabled in zlib defailts,
+// (!) This block is disabled in zlib defaults,
 // don't enable it for binary compatibility
 
 //#ifdef TRUNCATE_BLOCK

@@ -2,9 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-[markdownlint](https://dlaa.me/markdownlint/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog], [markdownlint],
+and this project adheres to [Semantic Versioning].
 
 ## [3.0.2] - 2023-10-19
 
@@ -22,11 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.0.0] - 2022-05-04
 
 ### Added in 3.0.0
+
 - Added the following functions to `com.senzing.g2.engine.G2Engine`:
   - `findInterestingEntitiesByEntityID(...)`
   - `findInterestingEntitiesByRecordID(...)`
   - `findPathExcludingByEntityID(...)`
-  - `findPathExcluduingByRecordID(...)`
+  - `findPathExcludingByRecordID(...)`
   - `findPathIncludingSourceByEntityID(...)`
   - `findPathIncludingSourceByRecordID(...)`
   - `howEntityByEntityID(long, StringBuffer)`
@@ -37,12 +37,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `int validateLicenseStringBase64(String, StringBuffer)`
 
 ### Removed in 3.0.0
+
 - The `G2Audit` functions including the entire `com.senzing.g2.engine.internal`
-  package have been removed.  These funtions are no longer available for 
-  external use.  Instead the `WithInfo` function variants in `G2Engine` should
-  be used to incrementally aggregate repository statistics. 
+  package have been removed. These functions are no longer available for
+  external use. Instead the `WithInfo` function variants in `G2Engine` should
+  be used to incrementally aggregate repository statistics.
 - The Entity Type and Entity Class functions in `com.senzing.g2.engine.G2Config`
-  are no longer relevant since entity types and entity classes are no longer 
+  are no longer relevant since entity types and entity classes are no longer
   used by Senzing. The following functions have been removed:
   - `addDataSource(long, String)`
   - `addDataSourceWithID(long, String, int)`
@@ -53,7 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `addEntityTypeV2()`
   - `deleteEntityTypeV2()`
 - Many functions that were intended only for internal use have been removed
-  from `com.senzing.g2.engine.G2Config`.  These functions have no replacement
+  from `com.senzing.g2.engine.G2Config`. These functions have no replacement
   and should be removed from your application if they are used:
   - `listFeatureElementsV2()`
   - `getFeatureElementV2()`
@@ -119,7 +120,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `modifyCompatibilityVersionV2()`
 
 ### Changed in 3.0.0
-- Changed "flag" constants from type `int` to `long`.  This includes the 
+
+- Changed "flag" constants from type `int` to `long`. This includes the
   constant definitions (e.g.: `G2Engine.G2_ENTITY_INCLUDE_ALL_FEATURES`) and
   in function parameters.
 - Removed "V2" and "V3" suffixes from functions, replacing the "V1" versions
@@ -171,3 +173,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.9.0] - 2021-09-15
 
 ### Initial open-source release
+
+[Keep a Changelog]: https://keepachangelog.com/en/1.0.0/
+[markdownlint]: https://dlaa.me/markdownlint/
+[Semantic Versioning]: https://semver.org/spec/v2.0.0.html
