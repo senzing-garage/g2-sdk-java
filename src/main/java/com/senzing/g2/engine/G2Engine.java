@@ -138,7 +138,7 @@ public interface G2Engine extends G2Fallible
   long G2_ENTITY_INCLUDE_RECORD_JSON_DATA = ( 1L << 16 );
 
   /**
-   * The bitwise flag for including the record formattted data for the entity
+   * The bitwise flag for including the record formatted data for the entity
    */
   long G2_ENTITY_INCLUDE_RECORD_FORMATTED_DATA = ( 1L << 17 );
 
@@ -989,7 +989,7 @@ public interface G2Engine extends G2Fallible
    * This method is used to find a relationship path between two entities
    * identified by the data source codes and record IDs of their composite
    * records where that path excludes one or more entities, also
-   * identified by the data sourec codes and record IDs of their composite
+   * identified by the data source codes and record IDs of their composite
    * records.
    *
    * <p>
@@ -1040,7 +1040,7 @@ public interface G2Engine extends G2Fallible
    * This method is used to find a relationship path between two entities
    * identified by the data source codes and record IDs of their composite
    * records where that path excludes one or more entities, also
-   * identified by the data sourec codes and record IDs of their composite
+   * identified by the data source codes and record IDs of their composite
    * records.
    *
    * <p>
@@ -1359,7 +1359,7 @@ public interface G2Engine extends G2Fallible
    *   }
    * </pre>
    *
-   * @param entityList The JSON document specififying the entity ID's of the
+   * @param entityList The JSON document specifying the entity ID's of the
    *                   desired entities.
    * @param maxDegrees The maximum number of degrees for the path search
    *                   between the specified entities.
@@ -1396,7 +1396,7 @@ public interface G2Engine extends G2Fallible
    *   }
    * </pre>
    *
-   * @param entityList The JSON document specififying the entity ID's of the
+   * @param entityList The JSON document specifying the entity ID's of the
    *                   desired entities.
    * @param maxDegrees The maximum number of degrees for the path search
    *                   between the specified entities.
@@ -1792,7 +1792,7 @@ public interface G2Engine extends G2Fallible
    *
    * @param csvColumnList Specify <code>"*"</code> to indicate "all columns",
    *                      specify empty-string to indicate the "standard
-   *                      columns", otherwise specify a comma-sepatated list of
+   *                      columns", otherwise specify a comma-separated list of
    *                      column names.
    * @param flags A bit mask specifying other control flags, such as
    *        "G2_EXPORT_INCLUDE_SINGLETONS".  The default and recommended

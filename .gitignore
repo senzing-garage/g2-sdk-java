@@ -23,8 +23,6 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
-.history
-
 # Maven build artifact directory
 target/*
 
@@ -32,7 +30,10 @@ target/*
 .idea/*
 *.iml
 
-.history
 .DS_Store
-.vscode
+
+# Visual Studio code
 .vscode/*
+!.vscode/cspell.json
+*.code-workspace
+.history
